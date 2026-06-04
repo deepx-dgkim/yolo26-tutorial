@@ -178,7 +178,7 @@
             <article id="section-1-1" class="mb-8">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">HW 아키텍처 및 초저전력 설계</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    DEEPX의 DX-M1은 엣지 환경에 최적화된 <strong class="text-indigo-700">25 TOPS (INT8 기준)</strong>의 연산 성능을 제공하는 AI 프로세서다. 단순히 TOPS 수치만 높은 것이 아니라, 실제 소비 전력 대비 추론 성능(Inference-per-Second/Watt)을 극대화하도록 설계된 것이 특징이다.
+                    DEEPX의 DX-M1은 최신 5나노 미세공정을 기반으로 제작되어, 엣지 환경에 최적화된 <strong class="text-indigo-700">25 TOPS (INT8 기준)</strong>의 강력한 연산 성능을 제공하는 AI 프로세서다. 단순히 미세 공정이나 높은 TOPS 수치에만 의존한 것이 아니라, 자체 아키텍처 최적화를 통해 실제 소비 전력 대비 추론 성능(Inference-per-Second/Watt)을 극대화하도록 설계된 것이 특징이다.
                 </p>
                 <p class="text-gray-600 leading-relaxed mb-4">
                     구체적인 전력 소모 지표를 보면 그 진가를 알 수 있다. 경량 객체 인식 모델인 YOLOv9T를 구동할 때의 전력 소모는 약 2.69W에 불과하며, 연산량이 훨씬 많은 무거운 모델인 YOLOv8L을 구동할 때조차 5.64W 수준의 매우 낮은 전력만을 소모한다. 이는 방열판이나 작은 쿨링팬만으로도 Raspberry Pi 5와 함께 운용하기에 완벽한 조건을 제공한다.
@@ -405,8 +405,13 @@ dxtop</code></pre>
 
                 <ol class="text-gray-600 leading-relaxed mb-6">
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>YOLO26s 로 pre-trained weight 다운로드:</strong> YOLO26s 모델을 기반으로 학습된 야생동물 YOLO26 모델의 weight 값을 다운로드한다. <code>yolo26s-wildlife.pt</code> 파일이 다운로드된다.
-                        <a href="https://drive.google.com/file/d/1bI6J_iye6U-MlRzuMsRyPUgV6FbUQKcT/view?usp=sharing" target="_blank" class="text-indigo-600 hover:underline break-all">https://drive.google.com/file/d/1bI6J_iye6U-MlRzuMsRyPUgV6FbUQKcT/view?usp=sharing</a></p>
+                        <p class="step-desc"><strong>YOLO26s 로 pre-trained weight 다운로드:</strong> YOLO26s 모델을 기반으로 학습된 야생동물 YOLO26 모델의 weight 값을 다운로드한다. <code>yolo26s-custom.pt</code> 파일이 다운로드된다. (학습 편의상 pt 파일을 제공하나, custom model 의 training phorch 를 사용해도 무방함)
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
+                            💻 Host PC (Ubuntu/x86_64)
+                        </div>
+<pre><code class="language-bash">wget -O yolo26s-custom.pt https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/best.pt</code></pre>
+                        </div>
                     </li>
                     <li class="step-item mb-4">
                         <p class="step-desc"><strong>필수 패키지 설치:</strong> 터미널이나 커맨드 창을 열고 python 가상환경을 생성 후 <code>pip</code> 명령어를 이용해 <code>ultralytics</code> 패키지를 설치한다. 이 명령어 하나로 단 몇 분 안에 필요한 툴이 모두 설치된다.</p>
@@ -424,19 +429,20 @@ pip install ultralytics dx-com</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>ONNX 변환:</strong> DX-Compiler 는 ONNX 로 1차 변환이 되어야 이를 <code>.dxnn</code>으로 변환할 수 있다. ONNX 추출 시 반드시 batch size 를 1 로 고정해야 한다. NPU 에서는 low latency 가 중요하기 때문에 multi batch size 를 고려하지 않고 1개의 고정된 batch 만 사용되도록 설계됐기 때문이다.</p>
+                        <p class="step-desc"><strong>ONNX 변환:</strong> DX-Compiler 는 ONNX 로 1차 변환이 되어야 이를 <code>.dxnn</code>으로 변환할 수 있다. ONNX 추출 시 반드시 batch size 를 1 로 고정해야 한다. NPU 에서는 low latency 가 중요하기 때문에 multi batch size 를 고려하지 않고 1개의 고정된 batch 만 사용되도록 설계되었기 때문이다.</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
                         </div>
 <pre><code class="language-bash"># yolo export 명령어를 활용해 ONNX format으로 추출 (input size = 640, batch size = 1)
-yolo export model=yolo26s-wildlife.pt format=onnx batch=1 imgsz=640</code></pre>
+yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
+# wget -O yolo26s-wild.pt https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.onnx</code></pre>
                         </div>
-                        <p class="step-desc"><code>yolo26s-wildlife.onnx</code> 파일이 생성되면 성공이다. 그리고 추출된 ONNX 파일의 batch size 가 1 로 고정됐는지 <a href="https://netron.app" target="_blank" class="text-indigo-600 hover:underline">https://netron.app</a> 을 통해 확인해 보자. 해당 브라우저에서 <code>yolo26s-wildlife.onnx</code> 파일을 로드하고 가장 상단의 images 레이어를 클릭해 input tensor shape 이 <code>1x3x640x640</code>으로 보이면 된다.</p>
+                        <p class="step-desc"><code>yolo26s-custom.onnx</code> 파일이 생성되면 성공이다. 그리고 추출된 ONNX 파일의 batch size 가 1 로 고정됐는지 <a href="https://netron.app" target="_blank" class="text-indigo-600 hover:underline">https://netron.app</a> 을 통해 확인해 보자. 해당 브라우저에서 <code>yolo26s-custom.onnx</code> 파일을 로드하고 가장 상단의 images 레이어를 클릭해 input tensor shape 이 <code>1x3x640x640</code>으로 보이면 된다.</p>
                         <figure class="my-6 not-prose">
-                            <img src="assets/image-16.png" alt="netron 으로 yolo26-s-wildlife.onnx 확인">
+                            <img src="assets/image-16.png" alt="netron 으로 yolo26-s-custom.onnx 확인">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[그림 8] netron 으로 yolo26-s-wildlife.onnx 확인한 결과</strong>
+                                <strong class="text-gray-700">[그림 8] netron 으로 yolo26-s-custom.onnx 확인한 결과</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -452,7 +458,7 @@ tar xzf calibration_dataset.tar.gz</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>컴파일 configuration 구성:</strong> 아래 내용으로 <code>yolo26s-wildlife.json</code> 파일을 생성한다. 관련해서 자세한 내용은 DEEPX 개발자 페이지에서 DX-COM user manual 을 참고한다. 해당 문서를 다운로드하려면 먼저 DEEPX 개발자 페이지에 계정을 생성하고 로그인해야 한다.
+                        <p class="step-desc"><strong>컴파일 configuration 구성:</strong> 아래 내용으로 <code>yolo26s-custom.json</code> 파일을 생성한다. 관련해서 자세한 내용은 DEEPX 개발자 페이지에서 DX-COM user manual 을 참고한다. 해당 문서를 다운로드하려면 먼저 DEEPX 개발자 페이지에 계정을 생성하고 로그인해야 한다.
                         <a href="https://developer.deepx.ai/download/?id=510" target="_blank" class="text-indigo-600 hover:underline break-all">https://developer.deepx.ai/download/?id=510</a> 에서 다운로드 가능하다.</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
@@ -485,14 +491,19 @@ tar xzf calibration_dataset.tar.gz</code></pre>
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
                         </div>
-<pre><code class="language-bash">dxcom -m yolo26s-wildlife.onnx -c yolo26s-wildlife.json -o output
+<pre><code class="language-bash">dxcom -m yolo26s-custom.onnx -c yolo26s-custom.json -o output
 
-# 컴파일 완료 후 아래와 같이 'yolo26s-wildlife.dxnn' 파일이 생성된다.
+# 컴파일 완료 후 아래와 같이 'yolo26s-custom.dxnn' 파일이 생성된다.
 # ├── output
-# │   └── yolo26s-wildlife.dxnn</code></pre>
+# │   └── yolo26s-custom.dxnn</code></pre>
                         </div>
-                        <p class="step-desc">생성된 <code>yolo26s-wildlife.dxnn</code> 파일을 target device(Raspberry Pi 5)로 카피한다. 만약 위 과정을 생략하고 바로 컴파일된 <code>.dxnn</code> 파일만 받아서 다음 과정을 진행하고 싶은 경우 다음 링크에서 컴파일된 야생동물 detection 기능을 하는 <code>yolo26s-wildlife.dxnn</code> 파일을 다운로드할 수 있다.
-                        <a href="https://drive.google.com/file/d/1qoW7jN7RhDYwCkla6GDB5p3aOfgQSUib/view?usp=sharing" target="_blank" class="text-indigo-600 hover:underline break-all">https://drive.google.com/file/d/1qoW7jN7RhDYwCkla6GDB5p3aOfgQSUib/view?usp=sharing</a></p>
+                        <p class="step-desc">생성된 <code>yolo26s-custom.dxnn</code> 파일을 target device(Raspberry Pi 5)로 카피한다. 만약 위 과정을 생략하고 바로 컴파일된 <code>.dxnn</code> 파일만 받아서 다음 과정을 진행하고 싶은 경우 다음 링크에서 컴파일된 야생동물 detection 기능을 하는 <code>yolo26s-custom.dxnn</code> 파일을 다운로드할 수 있다.</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
+                            💻 Host PC (Ubuntu/x86_64)
+                        </div>
+<pre><code class="language-bash">wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.dxnn"</code></pre>
+                        </div>
                     </li>
                 </ol>
             </article>
@@ -537,7 +548,7 @@ cd dx_app</code></pre>
                         </figure>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>5개 class 만 찾는 Custom 모델로 코드 수정:</strong> 기존 YOLO26 모델들은 default 로 80개 class 를 찾도록 pre-trained 된 모델이다. DX-APP 코드도 이에 맞춰져 있어서 이 부분만 수정하면 된다. 아래 diff 부분을 확인해서 코드를 수정하자.</p>
+                        <p class="step-desc"><strong>4개 class 만 찾는 Custom 모델로 코드 수정:</strong> 기존 YOLO26 모델들은 default 로 80개 class 를 찾도록 pre-trained 된 모델이다. DX-APP 코드도 이에 맞춰져 있어서 이 부분만 수정하면 된다. 아래 diff 부분을 확인해서 코드를 수정하자.</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
@@ -550,9 +561,9 @@ index 2476a60..6955632 100644
  _TEDDY_BEAR = "teddy bear"
 
 
-+def get_wildlife_labels() -> List[str]:
++def get_custom_labels() -> List[str]:
 +    return [
-+        "Water Deer", "Wild Boar", "Raccon Dog", "Black Bear", "Roe Deer"
++        "Person", "Deer", "Raccoon", "Bear"
 +    ]
 +
 
@@ -562,7 +573,7 @@ index 2476a60..6955632 100644
 
 
  _DATASET_LABELS: Dict[str, List[str]] = {
-+    "wildlife": get_wildlife_labels(),
++    "costom": get_custom_labels(),
      "coco80": get_coco_80_labels(),
      "imagenet1000": get_imagenet_labels(),
      "cityscapes": get_cityscapes_labels(),
@@ -575,7 +586,7 @@ index 6c03a32..deef9fa 100644
      """
 
 -    def __init__(self, label_set: str = 'coco80', custom_labels: List[str] = None):
-+    def __init__(self, label_set: str = 'wildlife', custom_labels: List[str] = None):
++    def __init__(self, label_set: str = 'custom', custom_labels: List[str] = None):
          """
          Initialize detection visualizer.</code></pre>
                         </div>
@@ -587,7 +598,11 @@ index 6c03a32..deef9fa 100644
                             🍓 Target (Raspberry Pi 5)
                         </div>
 <pre><code class="language-bash"># Test Video download
-wget "https://github.com/max5982/yolo26/raw/main/assets/test-video-1.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-0.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-1.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-2.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-3.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-4.mp4"
 
 # Python 가상환경 생성 후 dx-engine & opencv-python package 설치하기
 python3 -m venv venv
@@ -597,12 +612,12 @@ cd /usr/share/libdxrt/python_package && sudo ./make_whl.sh && pip install dx_eng
 pip install opencv-python
 
 # async mode 의 python app 실행하기, 이때 model 의 경로는 Raspberry Pi 5 에 카피한 경로에 맞게 설정해야 한다.
-python3 yolo26s_async.py -m yolo26s-wildlife.dxnn -v test-video-1.mp4</code></pre>
+python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4</code></pre>
                         </div>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-18.png" alt="Black Bear detection 결과">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[그림 10] Black Bear 가 detection 되는 것을 확인할 수 있다.</strong>
+                                <strong class="text-gray-700">[그림 10] Bear 와 Person 이 detection 되는 것을 확인할 수 있다.</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -647,7 +662,7 @@ cd dx_stream
                     </li>
 
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>YOLO26 모델 postprocessing lib 수정:</strong> Default 80개 class 를 찾는 YOLO26 모델을 5개 class 만 찾는 Custom 모델로 수정하기 위해서는 postprocessing lib 을 수정해야 한다. </p>
+                        <p class="step-desc"><strong>YOLO26 모델 postprocessing lib 수정:</strong> Default 80개 class 를 찾는 YOLO26 모델을 4개 class 만 찾는 Custom 모델로 수정하기 위해서는 postprocessing lib 을 수정해야 한다. </p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
@@ -662,7 +677,7 @@ index 8d768e5..113e154 100644
     int input_height = 640;
     float conf_threshold = 0.25f;
 -    int num_classes = 80;
-+    int num_classes = 5;
++    int num_classes = 4;
     std::vector<std::string> class_names = {
 -        "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck",
 -        "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench",
@@ -675,14 +690,14 @@ index 8d768e5..113e154 100644
 -        "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse",
 -        "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink",
 -        "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"
-+        "Water Deer", "Wild Boar", "Raccon Dog", "Black Bear", "Roe Deer"
++        "Person", "Deer", "Raccoon", "Bear"
     };
 };</code></pre>
 <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
     🍓 Target (Raspberry Pi 5)
 </div>
 <pre><code class="language-bash"># 수정 이후 아래 명령어를 통해 재빌드
-./build.sh</code></pre>
+./build.sh --clean</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
@@ -691,11 +706,15 @@ index 8d768e5..113e154 100644
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
                         </div>
-<pre><code class="language-bash"># Test Video download
-wget "https://github.com/max5982/yolo26/raw/main/assets/test-video-1.mp4"
+<pre><code class="language-bash"># Test Video download - 이전 과정에서 이미 다운로드 받았으면 skip
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-0.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-1.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-2.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-3.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-4.mp4"
 
-# YOLO26 모델 다운로드
-wget "https://github.com/max5982/yolo26/raw/main/assets/yolo26s-wildlife.dxnn"
+# YOLO26 모델 다운로드- 이전 과정에서 이미 다운로드 받았거나 직접 만든 dxnn 있을 경우 skip
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.dxnn"
 
 # 1개의 Stream 만 처리하는 GStreamer Pipeline 구성/실행
 gst-launch-1.0 urisourcebin uri=file://$(pwd)/test-video-1.mp4 ! decodebin ! \
@@ -707,7 +726,7 @@ gst-launch-1.0 urisourcebin uri=file://$(pwd)/test-video-1.mp4 ! decodebin ! \
                     dxinfer \
                         preprocess-id=1 \
                         inference-id=1 \
-                        model-path=yolo26s-wildlife.dxnn ! \
+                        model-path=yolo26s-custom.dxnn ! \
                     queue max-size-buffers=1 ! \
                     dxpostprocess \
                         inference-id=1 \
@@ -733,7 +752,7 @@ NUM_PIPELINES=4
 OUTPUT_WIDTH=1280
 OUTPUT_HEIGHT=720
 
-MODEL_NAME="yolo26s-wildlife.dxnn"
+MODEL_NAME="yolo26s-custom.dxnn"
 POSTPROCESS_LIB="/usr/local/share/gstdxstream/lib/libpostprocess_yolo26od.so"
 
 # =========================================================
@@ -802,7 +821,7 @@ exit 0</code></pre>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-23.png" alt="Black Bear detection 결과">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[그림 10] Black Bear 가 detection 되는 것을 확인할 수 있다.</strong>
+                                <strong class="text-gray-700">[그림 11] 4채널 detection 이 동작되는 것을 확인할 수 있다.</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -811,8 +830,20 @@ exit 0</code></pre>
                 <figure class="my-10">
                     <img src="assets/image-19.png" alt="DX-STREAM 파이프라인 구조도" class="rounded-lg border border-slate-200">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[그림 11] DX-STREAM 파이프라인 구조도</strong><br>
+                        <strong class="text-gray-700">[그림 12] DX-STREAM 파이프라인 구조도</strong><br>
                         카메라 비디오 입력(Input) 소스에서 시작하여 <code>dxpreprocess</code>(전처리), NPU 하드웨어에서 가속되는 <code>dxinfer</code>(추론), 결과값을 처리하는 <code>dxpostprocess</code>(후처리)를 거쳐 <code>dxosd</code>를 통해 디스플레이(OSD)로 렌더링되는 전 과정을 보여준다.
+                    </figcaption>
+                </figure>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
+                    <strong>💡 팁:</strong> Multi-stream pipeline 을 구현 시 모두 동일한 AI 모델을 사용하는 경우에는 반드시 <code>dxpreprocess → dxinfer → dxpostprocess</code> 를 stream 마다 분리해서 사용할 필요는 없다. 오히려 <code>dxinputselector 와 dxoutputselector</code>를 사용하면 해당 plugin 들을 각 stream 이 공유해서 사용할 수 있어 불필요하게 동일 모델을 NPU 에 load 해서 동작시키는 resource 낭비를 최소화 할 수 있게 된다. <br> 아래 pipeline 구조도는 해당 구현의 예이며, <code>dx_stream/pipelines/multi_stream/run_multi_stream_selector.sh</code> 를 참고하면 어떤 식으로 구현됐는지를 알 수 있다.
+                </div>
+
+                <figure class="my-10">
+                    <img src="assets/image-20.png" alt="DX-STREAM 파이프라인 구조도" class="rounded-lg border border-slate-200">
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[그림 13] 각 스트림이 중복 자원을 공유하는 DX-STREAM 파이프라인 구조도</strong><br>
+                         dxinputselector 와 dxoutputselector 를 사용해  <code>dxpreprocess → dxinfer → dxpostprocess</code> pipeline 중복을 최소화 한다.
                     </figcaption>
                 </figure>
             </article>
@@ -828,10 +859,10 @@ exit 0</code></pre>
                 최신 객체 인식 모델인 YOLO26은 NMS(Non-Maximum Suppression) 후처리가 필요 없는 End-to-End 추론을 지원하며 edge device 구동에 최적화된 차세대 비전 AI 모델이다. 처음 해보는 사람도 손쉽게 자신만의 dataset을 구축하고 YOLO26 모델을 학습시킬 수 있도록 두 가지 방법을 소개한다.
             </p>
             <p class="text-gray-600 leading-relaxed mb-6">
-                참고용 dataset은 다음 링크에서 다운로드 가능하다. 해당 dataset은 IP 이슈로 약 30장의 소량의 data만 포함하고 있으니 컨셉을 이해하기 위한 목적으로만 사용한다. 실사용 목적의 정확도를 위해서는 최소 1000장 이상의 dataset이 요구된다.
+                참고용 dataset은 다음 링크에서 다운로드 가능하다. 해당 dataset은 IP 이슈로 소량의 data만 포함하고 있으니 컨셉을 이해하기 위한 목적으로만 사용한다. 실사용 목적의 정확도를 위해서는 최소 1000장 이상의 dataset이 요구된다.
             </p>
             <p class="text-gray-600 leading-relaxed mb-6">
-            👉 다운로드 링크: <a href="https://github.com/max5982/yolo26/raw/main/dataset/simple_wild_yolo.zip" target="_blank">https://github.com/max5982/yolo26/raw/main/dataset/simple_wild_yolo.zip</a>
+            👉 다운로드 링크: <a href="https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/sample_dataset.tar.gz" target="_blank">https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/sample_dataset.tar.gz</a>
             </p>
             <br>
 
@@ -848,7 +879,7 @@ exit 0</code></pre>
                 <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                     💻 Host PC (Data Prep)
                 </div>
-<pre><code class="language-text">dataset/
+<pre><code class="language-text">sample_dataset/
 ├── data.yaml          # 클래스 정보와 학습/검증 데이터 경로가 정의된 설정 파일
 ├── images/
 │   ├── train/         # 모델 학습에 사용할 원본 이미지 (.jpg, .png 등)
@@ -860,7 +891,7 @@ exit 0</code></pre>
 
 
                 <p class="text-gray-600 leading-relaxed mt-6 mb-2">
-                    5가지 class 의 야생동물을 정의한 custom 모델용 dataset 의 <code>data.yaml</code> 내부는 아래와 같이 정의된다.
+                    4가지 class 의 사람과 야생동물을 정의한 custom 모델용 dataset 의 <code>data.yaml</code> 내부는 아래와 같이 정의된다.
                 </p>
                 <div class="code-panel">
 
@@ -868,16 +899,15 @@ exit 0</code></pre>
                 <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                     💻 Host PC (Data Prep)
                 </div>
-<pre><code class="language-yaml"># YOLO detection - 5 wildlife classes
+<pre><code class="language-yaml"># YOLO detection - 4 custom classes
 train: images/train
 val: images/val
 
 names:
-  0: water_deer
-  1: wild_boar
-  2: raccoon_dog
-  3: asian_black_bear
-  4: roe_deer</code></pre>
+  0: Person
+  1: Deer
+  2: Raccoon
+  3: Bear</code></pre>
                 </div>
 
                 <p class="text-gray-600 leading-relaxed mb-6">
@@ -888,30 +918,47 @@ names:
                 <h3 id="section-4-2" class="text-xl font-semibold text-gray-800 mb-4">학습 방법 1: Ultralytics Platform 이용 (Cloud 환경, 초보자 추천)</h3>
 
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    코딩이나 별도의 PC 환경 설정 없이 웹 브라우저에서 편리하게 학습을 진행할 수 있는 방법이다.
+                    코딩이나 별도의 PC 환경 설정 없이 웹 브라우저 GUI 를 사용해서 편리하게 학습을 진행할 수 있는 방법이다.
                 </p>
 
                 <ol class="text-gray-600 leading-relaxed mb-8">
             <li><strong>접속 및 데이터 업로드:</strong> <a href="https://platform.ultralytics.com" target="_blank">https://platform.ultralytics.com</a> 에 로그인하고 새 프로젝트를 생성하여 raw 이미지들을 업로드한다.</li>
-            <li><strong>스마트 라벨링 진행:</strong> 플랫폼에 내장된 SAM(Segment Anything Model) 기반의 스마트 어노테이션 도구를 사용하면, 클릭 한 번으로 바운딩 박스를 자동으로 생성할 수 있다. 이 기능을 활용하면 수동 작업 대비 최대 10배 빠르게 고품질 dataset을 완성할 수 있다.</li>
-            <li><strong>Cloud Training - New Model:</strong> 어노테이션 작업 완료 후, 플랫폼에서 제공하는 cloud GPU를 활용해 모델 학습을 바로 시작할 수 있다. 학습에 걸리는 며칠의 시간을 단축할 수 있으며, 정확도 등의 지표를 실시간으로 모니터링할 수 있다. New Model을 선택한다.</li>
-            <figure><img src="assets/image-11.png"></figure>
+            <li><strong>스마트 라벨링 진행:</strong> 플랫폼에 내장된 AI 기반의 Smart Annotation 도구를 사용하면, 클릭 한 번으로 바운딩 박스를 자동으로 생성할 수 있다. 이 기능을 활용하면 수동 작업 대비 최대 10배 빠르게 고품질 dataset을 완성할 수 있다.</li>
+            <li><strong>Cloud Training - New Model:</strong> 어노테이션 작업 완료 후, 플랫폼에서 제공하는 cloud GPU를 활용해 모델 학습을 바로 시작할 수 있다. GPU 가 없이 학습에 걸리는 며칠의 시간을 단축할 수 있으며, 정확도 등의 지표를 실시간으로 모니터링할 수 있다. New Model을 선택한다.</li>
+                <figure><img src="assets/image-11.png"></figure>
+                <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                    <strong class="text-gray-700">[그림 14] Ultralytics Platform 의 Annotation 작업 화면</strong><br>
+                     Annotation 작업이 완료됐으면 위 그림과 같이 New Model 을 선택하여 학습을 시작한다.
+                </figcaption><br>
             <li><strong>Cloud Training - Base Model:</strong> 어떤 모델을 base로 training할지 선정한다.</li>
-            <figure><img src="assets/image-12.png"></figure>
+                <figure><img src="assets/image-12.png"></figure>
+                <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                    <strong class="text-gray-700">[그림 15] Base Model 선택 화면</strong><br>
+                     Ultralytics 에서 지원하는 버전의 YOLO 모델들을 선택해서 training 을 할 수 있다. YOLO26n 이 YOLO26 계열에서 가장 light 한 모델이기에 latency 가 낮고 accuracy 가 상대적으로 떨어진다. YOLO26s 를 선택하자.
+                </figcaption><br>
             <li><strong>Cloud Training - Start Training:</strong> Cloud training은 과금 모델이며 약 1300장의 dataset 을 yolo26n 으로 training 시 $0.34 정도의 credit 이 소진된다. Account 생성 시 기업 email 로 가입하면 $25 free credit이 부여된다.</li>
-            <figure><img src="assets/image-13.png"></figure>
-            <li><strong>내보내기:</strong> 학습이 끝난 완성된 프로덕션 레벨의 모델 파일을 export하면 <code>yolo26n.dxnn</code> 파일이 생성되며 이를 다운로드하여 NPU 에서 추론용으로 바로 사용 할 수 있다.</li>
-            <figure><img src="assets/image-14.png"></figure>
+                <figure><img src="assets/image-13.png"></figure>
+                <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                    <strong class="text-gray-700">[그림 16] Cloud Training 의 과금 정책</strong><br>
+                     사용할 Base Model 과 epoch, dataset 의 수, 그리고 GPU type 에 따라 과금이 달라진다. Start Training 을 누르면 학습이 시작된다. 만약 Cloud Training 말고 Local Training 을 선택하면 Cloud 의 dataset 을 기반으로 Local Training 을 할 수 있게 API Key 값을 제공한다. 
+                </figcaption><br>
+            <li><strong>내보내기:</strong> 학습이 끝난 완성된 모델 파일을 export하면 <code>yolo26n.dxnn</code> 파일이 생성되며 이를 다운로드하여 NPU 에서 추론용으로 바로 사용 할 수 있다.</li>
+                <figure><img src="assets/image-14.png"></figure>
+                <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                    <strong class="text-gray-700">[그림 17] 간단하게 .dxnn 으로 export 하는 과정</strong><br>
+                     몇번의 마우스 클릭 만으로 간단하게 DEEPX M1 NPU 에서 바로 사용 가능한 .dxnn 파일이 추출된다.
+                </figcaption>
                 </ol>
 
                 <p class="text-gray-600 leading-relaxed mb-6">
                     For more details, refer to the following Ultralytics DEEPX Integration Guide.<br>
                     👉 Link: <a href="https://github.com/ultralytics/ultralytics/blob/main/docs/en/integrations/deepx.md" target="_blank" class="text-indigo-600 hover:underline">https://github.com/ultralytics/ultralytics/blob/main/docs/en/integrations/deepx.md</a>
                 </p>
+                <br>
 
 
                 <h3 id="section-4-3" class="text-xl font-semibold text-gray-800 mb-4">학습 방법 2: 내 로컬 PC에서 직접 학습하기</h3>
-                <p class="text-gray-600 leading-relaxed mb-6">본인의 PC에 장착된 리소스를 활용하여 직접 custom model을 훈련하는 방법이다. GPU가 있는 환경을 권장하며 관련 개발환경이 기 설치된 시스템이란 가정하에 진행한다.</p>
+                <p class="text-gray-600 leading-relaxed mb-6">본인의 PC에 장착된 리소스를 활용하여 직접 custom model을 훈련하는 방법이다. GPU가 있는 환경을 권장하며 GPU 관련 개발환경이 이미 설치된 시스템이란 가정하에 진행한다.</p>
                 <ol class="text-gray-600 leading-relaxed mb-8">
             <li class="step-item">
                 <p class="step-desc"><strong>패키지 설치:</strong> 터미널이나 커맨드 창을 열고 Python 가상환경을 생성 후 <code>pip</code> 명령어를 이용해 <code>ultralytics</code> 패키지를 설치한다. 이 명령어 하나로 단 몇 분 안에 필요한 툴이 모두 설치된다.</p>
@@ -953,10 +1000,18 @@ pip install ultralytics</code></pre>
 
             </li>
             <li class="step-item">
-                <p class="step-desc"><strong>명령어(CLI)로 학습 시작:</strong> 터미널에서 <code>yolo TASK train</code> 명령어를 호출하여 학습을 시작한다. YOLO26 객체 인식(Object Detection) 작업을 custom dataset(<code>data.yaml</code>)에 적용할 경우 다음과 같이 입력한다. 여기서는 YOLO26의 nano보다 무겁지만 정확도가 높은 small로 training을 해 본다. 트레이닝에 소요되는 자원과 시간이 nano에 비해 더 많아진다.</p>
+                <p class="step-desc"><strong>명령어(CLI)로 학습 시작:</strong> 터미널에서 <code>yolo TASK train</code> 명령어를 호출하여 학습을 시작한다. YOLO26 객체 인식(Object Detection) 작업을 custom dataset(<code>data.yaml</code>)에 적용할 경우 다음과 같이 입력한다. 여기서는 YOLO26의 nano보다 무겁지만 정확도가 높은 small로 training을 해 본다. 트레이닝에 소요되는 자원과 시간이 nano에 비해 더 많아진다. (선택 가능: yolo26n.pt / yolo26s.pt / yolo26m.pt / yolo26l.pt / yolo26x.pt)</p>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">yolo detect train data=dataset model=yolo26s.pt</code></pre>
                 </div>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
+                    <strong>💡 팁: </strong>train 을 위한 다양한 option 들이 존재한다. 위와 같이 train 명령을 수행하면 default option 값으로 training 하며 default option 값을 확인하고 싶으면 아래와 같이 명령어를 입력한다. </div>
+                <div class="code-panel editor-note">
+                    <pre><code class="language-bash">yolo cfg</code></pre>
+                </div>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
+                    <strong>💡 팁: </strong> dataset 이 충분하지 않거나 현재 가지고 있는 dataset 을 좀 더 효과적으로 사용하고 싶을 경우 아래 dataset augmentation 을 참고하자.</div>
+                    👉 Link: <a href="https://docs.ultralytics.com/guides/yolo-data-augmentation" target="_blank" class="text-indigo-600 hover:underline">https://docs.ultralytics.com/guides/yolo-data-augmentation</a>
             </li>
             <li><strong>결과 산출 및 활용:</strong> 학습이 진행되며 손실 값이나 추론 지표가 출력된다. 성공적으로 완료되면 <code>.pt</code> 형식의 가중치 파일이 생성된다. 생성되는 위치는 training log에 있으니 꼭 이 위치를 확인한다.</li>
             <li class="step-item">
@@ -976,8 +1031,22 @@ pip install ultralytics</code></pre>
                 </div>
             </li>
                 </ol>
-
             </article>
+
+            <article id="section-4-4" class="prose max-w-none">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">YOLO26 모델의 scale별 성능 비교</h3>
+
+                <p class="text-gray-600 leading-relaxed mb-6"> Ultralytics YOLO26 시리즈 모델 뒤에 붙는 n, s, m, l, x는 모델의 크기(Scale)와 연산 복잡도에 따른 구분이다.  한마디로 요약하면 "모델의 파라미터 수(용량)와 연산량(속도) 사이의 밸런스에 따른 구분"이라고 할 수 있다. 알파벳은 각각 다음을 의미한다.</p>
+
+                <ol class="text-gray-600 leading-relaxed mb-8">
+                    <li><strong>n (Nano):</strong> 가장 작고 가벼운 모델 (속도 최우선, 초경량 기기용)</li>
+                    <li><strong>s (Small):</strong> 작은 모델 (속도와 정확도의 좋은 타협점)</li>
+                    <li><strong>m (Medium):</strong> 중간 크기 모델 (균형 잡힌 성능)</li>
+                    <li><strong>l (Large):</strong> 큰 모델 (높은 정확도 필요 시 사용)</li>
+                    <li><strong>x (XLarge):</strong> 가장 큰 모델 (속도보다 정확도가 최우선일 때 사용)</li>
+                </ol>
+            </article>
+
         </section>
 
         <footer>
