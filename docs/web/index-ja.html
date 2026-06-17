@@ -399,7 +399,7 @@ sudo reboot</code></pre>
                     🍓 Target (Raspberry Pi 5)
                 </div>
 <pre><code class="language-bash"># Upgrade NPU FW to v2.5.6
-wget https://github.com/DEEPX-AI/dx_fw/raw//main/m1/2.5.6/mdot2/fw.bin
+wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/2.5.6/mdot2/fw.bin
 dxrt-cli -u fw.bin</code></pre>
                 </div>
 
@@ -981,10 +981,10 @@ exit 0</code></pre>
                 最新オブジェクト検出モデル YOLO26 は NMS (Non-Maximum Suppression) 後処理不要の End-to-End 推論をサポートし、edge device 向けに最適化された次世代 Vision AI モデルである。初めての方でも独自 dataset を構築し YOLO26 を学習できるよう、2 つの方法を紹介する。
             </p>
             <p class="text-gray-600 leading-relaxed mb-6">
-                参考用 dataset は以下のリンクからダウンロード可能である。当該 dataset は IP 上の理由で少量の data のみ含むため、概念理解用として使用すること。実運用の精度には最低 1000 枚以上の dataset が必要である。
+                参考用 dataset は以下のリンクからダウンロード可能である。当該 dataset は IP 上の理由で少量の data のみ含むため、概念理解用として使用すること。研究目的の精度を得るには最低 1000 枚以上の dataset が必要であり、商用化目的の精度を得るには最低 10000 枚以上の多様な dataset が必要である。
             </p>
             <p class="text-gray-600 leading-relaxed mb-6">
-            👉 ダウンロードリンク: <a href="https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/sample_dataset.tar.gz" target="_blank">https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/sample_dataset.tar.gz</a>
+            👉 ダウンロードリンク: <a href="https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/dataset.tar.gz" target="_blank">https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/dataset.tar.gz</a>
             </p>
             <br>
 
@@ -1001,7 +1001,7 @@ exit 0</code></pre>
                 <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                     💻 Host PC (Data Prep)
                 </div>
-<pre><code class="language-text">sample_dataset/
+<pre><code class="language-text">dataset/
 ├── data.yaml          # クラス情報と学習/検証データパスを定義した設定ファイル
 ├── images/
 │   ├── train/         # モデル学習用の元画像 (.jpg, .png 等)

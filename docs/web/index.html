@@ -274,16 +274,16 @@
                 Building an Ultra-Low-Power Edge AI System with DEEPX M1 NPU and Raspberry Pi 5
             </h1>
             <p class="text-lg text-gray-600 leading-relaxed mb-6">
-                Recent advances in edge AI make it possible to run complex models on the device in real time without routing through heavy cloud servers. Limited power, heat, and compute on embedded boards remain key challenges for engineers.
+                Recent advances in edge AI enable real-time execution of complex models on-device, eliminating the need for cloud-based processing. Limited power, heat, and compute on embedded boards remain key challenges for engineers.
             </p>
             <p class="text-lg text-gray-600 leading-relaxed mb-8">
-                This article shows how to combine the widely used Raspberry Pi 5 single-board computer with DEEPX's ultra-low-power, high-performance DX-M1 M.2 AI accelerator into a capable edge AI system. We walk through the full workflow—from hardware architecture to training and porting a custom wildlife detection model, and a practical wildlife monitoring camera demo.
+                This article demonstrates how to combine the widely used Raspberry Pi 5 single-board computer with DEEPX's ultra-low-power, high-performance DX-M1 M.2 AI accelerator into a capable edge AI system. We walk through the full workflow—from hardware architecture to training and porting a custom wildlife detection model, and a practical wildlife monitoring camera demo.
             </p>
             <figure class="my-8">
                 <img src="assets/image-01.png">
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
                     <strong class="text-gray-700">[Figure 1] System connection between host processor and DX-M1</strong><br>
-                    Video from the camera is received by the ARM-based host processor (Raspberry Pi 5) and sent over a high-speed PCIe link to the DX-M1 M.2 module for AI inference.
+                    The ARM-based host processor (Raspberry Pi 5) receives video input from the camera and sends it over a high-speed PCIe link to the DX-M1 M.2 module for AI inference.
                 </figcaption>
             </figure>
         </header>
@@ -300,10 +300,10 @@
             <article id="section-1-1" class="mb-8">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">HW Architecture and Ultra-Low-Power Design</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    DEEPX DX-M1 is built on a 5 nm process and delivers <strong class="text-indigo-700">25 TOPS (INT8)</strong> tuned for edge use. The design focuses on inference performance per watt—not only process node or peak TOPS—through custom architecture optimization.
+                    DEEPX DX-M1 is built on a 5 nm process and delivers <strong class="text-indigo-700">25 TOPS (INT8)</strong> tuned for edge use. The design optimizes inference performance per watt—not only process node or peak TOPS—through custom architecture optimization.
                 </p>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    Power numbers show the benefit clearly. YOLOv9T runs at about 2.69 W; even the heavier YOLOv8L stays near 5.64 W. A small heatsink or fan is enough to run alongside Raspberry Pi 5.
+                    Power metrics demonstrate the benefit clearly. YOLOv9T runs at about 2.69 W; even the heavier YOLOv8L stays near 5.64 W. A small heatsink or fan is enough to operate alongside Raspberry Pi 5.
                 </p>
             </article>
 
@@ -316,11 +316,11 @@
                     <img src="assets/image-07.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
                         <strong class="text-gray-700">[Figure 2] DX-M1 M.2 module system block diagram</strong><br>
-                        Shows three NPU cores, dedicated LPDDR5, and PCIe Gen3 x4 to the host to reduce data bottlenecks.
+                        Illustrates three NPU cores, dedicated LPDDR5, and PCIe Gen3 x4 to the host to reduce data bottlenecks.
                     </figcaption>
                 </figure>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    A key feature is the memory hierarchy built for data reuse. Deep learning often hits memory bandwidth limits; DX-M1 uses on-chip SRAM and tuned data flow to cut external accesses for weights and activations.
+                    The memory hierarchy optimizes data reuse to alleviate bandwidth constraints. Deep learning often hits memory bandwidth limits; DX-M1 uses on-chip SRAM and tuned data flow to cut external accesses for weights and activations.
                 </p>
             </article>
         </section>
@@ -335,7 +335,7 @@
             <article id="section-2-1" class="mb-8">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">M.2 NPU Module Overview and Hardware Installation</h3>
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    The DEEPX DX-M1 M.2 module uses the standard M.2 2280 Key M form factor. Raspberry Pi 5 supports PCIe officially, so you can mount the NPU with an NVMe HAT or M.2 expansion board.
+                    The DEEPX DX-M1 M.2 module adopts the standard M.2 2280 Key M form factor. Raspberry Pi 5 supports PCIe officially, so you can mount the NPU with an NVMe HAT or M.2 expansion board.
                 </p>
                 <figure>
                     <img src="assets/image-08.png">
@@ -356,7 +356,7 @@
             <article id="section-2-2" class="mb-8 prose max-w-none">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">Installing DX-RT SDK and Drivers</h3>
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    Raspberry Pi 5 runs aarch64 (ARM64) OS images. DEEPX DX-RT and the NPU driver officially support Ubuntu and Debian on aarch64. Below are install steps for Debian 13 (Raspberry Pi OS default).
+                    Raspberry Pi 5 runs aarch64 (ARM64) architecture. DEEPX DX-RT and the NPU driver officially support Ubuntu and Debian on aarch64. The following steps outline the installation process for Debian 13 (Raspberry Pi OS default).
                 </p>
                 <div class="code-panel">
 
@@ -385,11 +385,11 @@ sudo reboot</code></pre>
                 </div>
 
                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
-                    <strong>💡 Tip:</strong> Run <code>sudo ./make_whl.sh</code> with system privileges, but install with <code>pip install</code> inside a virtual environment to avoid permission issues.
+                    <strong>💡 Tip:</strong> Execute <code>sudo ./make_whl.sh</code> with system privileges, but install with <code>pip install</code> inside a virtual environment to avoid permission issues.
                 </div>
 
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    If DX-M1 M.2 firmware (FW) is too old, you may see API compatibility issues. Upgrade NPU FW as below. With DX-RT v3.3.2, use NPU FW v2.5.6 or newer.
+                    Outdated DX-M1 M.2 firmware may cause API compatibility issues. Upgrade NPU FW as below. With DX-RT v3.3.2, use NPU FW v2.5.6 or newer.
                 </p>
                 <div class="code-panel">
 
@@ -398,14 +398,21 @@ sudo reboot</code></pre>
                 <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                     🍓 Target (Raspberry Pi 5)
                 </div>
-<pre><code class="language-bash"># Upgrade NPU FW to v2.5.6
-wget https://github.com/DEEPX-AI/dx_fw/raw//main/m1/2.5.6/mdot2/fw.bin
-dxrt-cli -u fw.bin</code></pre>
+<pre><code class="language-bash"># Stop dxrt.service before FW upgrade
+systemctl stop dxrt.service
+
+# Download NPU FW v2.5.6
+wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/2.5.6/mdot2/fw.bin
+# Upgrade NPU FW to v2.5.6
+dxrt-cli -u fw.bin
+
+# Restart dxrt.service after FW upgrade
+systemctl start dxrt.service</code></pre>
                 </div>
 
 
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    Verify the install as follows.
+                    Verify the installation using the following commands:
                 </p>
                 <div class="code-panel">
 
@@ -434,7 +441,7 @@ systemctl status dxrt.service
 # Check the DX-RT and other version info -> expected: DXRT v3.3.2, FW v2.5.6
 dxrt-cli -s
 
-# Run a model as a quick validation -> expected: 'FPS: higher than 90'
+# Perform a quick validation by inferencing a model -> expected: 'FPS: higher than 90'
 wget https://sdk.deepx.ai/modelzoo/dxnn/2_3_0/yolo26n.dxnn
 run_model -m yolo26n.dxnn -t 3 | grep FPS</code></pre>
                 </div>
@@ -484,7 +491,7 @@ dxtop</code></pre>
             </h2>
 
             <p class="text-gray-600 leading-relaxed mb-6">
-                Next we build a practical wildlife detection camera. Keep in mind: <strong class="text-indigo-700">compile on the host, run on the target</strong> are separate steps.
+                Next, we will construct a practical wildlife detection camera system. Note that model compilation and execution are performed in separate environments: compilation occurs on the host, while inference is deployed on the target.
             </p>
 
             <figure class="my-8">
@@ -497,12 +504,12 @@ dxtop</code></pre>
             </figure>
 
             <p class="text-gray-600 leading-relaxed mb-6">
-                Split model development (wildlife detection) from inference deployment. Train and convert to <code>.dxnn</code> on a capable host PC; build applications on the edge device (e.g., Raspberry Pi 5 + DX-M1 M.2) that run on DX-Runtime.
+                Split model development (wildlife detection) from inference deployment. Train and convert to <code>.dxnn</code> on a capable host PC; build applications on the edge device (e.g., Raspberry Pi 5 + DX-M1 M.2) that execute on DX-Runtime.
             </p>
 
             <article id="section-3-workflow" class="mb-10">
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    The vision AI development workflow has five steps:
+                    The vision AI development workflow consists of five steps:
                 </p>
                 <figure class="my-8">
                     <img src="assets/image-15.png" alt="Vision AI Development Work Flow">
@@ -522,7 +529,7 @@ dxtop</code></pre>
             <article id="section-3-1" class="mb-8 prose max-w-none">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">[Host PC] Compile the Wildlife Detection Model to .dxnn for DEEPX</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    DEEPX compiler <strong>DX-COM runs only on x86_64 PCs</strong>. Do training and binary compile on a dev PC (Debian-based Linux recommended). The host does not need a DX-M1 M.2 module. Export ONNX from a PyTorch <code>.pt</code> file (e.g., YOLO26s), then use DX-COM to produce <code>.dxnn</code>.
+                    DEEPX compiler <strong>DX-COM runs only on x86_64 PCs</strong>. Perform model training and binary compilation on a development PC (Debian-based Linux recommended). The host machine operates independently of the DX-M1 M.2 module during compilation. Export ONNX from a PyTorch <code>.pt</code> file (e.g., YOLO26s), then use DX-COM to produce <code>.dxnn</code>.
                 </p>
 
                 <ol class="text-gray-600 leading-relaxed mb-6">
@@ -536,7 +543,7 @@ dxtop</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Install packages:</strong> Open a terminal, create a Python virtual environment, and run <code>pip install ultralytics</code>. Setup takes only a few minutes.</p>
+                        <p class="step-desc"><strong>Install packages:</strong> Open a terminal, create a Python virtual environment, and run <code>pip install ultralytics</code>. The setup process takes only a few minutes to complete.</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -619,7 +626,7 @@ tar xzf calibration_dataset.tar.gz</code></pre>
 # ├── output
 # │   └── yolo26s-custom.dxnn</code></pre>
                         </div>
-                        <p class="step-desc">Copy <code>yolo26s-custom.dxnn</code> to the target (Raspberry Pi 5). To skip compile, download a pre-built wildlife <code>yolo26s-custom.dxnn</code> from the link below.</p>
+                        <p class="step-desc">Copy <code>yolo26s-custom.dxnn</code> to the target (Raspberry Pi 5). To skip compilation, download a pre-built wildlife <code>yolo26s-custom.dxnn</code> from the link below.</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -633,7 +640,7 @@ tar xzf calibration_dataset.tar.gz</code></pre>
             <article id="section-3-2" class="mb-8 prose max-w-none">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">[Raspberry Pi 5 Target] Custom YOLO26 Object Detection with DX-APP</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    With <code>.dxnn</code> on the Pi, run inference. The easiest path is to adapt DEEPX sample code. DX-APP ships matched samples for Model Zoo models in C++ and Python.
+                    Once the <code>.dxnn</code> file is deployed on the Raspberry Pi 5, proceed to execute inference. We recommend utilizing the provided DEEPX sample applications. DX-APP includes pre-configured, verified samples for Model Zoo models in both C++ and Python.
                 </p>
                 <p class="text-gray-600 leading-relaxed mb-4">
                     Model Zoo lists verified models with ONNX, <code>.dxnn</code>, compile configs, and sample apps (DX-APP). See <a href="https://developer.deepx.ai/modelzoo/" target="_blank" class="text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a>.
@@ -659,7 +666,7 @@ cd dx_app</code></pre>
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
                         </div>
-<pre><code class="language-bash"># Running the script shows a selection menu.
+<pre><code class="language-bash"># Execute the script to display a selection menu.
 ./scripts/dx_tool.sh</code></pre>
                         </div>
                         <figure class="my-6 not-prose">
@@ -714,7 +721,7 @@ index 6c03a32..deef9fa 100644
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Run the app:</strong> Download test videos, install <code>dx_engine</code> and <code>opencv-python</code> in a venv, and run <code>yolo26s_async.py</code> for a simple wildlife detection demo.</p>
+                        <p class="step-desc"><strong>Run the app:</strong> Download test videos, install <code>dx_engine</code> and <code>opencv-python</code> in a venv, and execute <code>yolo26s_async.py</code> for a simple wildlife detection demo.</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
@@ -733,7 +740,7 @@ pip install -U pip
 cd /usr/share/libdxrt/python_package && sudo ./make_whl.sh && pip install dx_engine*.whl && cd -
 pip install opencv-python
 
-# Run async Python app; set -m to the .dxnn path on your Pi.
+# Execute the async Python app; set -m to the .dxnn path on your target device.
 python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4</code></pre>
                         </div>
                         <figure class="my-6 not-prose">
@@ -750,11 +757,11 @@ python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4</code></pre>
             <article id="section-3-3" class="mb-8 prose max-w-none">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">[Raspberry Pi 5 Target] Multi-Stream YOLO26 Detection with DX-STREAM</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    DX-STREAM is a GStreamer-based video platform. Its object detection plugins support multi-stream YOLO26 pipelines.
+                    DX-STREAM is a GStreamer-based video platform. Its object detection plugins support and manage multi-stream YOLO26 pipelines.
                 </p>
 
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    Let's build a multi-stream detection app with your YOLO26 model using DX-STREAM.
+                    Let's build a multi-stream detection application with your YOLO26 model using DX-STREAM.
                 </p>
 
                 <ol class="text-gray-600 leading-relaxed mb-6">
@@ -771,13 +778,13 @@ cd dx_stream
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Verify DX-STREAM:</strong> Run <code>run_demo.sh</code> and choose option 0. A YOLO26n detection demo means it works.</p>
+                        <p class="step-desc"><strong>Verify DX-STREAM:</strong> Execute <code>run_demo.sh</code> and select option 0. A YOLO26n detection demo means it works.</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
                         </div>
 <pre><code class="language-bash">source ~/.bashrc # load env vars (skip after new shell)
-./run_demo.sh <<< 0 # run demo, select 0</code></pre>
+./run_demo.sh <<< 0 # execute demo, select 0</code></pre>
                         </div>
                         <img src="assets/image-21.png" alt="dx_tool.sh YOLO26s code extract"><br>
                         <img src="assets/image-22.png" alt="dx_tool.sh YOLO26s code extract">
@@ -823,7 +830,7 @@ index 8d768e5..113e154 100644
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Single-stream GStreamer pipeline:</strong> Build and run a one-stream pipeline with your .dxnn model and test videos.</p>
+                        <p class="step-desc"><strong>Single-stream GStreamer pipeline:</strong> Build and deploy a one-stream pipeline with your .dxnn model and test videos.</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
@@ -861,7 +868,7 @@ gst-launch-1.0 urisourcebin uri=file://$(pwd)/test-video-1.mp4 ! decodebin ! \
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Four-stream GStreamer pipeline:</strong> Build and run a 4-stream pipeline with your .dxnn and test videos.</p>
+                        <p class="step-desc"><strong>Four-stream GStreamer pipeline:</strong> Build and deploy a 4-stream pipeline with your .dxnn and test videos.</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
@@ -978,13 +985,13 @@ exit 0</code></pre>
                 Appendix: Training Your Own YOLO26 Custom Model
             </h2>
             <p class="text-gray-600 leading-relaxed mb-6">
-                YOLO26 is a vision model optimized for edge devices with end-to-end inference (no NMS post-processing). We cover two ways to build a dataset and train—even for beginners.
+                YOLO26 is a vision model optimized for edge devices with end-to-end inference (no NMS post-processing). This guide covers two training workflows, suitable for both beginners and experienced developers.
             </p>
             <p class="text-gray-600 leading-relaxed mb-6">
-                A sample dataset is available at the link below. It is small due to licensing—use it only to learn the layout. For production accuracy, use at least 1,000 images.
+                A sample dataset is available at the link below. It is small due to licensing—use it only to learn the layout. For research-grade accuracy, you need a dataset of at least 1,000 images. For commercial-grade accuracy, you need at least 10,000 diverse images in your dataset.
             </p>
             <p class="text-gray-600 leading-relaxed mb-6">
-            👉 Download: <a href="https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/sample_dataset.tar.gz" target="_blank">https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/sample_dataset.tar.gz</a>
+            👉 Download: <a href="https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/dataset.tar.gz" target="_blank">https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/dataset.tar.gz</a>
             </p>
             <br>
 
@@ -1001,7 +1008,7 @@ exit 0</code></pre>
                 <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                     💻 Host PC (Data Prep)
                 </div>
-<pre><code class="language-text">sample_dataset/
+<pre><code class="language-text">dataset/
 ├── data.yaml          # Config: class names and train/val paths
 ├── images/
 │   ├── train/         # Training images (.jpg, .png, etc.)
@@ -1122,7 +1129,7 @@ pip install ultralytics</code></pre>
 
             </li>
             <li class="step-item">
-                <p class="step-desc"><strong>Start training (CLI):</strong> Run <code>yolo detect train data=dataset model=yolo26s.pt</code> for object detection on your <code>data.yaml</code>. We use YOLO26s (more accurate, slower than nano). Options: yolo26n/s/m/l/x.pt.</p>
+                <p class="step-desc"><strong>Start training (CLI):</strong> Execute <code>yolo detect train data=dataset model=yolo26s.pt</code> for object detection on your <code>data.yaml</code>. We use YOLO26s (more accurate, slower than nano). Options: yolo26n/s/m/l/x.pt.</p>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">yolo detect train data=dataset model=yolo26s.pt</code></pre>
                 </div>
@@ -1137,7 +1144,7 @@ pip install ultralytics</code></pre>
             </li>
             <li><strong>Output:</strong> Training prints loss and metrics. On success you get a <code>.pt</code> weights file—check the log for its path.</li>
             <li class="step-item">
-                <p class="step-desc"><strong>Export (CLI):</strong> Run <code>yolo export model=&lt;path&gt;/weights/best.pt format=deepx data=dataset</code> to produce NPU-ready output. This exports ONNX, runs DX-COM to <code>.dxnn</code>, and uses your dataset for FP32→INT8 calibration.</p>
+                <p class="step-desc"><strong>Export (CLI):</strong> Execute <code>yolo export model=&lt;path&gt;/weights/best.pt format=deepx data=dataset</code> to produce NPU-ready output. This exports ONNX, runs DX-COM to <code>.dxnn</code>, and utilize your dataset to calibrate FP32 to INT8 models.</p>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">yolo export model=&lt;path to trained pt&gt;/weights/best.pt format=deepx data=dataset # creates 'best_deepx_model/'</code></pre>
                 </div>
