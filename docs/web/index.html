@@ -569,7 +569,7 @@ yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
                         </figure>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Prepare calibration data:</strong> DX-Compiler needs images for FP32→INT8 quantization (100+ recommended). Use images similar to deployment to limit accuracy loss. This guide uses a sample set; use your real dataset in production.</p>
+                        <p class="step-desc"><strong>Prepare calibration data:</strong> DX-Compiler requires calibration images for FP32 to INT8 quantization; 100 or more are recommended. The closer the images are to the actual input dataset, the more you can minimize accuracy loss. However, using calibration images that differ from the actual deployment environment during compile means real data is not reflected in quantization, which can reduce INT8 accuracy—take care to avoid this. This guide uses an arbitrary dataset, but in production you must use a dataset matched to your deployment environment.</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -695,7 +695,7 @@ index 2476a60..6955632 100644
 
 
  _DATASET_LABELS: Dict[str, List[str]] = {
-+    "costom": get_custom_labels(),
++    "custom": get_custom_labels(),
      "coco80": get_coco_80_labels(),
      "imagenet1000": get_imagenet_labels(),
      "cityscapes": get_cityscapes_labels(),
@@ -1147,7 +1147,7 @@ pip install ultralytics</code></pre>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">.
 ├── best_deepx_model     # Generated directory
-│   ├── config.json      # configuration file for DX-COM (compile configuraion for DX-COM)
+│   ├── config.json      # configuration file for DX-COM
 │   ├── metadata.yaml
 │   └── best.dxnn        # DX-COM result to be the deployment-ready binary for DEEPX NPU</code></pre>
                 </div>
@@ -1174,7 +1174,7 @@ pip install ultralytics</code></pre>
                     <table class="min-w-full text-sm text-left border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                         <thead class="bg-indigo-50 text-indigo-900">
                             <tr>
-                                <th scope="col" class="px-4 py-3 font-semibold border-b border-gray-200">Model</th>
+                                <th scope="col" class="px-4 py-3 font-semibold border-b border-gray-200">Model (640x640)</th>
                                 <th scope="col" class="px-4 py-3 font-semibold border-b border-gray-200">FPS</th>
                                 <th scope="col" class="px-4 py-3 font-semibold border-b border-gray-200">Accuracy (mAP)</th>
                             </tr>
@@ -1207,6 +1207,9 @@ pip install ultralytics</code></pre>
                             </tr>
                         </tbody>
                     </table>
+                    <p class="mt-2 text-xs text-gray-500">
+                        The <code class="text-gray-600">.dxnn</code> files used for these measurements were downloaded from the DEEPX Official Model Zoo (<a href="https://developer.deepx.ai/modelzoo/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a>).
+                    </p>
                     <p class="mt-2 text-xs text-gray-500">
                         Example benchmark command:
                         <code class="text-gray-600">run_model -m yolo26s.dxnn --use-ort -t 3</code>

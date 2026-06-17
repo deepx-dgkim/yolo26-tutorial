@@ -569,7 +569,7 @@ yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
                         </figure>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Calibration Data 준비:</strong> DX-Compiler 에서 FP32 to INT8 으로 Quantization 과정에서 사용될 calibration 용 이미지들이 필요하며 최소 100 장 이상을 권장한다. 실제 input 에 사용되는 dataset 을 사용할 수록 accuracy loss 를 최소화 해서 <code>.dxnn</code>으로 변환될 수 있다. 이번 과정에서는 임의 dataset 을 사용하나 실 사용에서는 반드시 실제 dataset을 사용한다.</p>
+                        <p class="step-desc"><strong>Calibration Data 준비:</strong> DX-Compiler 에서 FP32 to INT8 Quantization 에 사용될 calibration 이미지가 필요하며 최소 100 장 이상을 권장한다. 실제 input 에 사용되는 dataset 과 유사할수록 accuracy loss 를 최소화할 수 있다. 다만 compile 시 실제 배포 환경과 다른 calibration image 를 쓰면 양자화에 실제 데이터가 반영되지 않아 INT8 정확도가 떨어질 수 있으니 주의한다. 이번 과정에서는 임의 dataset 을 사용하나, 실 사용에서는 반드시 배포 환경에 맞는 dataset 을 사용해야 한다.</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -695,7 +695,7 @@ index 2476a60..6955632 100644
 
 
  _DATASET_LABELS: Dict[str, List[str]] = {
-+    "costom": get_custom_labels(),
++    "custom": get_custom_labels(),
      "coco80": get_coco_80_labels(),
      "imagenet1000": get_imagenet_labels(),
      "cityscapes": get_cityscapes_labels(),
@@ -1147,7 +1147,7 @@ pip install ultralytics</code></pre>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">.
 ├── best_deepx_model     # Generated directory
-│   ├── config.json      # configuration file for DX-COM (compile configuraion for DX-COM)
+│   ├── config.json      # configuration file for DX-COM
 │   ├── metadata.yaml
 │   └── best.dxnn        # DX-COM result to be the deployment-ready binary for DEEPX NPU</code></pre>
                 </div>
@@ -1207,6 +1207,9 @@ pip install ultralytics</code></pre>
                             </tr>
                         </tbody>
                     </table>
+                    <p class="mt-2 text-xs text-gray-500">
+                        측정에 사용된 <code class="text-gray-600">.dxnn</code> 파일은 DEEPX Official Model Zoo (<a href="https://developer.deepx.ai/modelzoo/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a>)에서 다운로드했다.
+                    </p>
                     <p class="mt-2 text-xs text-gray-500">
                         측정 명령어 예:
                         <code class="text-gray-600">run_model -m yolo26s.dxnn --use-ort -t 3</code>

@@ -569,7 +569,7 @@ yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
                         </figure>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Calibration Data の準備:</strong> DX-Compiler の FP32 to INT8 Quantization で使用する calibration 用画像が必要で、最低 100 枚以上を推奨する。実際の input に使う dataset を使うほど accuracy loss を最小化して <code>.dxnn</code>に変換できる。本手順では任意の dataset を使用するが、実運用では必ず実際の dataset を使用すること。</p>
+                        <p class="step-desc"><strong>Calibration Data の準備:</strong> DX-Compiler の FP32 to INT8 Quantization に使用する calibration 用画像が必要で、最低 100 枚以上を推奨する。実際の input に使う dataset に近いほど accuracy loss を最小化できる。ただし compile 時に実際のデプロイ環境と異なる calibration image を使うと、量子化に実データが反映されず INT8 精度が低下する可能性があるので注意すること。本手順では任意の dataset を使用するが、実運用では必ずデプロイ環境に合った dataset を使用する必要がある。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -695,7 +695,7 @@ index 2476a60..6955632 100644
 
 
  _DATASET_LABELS: Dict[str, List[str]] = {
-+    "costom": get_custom_labels(),
++    "custom": get_custom_labels(),
      "coco80": get_coco_80_labels(),
      "imagenet1000": get_imagenet_labels(),
      "cityscapes": get_cityscapes_labels(),
@@ -1147,7 +1147,7 @@ pip install ultralytics</code></pre>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">.
 ├── best_deepx_model     # Generated directory
-│   ├── config.json      # configuration file for DX-COM (compile configuraion for DX-COM)
+│   ├── config.json      # configuration file for DX-COM
 │   ├── metadata.yaml
 │   └── best.dxnn        # DX-COM result to be the deployment-ready binary for DEEPX NPU</code></pre>
                 </div>
@@ -1207,6 +1207,9 @@ pip install ultralytics</code></pre>
                             </tr>
                         </tbody>
                     </table>
+                    <p class="mt-2 text-xs text-gray-500">
+                        測定に使用した <code class="text-gray-600">.dxnn</code> ファイルは DEEPX Official Model Zoo (<a href="https://developer.deepx.ai/modelzoo/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a>) からダウンロードした。
+                    </p>
                     <p class="mt-2 text-xs text-gray-500">
                         測定コマンド例:
                         <code class="text-gray-600">run_model -m yolo26s.dxnn --use-ort -t 3</code>
