@@ -351,6 +351,13 @@
                         Connect Pi 5 to the HAT with a PCIe cable → install the DX-M1 M.2 module in the HAT M.2 slot
                     </figcaption>
                 </figure>
+                <figure>
+                    <img src="assets/image-24.png">
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[Figure 5] Sixfab On-board discrete chip design for AI HAT using DX-M1M</strong><br>
+                        Connect the integrated DX-M1M HAT board sold at <a href="https://sixfab.com/product/ai-hat-plus-raspberry-pi-5/" target="_blank" class="text-indigo-600 hover:underline">https://sixfab.com/product/ai-hat-plus-raspberry-pi-5</a> to Raspberry Pi 5 via PCIe.
+                    </figcaption>
+                </figure>
             </article>
 
             <article id="section-2-2" class="mb-8 prose max-w-none">
@@ -476,7 +483,7 @@ dxtop</code></pre>
                 <figure class="my-6">
                     <img src="assets/image-10.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[Figure 5] dxtop screen</strong><br>
+                        <strong class="text-gray-700">[Figure 6] dxtop screen</strong><br>
                         Monitor DX-M1 NPU memory and utilization, temperature, voltage, and clock for all three cores in real time.
                     </figcaption>
                 </figure>
@@ -498,7 +505,7 @@ dxtop</code></pre>
                 <img src="assets/image-04.png" alt="DEEPX SDK architecture">
                 <img src="assets/image-05.png" alt="DEEPX SDK architecture">
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[Figure 6] DEEPX SDK architecture</strong><br>
+                    <strong class="text-gray-700">[Figure 7] DEEPX SDK architecture</strong><br>
                     Cross-platform workflow: x86_64 host for model compile (left) and aarch64 Raspberry Pi 5 target for runtime (right).
                 </figcaption>
             </figure>
@@ -514,7 +521,7 @@ dxtop</code></pre>
                 <figure class="my-8">
                     <img src="assets/image-15.png" alt="Vision AI Development Work Flow">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[Figure 7] Vision AI Development Work Flow</strong>
+                        <strong class="text-gray-700">[Figure 8] Vision AI Development Work Flow</strong>
                     </figcaption>
                 </figure>
                 <ol class="text-gray-600 leading-relaxed">
@@ -571,7 +578,7 @@ yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
                         <figure class="my-6 not-prose">
                             <img src="assets/image-16.png" alt="yolo26s-custom.onnx in Netron">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[Figure 8] yolo26s-custom.onnx in Netron</strong>
+                                <strong class="text-gray-700">[Figure 9] yolo26s-custom.onnx in Netron</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -672,7 +679,7 @@ cd dx_app</code></pre>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-17.png" alt="dx_tool.sh YOLO26s code extract">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[Figure 9] Extracting YOLO26s Python code with dx_tool.sh</strong>
+                                <strong class="text-gray-700">[Figure 10] Extracting YOLO26s Python code with dx_tool.sh</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -746,7 +753,7 @@ python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4</code></pre>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-18.png" alt="Black Bear detection result">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[Figure 10] Bear and Person detected</strong>
+                                <strong class="text-gray-700">[Figure 11] Bear and Person detected</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -950,7 +957,7 @@ exit 0</code></pre>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-23.png" alt="Black Bear detection result">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[Figure 11] Four-channel detection running</strong>
+                                <strong class="text-gray-700">[Figure 12] Four-channel detection running</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -959,7 +966,7 @@ exit 0</code></pre>
                 <figure class="my-10">
                     <img src="assets/image-19.png" alt="DX-STREAM pipeline diagram" class="rounded-lg border border-slate-200">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[Figure 12] DX-STREAM pipeline diagram</strong><br>
+                        <strong class="text-gray-700">[Figure 13] DX-STREAM pipeline diagram</strong><br>
                         Flow: input → <code>dxpreprocess</code> → NPU <code>dxinfer</code> → <code>dxpostprocess</code> → <code>dxosd</code> display.
                     </figcaption>
                 </figure>
@@ -971,7 +978,7 @@ exit 0</code></pre>
                 <figure class="my-10">
                     <img src="assets/image-20.png" alt="DX-STREAM pipeline diagram" class="rounded-lg border border-slate-200">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[Figure 13] DX-STREAM pipeline with shared resources</strong><br>
+                        <strong class="text-gray-700">[Figure 14] DX-STREAM pipeline with shared resources</strong><br>
                          <code>dxinputselector</code> and <code>dxoutputselector</code> reduce duplicate preprocess/infer/postprocess chains.
                     </figcaption>
                 </figure>
@@ -1056,25 +1063,25 @@ names:
             <li><strong>Cloud Training - New Model:</strong> After labeling, start training on cloud GPUs, watch metrics live, and choose New Model.</li>
                 <figure><img src="assets/image-11.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[Figure 14] Ultralytics Platform annotation</strong><br>
+                    <strong class="text-gray-700">[Figure 15] Ultralytics Platform annotation</strong><br>
                      When labeling is done, choose New Model as shown to start training.
                 </figcaption><br>
             <li><strong>Cloud Training - Base Model:</strong> Pick the base YOLO model for training.</li>
                 <figure><img src="assets/image-12.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[Figure 15] Base model selection</strong><br>
+                    <strong class="text-gray-700">[Figure 16] Base model selection</strong><br>
                      Choose a supported YOLO variant. YOLO26n is smallest (low latency, lower accuracy). We pick YOLO26s.
                 </figcaption><br>
             <li><strong>Cloud Training - Start Training:</strong> Cloud training is paid (~$0.34 credit for ~1,300 images with yolo26n). Business email sign-up includes $25 free credit.</li>
                 <figure><img src="assets/image-13.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[Figure 16] Cloud training pricing</strong><br>
+                    <strong class="text-gray-700">[Figure 17] Cloud training pricing</strong><br>
                      Cost depends on base model, epochs, dataset size, and GPU. Click Start Training to begin. Local Training provides an API key to train on the cloud dataset locally. 
                 </figcaption><br>
             <li><strong>Export:</strong> Export the trained model to get <code>yolo26n.dxnn</code> for direct NPU inference.</li>
                 <figure><img src="assets/image-14.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[Figure 17] Export to .dxnn</strong><br>
+                    <strong class="text-gray-700">[Figure 18] Export to .dxnn</strong><br>
                      A few clicks produce a .dxnn file ready for DEEPX M1 NPU.
                 </figcaption>
                 </ol>

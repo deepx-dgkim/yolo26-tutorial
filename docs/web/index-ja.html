@@ -351,6 +351,13 @@
                         Raspberry Pi 5 と HAT ボードを PCIe ケーブルで接続 → HAT ボードの M.2 ポートに DX-M1 M.2 モジュールを取り付ける
                     </figcaption>
                 </figure>
+                <figure>
+                    <img src="assets/image-24.png">
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[図 5] Sixfab On-board discrete chip design for AI HAT using DX-M1M</strong><br>
+                        <a href="https://sixfab.com/product/ai-hat-plus-raspberry-pi-5/" target="_blank" class="text-indigo-600 hover:underline">https://sixfab.com/product/ai-hat-plus-raspberry-pi-5</a> で販売されている DX-M1M 一体型 HAT ボードを PCIe で Raspberry Pi 5 に接続する。
+                    </figcaption>
+                </figure>
             </article>
 
             <article id="section-2-2" class="mb-8 prose max-w-none">
@@ -398,9 +405,16 @@ sudo reboot</code></pre>
                 <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                     🍓 Target (Raspberry Pi 5)
                 </div>
-<pre><code class="language-bash"># Upgrade NPU FW to v2.5.6
+<pre><code class="language-bash"># Stop dxrt.service before FW upgrade
+systemctl stop dxrt.service
+
+# Download NPU FW v2.5.6
 wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/2.5.6/mdot2/fw.bin
-dxrt-cli -u fw.bin</code></pre>
+# Upgrade NPU FW to v2.5.6
+dxrt-cli -u fw.bin
+
+# Restart dxrt.service after FW upgrade
+systemctl start dxrt.service</code></pre>
                 </div>
 
 
@@ -434,7 +448,7 @@ systemctl status dxrt.service
 # Check the DX-RT and other version info -> expected: DXRT v3.3.2, FW v2.5.6
 dxrt-cli -s
 
-# Run a model as a quick validation -> expected: 'FPS: higher than 90'
+# Perform a quick validation by inferencing a model -> expected: 'FPS: higher than 90'
 wget https://sdk.deepx.ai/modelzoo/dxnn/2_3_0/yolo26n.dxnn
 run_model -m yolo26n.dxnn -t 3 | grep FPS</code></pre>
                 </div>
@@ -469,7 +483,7 @@ dxtop</code></pre>
                 <figure class="my-6">
                     <img src="assets/image-10.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 5] dxtop 実行画面</strong><br>
+                        <strong class="text-gray-700">[図 6] dxtop 実行画面</strong><br>
                         DX-M1 の NPU メモリ使用量および 3 コアそれぞれの Utilization / Temp / Voltage / Clock をリアルタイムでモニタリングできる。
                     </figcaption>
                 </figure>
@@ -491,7 +505,7 @@ dxtop</code></pre>
                 <img src="assets/image-04.png" alt="DEEPX SDK アーキテクチャ">
                 <img src="assets/image-05.png" alt="DEEPX SDK アーキテクチャ">
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[図 6] DEEPX SDK アーキテクチャ</strong><br>
+                    <strong class="text-gray-700">[図 7] DEEPX SDK アーキテクチャ</strong><br>
                     左側の x86_64 ベース AI モデルコンパイル環境 (Host PC) と右側の aarch64 ベースランタイム環境 (Raspberry Pi 5 Target) が完全に分離して動作する cross-platform 開発 workflow の図である。
                 </figcaption>
             </figure>
@@ -507,7 +521,7 @@ dxtop</code></pre>
                 <figure class="my-8">
                     <img src="assets/image-15.png" alt="Vision AI Development Work Flow">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 7] Vision AI Development Work Flow</strong>
+                        <strong class="text-gray-700">[図 8] Vision AI Development Work Flow</strong>
                     </figcaption>
                 </figure>
                 <ol class="text-gray-600 leading-relaxed">
@@ -564,7 +578,7 @@ yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
                         <figure class="my-6 not-prose">
                             <img src="assets/image-16.png" alt="netron で yolo26-s-custom.onnx を確認">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[図 8] netron で yolo26-s-custom.onnx を確認した結果</strong>
+                                <strong class="text-gray-700">[図 9] netron で yolo26-s-custom.onnx を確認した結果</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -665,7 +679,7 @@ cd dx_app</code></pre>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-17.png" alt="dx_tool.sh で YOLO26s コードを抽出">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[図 9] dx_tool.sh で YOLO26s 関連 Python コードのみ抽出する手順</strong>
+                                <strong class="text-gray-700">[図 10] dx_tool.sh で YOLO26s 関連 Python コードのみ抽出する手順</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -739,7 +753,7 @@ python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4</code></pre>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-18.png" alt="Black Bear detection 結果">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[図 10] Bear と Person が検出されることを確認できる</strong>
+                                <strong class="text-gray-700">[図 11] Bear と Person が検出されることを確認できる</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -943,7 +957,7 @@ exit 0</code></pre>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-23.png" alt="Black Bear detection 結果">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[図 11] 4 チャネル検出が動作することを確認できる</strong>
+                                <strong class="text-gray-700">[図 12] 4 チャネル検出が動作することを確認できる</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -952,7 +966,7 @@ exit 0</code></pre>
                 <figure class="my-10">
                     <img src="assets/image-19.png" alt="DX-STREAM パイプライン構造図" class="rounded-lg border border-slate-200">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 12] DX-STREAM パイプライン構造図</strong><br>
+                        <strong class="text-gray-700">[図 13] DX-STREAM パイプライン構造図</strong><br>
                         カメラビデオ入力 (Input) から <code>dxpreprocess</code> (前処理)、NPU ハードウェアで加速される <code>dxinfer</code> (推論)、結果を処理する <code>dxpostprocess</code> (後処理) を経て、<code>dxosd</code> でディスプレイ (OSD) にレンダリングされる一連の流れを示す。
                     </figcaption>
                 </figure>
@@ -964,7 +978,7 @@ exit 0</code></pre>
                 <figure class="my-10">
                     <img src="assets/image-20.png" alt="DX-STREAM パイプライン構造図" class="rounded-lg border border-slate-200">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 13] 各ストリームが重複リソースを共有する DX-STREAM パイプライン構造図</strong><br>
+                        <strong class="text-gray-700">[図 14] 各ストリームが重複リソースを共有する DX-STREAM パイプライン構造図</strong><br>
                          dxinputselector と dxoutputselector を使い <code>dxpreprocess → dxinfer → dxpostprocess</code> pipeline の重複を最小化する。
                     </figcaption>
                 </figure>
@@ -1049,25 +1063,25 @@ names:
             <li><strong>Cloud Training - New Model:</strong> アノテーション完了後、プラットフォームの cloud GPU でモデル学習をすぐ開始できる。GPU なしで学習にかかる日数を短縮でき、精度などの指標をリアルタイムでモニタリングできる。New Model を選択する。</li>
                 <figure><img src="assets/image-11.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[図 14] Ultralytics Platform の Annotation 作業画面</strong><br>
+                    <strong class="text-gray-700">[図 15] Ultralytics Platform の Annotation 作業画面</strong><br>
                      Annotation 作業が完了したら上図のとおり New Model を選択して学習を開始する。
                 </figcaption><br>
             <li><strong>Cloud Training - Base Model:</strong> base となるモデルを選定する。</li>
                 <figure><img src="assets/image-12.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[図 15] Base Model 選択画面</strong><br>
+                    <strong class="text-gray-700">[図 16] Base Model 選択画面</strong><br>
                      Ultralytics がサポートするバージョンの YOLO モデルを選択して training できる。YOLO26n は YOLO26 系で最も light なモデルであり latency は低く accuracy は相対的に低い。YOLO26s を選択する。
                 </figcaption><br>
             <li><strong>Cloud Training - Start Training:</strong> Cloud training は従量課金で、約 1300 枚の dataset を yolo26n で training すると約 $0.34 の credit を消費する。Account 作成時に企業 email で登録すると $25 free credit が付与される。</li>
                 <figure><img src="assets/image-13.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[図 16] Cloud Training の課金ポリシー</strong><br>
+                    <strong class="text-gray-700">[図 17] Cloud Training の課金ポリシー</strong><br>
                      使用する Base Model と epoch、dataset の数、GPU type により課金が変わる。Start Training を押すと学習が開始される。Cloud Training ではなく Local Training を選択すると、Cloud の dataset を基に Local Training できる API Key が提供される。
                 </figcaption><br>
             <li><strong>エクスポート:</strong> 学習完了後、完成モデルを export すると <code>yolo26n.dxnn</code> が生成され、ダウンロードして NPU 推論にそのまま使用できる。</li>
                 <figure><img src="assets/image-14.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[図 17] 簡単に .dxnn へ export する手順</strong><br>
+                    <strong class="text-gray-700">[図 18] 簡単に .dxnn へ export する手順</strong><br>
                      数回のマウスクリックだけで DEEPX M1 NPU でそのまま使える .dxnn ファイルが抽出される。
                 </figcaption>
                 </ol>
@@ -1174,7 +1188,7 @@ pip install ultralytics</code></pre>
                     <table class="min-w-full text-sm text-left border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                         <thead class="bg-indigo-50 text-indigo-900">
                             <tr>
-                                <th scope="col" class="px-4 py-3 font-semibold border-b border-gray-200">Model</th>
+                                <th scope="col" class="px-4 py-3 font-semibold border-b border-gray-200">Model (640x640)</th>
                                 <th scope="col" class="px-4 py-3 font-semibold border-b border-gray-200">FPS</th>
                                 <th scope="col" class="px-4 py-3 font-semibold border-b border-gray-200">Accuracy (mAP)</th>
                             </tr>
