@@ -378,29 +378,27 @@
                 </div>
 <pre><code class="language-bash"># Install NPU driver
 sudo apt update
-wget https://github.com/DEEPX-AI/dx_rt_npu_linux_driver/raw/main/release/2.4.1/dxrt-driver-dkms_2.4.1-2_all.deb
-sudo apt install ./dxrt-driver-dkms_2.4.1-2_all.deb
+wget https://github.com/DEEPX-AI/dx_rt_npu_linux_driver/raw/main/release/2.5.1/dxrt-driver-dkms_2.5.1-2_all.deb
+sudo apt install ./dxrt-driver-dkms_2.5.1-2_all.deb
 
 # Install libdxrt runtime
-wget https://github.com/DEEPX-AI/dx_rt/raw/main/release/3.3.2/libdxrt_3.3.2_all.deb
-sudo apt install ./libdxrt_3.3.2_all.deb
+wget https://github.com/DEEPX-AI/dx_rt/raw/main/release/3.4.0/libdxrt-bin_3.4.0_arm64.deb
+sudo apt install ./libdxrt-bin_3.4.0_arm64.deb
 
-# Create dx-engine wheel
-cd /usr/share/libdxrt/python_package && sudo ./make_whl.sh
+# Use a pre-built dx-engine wheel for your python applications
+cd /usr/share/libdxrt-bin/python
 
-# Install the bundled dx_engine Python wheel (Use python virtual env)
-pip install dx_engine-*.whl
+# Install the dx_engine Python wheel (Use python virtual env)
+# Note: If your python3 version is different with 3.13, use the proper version
+pip install dx_engine-3.4.0-cp313-cp313-manylinux_2_27_aarch64.whl
 
 # Reboot the system
 sudo reboot</code></pre>
                 </div>
 
-                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
-                    <strong>💡 ヒント:</strong> <code>sudo ./make_whl.sh</code> はシステム権限で実行されるが、<code>pip install</code> は仮想環境 (venv) 内で権限競合なくインストールすることを推奨する。
-                </div>
 
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    DX-M1 M.2 モジュールの firmware (FW) バージョンが低い場合、API 互換性の問題が発生する。以下の手順で NPU FW をアップグレードすること。DX-RT v3.3.2 を基準に、NPU FW バージョン v2.5.6 以上を推奨する。
+                    DX-M1 M.2 モジュールの firmware (FW) バージョンが低い場合、API 互換性の問題が発生する。以下の手順で NPU FW をアップグレードすること。DX-RT v3.4.0 を基準に、NPU FW バージョン v2.7.3 以上を推奨する。
                 </p>
                 <div class="code-panel">
 
@@ -412,9 +410,13 @@ sudo reboot</code></pre>
 <pre><code class="language-bash"># Stop dxrt.service before FW upgrade
 systemctl stop dxrt.service
 
-# Download NPU FW v2.5.6
-wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/2.5.6/mdot2/fw.bin
-# Upgrade NPU FW to v2.5.6
+# Download NPU FW v2.7.3
+wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/2.7.3/mdot2/fw.bin
+
+# For DX-M1M module, you need to download the M1M FW bin instead of the M1 FW bin
+# wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1m/2.7.3/mdot2/fw.bin
+
+# Upgrade NPU FW to v2.7.3
 dxrt-cli -u fw.bin
 
 # Restart dxrt.service after FW upgrade
@@ -453,8 +455,8 @@ systemctl status dxrt.service
 dxrt-cli -s
 
 # Perform a quick validation by inferencing a model -> expected: 'FPS: higher than 90'
-wget https://sdk.deepx.ai/modelzoo/dxnn/2_3_0/yolo26n.dxnn
-run_model -m yolo26n.dxnn -t 3 | grep FPS</code></pre>
+wget https://sdk.deepx.ai/modelzoo/dxnn/2_4_0/yolo26-n_640x640.dxnn
+run_model -m yolo26-n_640x640.dxnn -t 3 | grep FPS</code></pre>
                 </div>
 
 
