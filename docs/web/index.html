@@ -274,7 +274,16 @@
                 Building an Ultra-Low-Power Edge AI System with DEEPX M1 NPU and Raspberry Pi 5
             </h1>
             <p class="text-lg text-gray-600 leading-relaxed mb-6">
-                Recent advances in edge AI enable real-time execution of complex models on-device, eliminating the need for cloud-based processing. Limited power, heat, and compute on embedded boards remain key challenges for engineers.
+                In industrial physical-edge settings such as smart factories, autonomous driving, robotics, and intelligent surveillance (CCTV), the core technology is fast, high-precision AI. Here, the conventional cloud approach — sending high-resolution camera stream data to a cloud server for processing — introduces critical problems such as the following:
+            </p>
+            <ul class="list-disc pl-6 text-lg text-gray-600 leading-relaxed mb-6 space-y-2">
+                <li><strong>Latency:</strong> Network round-trip time makes millisecond-level, real-time response impossible</li>
+                <li><strong>Bandwidth & Cost:</strong> Excessive network traffic and operating costs from streaming dozens to hundreds of high-resolution camera feeds around the clock</li>
+                <li><strong>Privacy & Security:</strong> Risk of sensitive on-site video data leaking onto external networks</li>
+                <li><strong>Connectivity/Stability:</strong> Risk of total system downtime from network outages or in remote environments</li>
+            </ul>
+            <p class="text-lg text-gray-600 leading-relaxed mb-6">
+                Edge AI technology is needed to solve these problems. Recent advances in edge AI enable real-time execution of complex models on-device, eliminating the need for cloud-based processing. Limited power, heat, and compute on embedded boards remain key challenges for engineers.
             </p>
             <p class="text-lg text-gray-600 leading-relaxed mb-8">
                 This article demonstrates how to combine the widely used Raspberry Pi 5 single-board computer with DEEPX's ultra-low-power, high-performance DX-M1 M.2 AI accelerator into a capable edge AI system. We walk through the full workflow—from hardware architecture to training and porting a custom wildlife detection model, and a practical wildlife monitoring camera demo.
@@ -547,7 +556,7 @@ dxtop</code></pre>
 
                 <ol class="text-gray-600 leading-relaxed mb-6">
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Download pre-trained YOLO26s weights:</strong> Download weights for the wildlife YOLO26 model based on YOLO26s. You get <code>yolo26s-custom.pt</code>. (We provide the .pt file for convenience; you may train your own custom model instead.)
+                        <p class="step-desc"><strong>Download pre-trained YOLO26s weights:</strong> Download weights for the wildlife YOLO26 model based on YOLO26s. You get <code>yolo26s-custom.pt</code>. (We provide the .pt file for convenience; you may use the weight (.pt) file from a custom model you trained yourself instead.)
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -1054,7 +1063,7 @@ names:
 
                 <p class="text-gray-600 leading-relaxed mb-6">
                     For more details on YOLO dataset, refer to the following Ultralytics YOLO Dataset Overview.<br>
-                    👉 Download: <a href="https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset" target="_blank">https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset</a>
+                    👉 Link: <a href="https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset" target="_blank">https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset</a>
                 </p>
 
                 <h3 id="section-4-2" class="text-xl font-semibold text-gray-800 mb-4">Training Method 1: Ultralytics Platform (Cloud, Beginner-Friendly)</h3>
@@ -1157,7 +1166,7 @@ pip install ultralytics</code></pre>
             </li>
             <li><strong>Output:</strong> Training prints loss and metrics. On success you get a <code>.pt</code> weights file—check the log for its path.</li>
             <li class="step-item">
-                <p class="step-desc"><strong>Export (CLI):</strong> Execute <code>yolo export model=&lt;path&gt;/weights/best.pt format=deepx data=dataset</code> to produce NPU-ready output. This exports ONNX, runs DX-COM to <code>.dxnn</code>, and utilize your dataset to calibrate FP32 to INT8 models.</p>
+                <p class="step-desc"><strong>Export (CLI):</strong> Execute <code>yolo export model=&lt;path&gt;/weights/best.pt format=deepx data=dataset</code> to produce NPU-ready output. This exports ONNX, runs DX-COM to <code>.dxnn</code>, and utilizes your dataset to calibrate FP32 to INT8 models.</p>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">yolo export model=&lt;path to trained pt&gt;/weights/best.pt format=deepx data=dataset # creates 'best_deepx_model/'</code></pre>
                 </div>

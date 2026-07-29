@@ -274,7 +274,16 @@
                 DEEPX M1 NPU と Raspberry Pi 5 で構築する超低消費電力 Edge AI システム
             </h1>
             <p class="text-lg text-gray-600 leading-relaxed mb-6">
-                近年の Edge AI 技術の進歩により、重いクラウドサーバーを経由せず、デバイス上で複雑な AI モデルをリアルタイムに処理できるようになった。しかし、限られた電力と発熱、そして組み込みボードのコンピューティングリソースの制約は、依然としてエンジニアが解決すべき課題である。
+                スマートファクトリー、自動運転、ロボティクス、インテリジェント監視(CCTV)のような産業現場(Physical Edge)において最も重要な技術は、高速・高精度な AI である。ここで、高解像度カメラのストリームデータをクラウドサーバーに送信して処理する従来のクラウド方式は、次のような致命的な問題を引き起こす。
+            </p>
+            <ul class="list-disc pl-6 text-lg text-gray-600 leading-relaxed mb-6 space-y-2">
+                <li><strong>遅延時間 (Latency):</strong> ネットワークの往復時間により、ミリ秒(ms)単位の即時応答が不可能</li>
+                <li><strong>帯域幅とデータコスト (Bandwidth & Cost):</strong> 数十~数百台の高画質カメラ映像を24時間ストリーミングする際に発生する過剰なネットワークトラフィックおよび運用コスト</li>
+                <li><strong>プライバシーとセキュリティ (Privacy & Security):</strong> 現場の機密性の高い映像データが外部ネットワークに流出するリスク</li>
+                <li><strong>接続性・安定性 (Connectivity/Stability):</strong> 通信障害や僻地環境でシステム全体が停止するリスク</li>
+            </ul>
+            <p class="text-lg text-gray-600 leading-relaxed mb-6">
+                これらの問題を解決するために Edge AI 技術が必要とされており、近年の Edge AI 技術の進歩により、重いクラウドサーバーを経由せず、デバイス上で複雑な AI モデルをリアルタイムに処理できるようになった。しかし、限られた電力と発熱、そして組み込みボードのコンピューティングリソースの制約は、依然としてエンジニアが解決すべき課題である。
             </p>
             <p class="text-lg text-gray-600 leading-relaxed mb-8">
                 本稿では、世界で最も広く使われているシングルボードコンピュータ「Raspberry Pi 5」と、DEEPX の超低消費電力・高性能 AI アクセラレータ「DX-M1 M.2 モジュール」を組み合わせ、強力な Edge AI システムを構築する方法を紹介する。ハードウェアのアーキテクチャから始め、野生動物を認識するカスタムモデルの開発・ポーティング、そして実践的な野生動物監視カメラデモまで、Edge AI 開発のワークフロー全体を詳しく解説する。
@@ -547,7 +556,7 @@ dxtop</code></pre>
 
                 <ol class="text-gray-600 leading-relaxed mb-6">
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>YOLO26s の pre-trained weight をダウンロード:</strong> YOLO26s をベースに学習した野生動物 YOLO26 モデルの weight をダウンロードする。<code>yolo26s-custom.pt</code> ファイルがダウンロードされる。(学習の便宜上 pt ファイルを提供するが、custom model の training フローを使用しても差し支えない)
+                        <p class="step-desc"><strong>YOLO26s の pre-trained weight をダウンロード:</strong> YOLO26s をベースに学習した野生動物 YOLO26 モデルの weight をダウンロードする。<code>yolo26s-custom.pt</code> ファイルがダウンロードされる。(学習の便宜上 pt ファイルを提供するが、custom model を自分で training した weight (pt) ファイルを使用しても差し支えない)
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -1054,7 +1063,7 @@ names:
 
                 <p class="text-gray-600 leading-relaxed mb-6">
                     For more details on YOLO dataset, refer to the following Ultralytics YOLO Dataset Overview.<br>
-                    👉 ダウンロードリンク: <a href="https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset" target="_blank">https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset</a>
+                    👉 Link: <a href="https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset" target="_blank">https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset</a>
                 </p>
 
                 <h3 id="section-4-2" class="text-xl font-semibold text-gray-800 mb-4">学習方法 1: Ultralytics Platform の利用 (Cloud 環境、初心者向け)</h3>
