@@ -314,6 +314,49 @@
                 <p class="text-gray-600 leading-relaxed mb-4">
                     구체적인 전력 소모 지표를 보면 그 진가를 알 수 있다. 경량 객체 인식 모델인 YOLOv9T를 구동할 때의 전력 소모는 약 2.69W에 불과하며, 연산량이 훨씬 많은 무거운 모델인 YOLOv8L을 구동할 때조차 5.64W 수준의 매우 낮은 전력만을 소모한다. 이는 방열판이나 작은 쿨링팬만으로도 Raspberry Pi 5와 함께 운용하기에 완벽한 조건을 제공한다.
                 </p>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    그렇다면 실제 추론 속도는 얼마나 차이가 날까? 동일한 Raspberry Pi 5 환경에서 연산량이 많은 YOLO26-l (640x640) 모델을 기준으로, NPU 없이 CPU 만으로 추론했을 때와 DX-M1 NPU 를 사용해 추론했을 때의 속도를 직접 측정해 비교해 보았다.
+                </p>
+                <figure class="my-8">
+                    <div class="rounded-xl border border-gray-200 bg-gray-50 px-6 py-8 md:px-10">
+                        <div class="text-center mb-8">
+                            <span class="text-2xl md:text-2xl font-extrabold text-indigo-600">약 611배</span>
+                            <span class="block text-sm text-gray-500 mt-2">DX-M1 NPU 사용 시 CPU 단독 대비 추론 속도 향상 (YOLO26-l, 640x640 기준)</span>
+                        </div>
+                        <div class="space-y-6 max-w-2xl mx-auto">
+                            <div>
+                                <div class="flex items-center justify-between text-sm mb-1.5">
+                                    <span class="font-medium text-gray-500">Raspberry Pi 5 (CPU only)</span>
+                                    <span class="font-semibold text-gray-500 tabular-nums">0.14 FPS</span>
+                                </div>
+                                <div class="h-3 w-full rounded-full bg-gray-200">
+                                    <div class="h-3 rounded-r-full bg-gray-400" style="width: 4.9%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between text-sm mb-1.5">
+                                    <span class="font-medium text-gray-900">Raspberry Pi 5 + DX-M1 NPU</span>
+                                    <span class="font-semibold text-indigo-600 tabular-nums">85.5 FPS</span>
+                                </div>
+                                <div class="h-3 w-full rounded-full bg-gray-200">
+                                    <div class="h-3 rounded-r-full bg-indigo-600" style="width: 97.7%"></div>
+                                </div>
+                            </div>
+                            <div class="relative h-4 text-[11px] text-gray-400 tabular-nums">
+                                <span class="absolute" style="left: 0%">0.1</span>
+                                <span class="absolute -translate-x-1/2" style="left: 33.33%">1</span>
+                                <span class="absolute -translate-x-1/2" style="left: 66.67%">10</span>
+                                <span class="absolute -translate-x-full" style="left: 100%">100 FPS</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 text-center mt-3">* CPU 대비 NPU 의 속도 차이가 매우 커서(약 610배) 막대 길이는 로그 스케일(log scale, 밑 10)로 표시</p>
+                        <p class="text-xs text-gray-400 text-center mt-1">* 측정에 사용된 YOLO26-l 모델은 <a href="https://developer.deepx.ai/modelzoo/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a> 에서 다운로드</p>
+                    </div>
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[그림 2] Raspberry Pi 5 CPU 단독 구동과 DX-M1 NPU 사용 시 추론 속도(FPS) 비교</strong><br>
+                        동일한 Raspberry Pi 5 에서 YOLO26-l (640x640) 모델을 CPU 만으로 추론하면 0.14 FPS 에 불과하지만, DX-M1 M.2 NPU 를 사용하면 85.5 FPS 로 약 611배 향상되어 실시간 처리가 가능해 진다.
+                    </figcaption>
+                </figure>
             </article>
 
             <article id="section-1-2">
@@ -324,7 +367,7 @@
                 <figure class="my-8">
                     <img src="assets/image-07.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[그림 2] DX-M1 M.2 모듈 시스템 블록 다이어그램</strong><br>
+                        <strong class="text-gray-700">[그림 3] DX-M1 M.2 모듈 시스템 블록 다이어그램</strong><br>
                         모듈 내부의 3개의 NPU 코어와 전용 LPDDR5 메모리 구성, 그리고 호스트 보드와 데이터 병목을 해소하기 위한 PCIe Gen3 x4 기반의 고속 연결 인터페이스 구조를 보여준다.
                     </figcaption>
                 </figure>
@@ -341,33 +384,37 @@
                 DX-M1 M.2 NPU를 활용해 Raspberry Pi 5를 Edge AI 시스템으로 탈바꿈시키기
             </h2>
 
+            <p class="text-gray-600 leading-relaxed mb-6">
+                DEEPX NPU 에는 크게 두가지 type 이 있으며 <a href="https://deepx.ai/products/dx-m1/" target="_blank" class="text-indigo-600 hover:underline">DX-M1</a> 과 DX-M1M 이 있다. 아래는 DX-M1 M.2 모듈을 활용한 구성과, DX-M1M 일체형 HAT 을 활용한 구성, 이렇게 2가지 구성을 소개한다.
+            </p>
+
             <article id="section-2-1" class="mb-8">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">M.2 NPU 모듈 소개 및 HW 장착 방법</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">DX-M1 M.2 NPU 모듈 소개 및 HW 장착 방법</h3>
                 <p class="text-gray-600 leading-relaxed mb-6">
                     DEEPX DX-M1 M.2 모듈은 산업 표준인 M.2 2280 Key M form factor를 채택하고 있다. Raspberry Pi 5는 공식적으로 PCIe 인터페이스를 지원하므로, NVMe HAT이나 M.2 확장 보드를 사용하면 이 NPU 모듈을 손쉽게 장착할 수 있다.
                 </p>
                 <figure>
                     <img src="assets/image-08.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[그림 3] Raspberry Pi 5 기반의 Edge AI 시스템 필요 장비</strong><br>
+                        <strong class="text-gray-700">[그림 4] Raspberry Pi 5 기반의 Edge AI 시스템 필요 장비</strong><br>
                         Raspberry Pi 5 (8G RAM 이상 권장) 와 DX-M1 M.2 모듈이 필요하고, 이 둘을 PCIe Interface 로 연결해 줄 HAT 보드(PCIe gen3 x1 지원)가 필요하다.
                     </figcaption>
                 </figure><br>
                 <figure>
                     <img src="assets/image-09.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[그림 4] Raspberry Pi 5 와 DX-M1 M.2 체결 방법</strong><br>
+                        <strong class="text-gray-700">[그림 5] Raspberry Pi 5 와 DX-M1 M.2 체결 방법</strong><br>
                         Raspberry Pi 5 와 HAT 보드를 PCIe Cable 로 연결 → HAT 보드의 M.2 포트에 DX-M1 M.2 모듈을 체결
                     </figcaption>
                 </figure>
                 <h3 class="text-xl font-semibold text-gray-800 mb-4 mt-8">DX-M1M 모듈 소개 및 일체형 HAT 장착 방법</h3>
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    DEEPX DX-M1M 칩은 1GB 또는 2GB의 DDR4 RAM이 내장된 솔루션이다. DEEPX와 Sixfab의 협업으로 DX-M1M 칩이 온보드 형태로 탑재된 제품을 만들었으며, Raspberry Pi 5 전용으로 검증된 AI HAT 폼팩터를 제공한다. 하드웨어는 아래와 같은 방식으로 장착하여 사용할 수 있다.
+                    DEEPX DX-M1M 칩은 1GB 또는 2GB의 DDR4 RAM이 내장된 솔루션이다. DDR5 RAM 을 사용하는 DX-M1 에 비해 약 20% 정도의 추론 성능이 낮아지나 가격이나 칩 크기에서 이점이 있다. DEEPX와 Sixfab의 협업으로 DX-M1M 칩이 온보드 형태로 탑재된 제품을 만들었으며, Raspberry Pi 5 전용으로 검증된 AI HAT 폼팩터를 제공한다. 하드웨어는 아래와 같은 방식으로 장착하여 사용할 수 있다.
                 </p>
                 <figure>
                     <img src="assets/image-24.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[그림 5] Sixfab On-board discrete chip design for AI HAT using DX-M1M</strong><br>
+                        <strong class="text-gray-700">[그림 6] Sixfab On-board discrete chip design for AI HAT using DX-M1M</strong><br>
                         <a href="https://sixfab.com/product/ai-hat-plus-raspberry-pi-5/" target="_blank" class="text-indigo-600 hover:underline">https://sixfab.com/product/ai-hat-plus-raspberry-pi-5</a> 에서 판매하고 있는 DX-M1M 일체형 HAT board 를 PCIe 로 Raspberry Pi 5 와 연결한다.
                     </figcaption>
                 </figure>
@@ -497,7 +544,7 @@ dxtop</code></pre>
                 <figure class="my-6">
                     <img src="assets/image-10.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[그림 6] dxtop 실행 화면</strong><br>
+                        <strong class="text-gray-700">[그림 7] dxtop 실행 화면</strong><br>
                         DX-M1 의 NPU memory 사용량 및 3개 Core 별 Utilization / Temp / Voltage / Clock 값을 실시간 모니터링 할 수 있다.
                     </figcaption>
                 </figure>
@@ -519,7 +566,7 @@ dxtop</code></pre>
                 <img src="assets/image-04.png" alt="DEEPX SDK 아키텍처">
                 <img src="assets/image-05.png" alt="DEEPX SDK 아키텍처">
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[그림 7] DEEPX SDK 아키텍처</strong><br>
+                    <strong class="text-gray-700">[그림 8] DEEPX SDK 아키텍처</strong><br>
                     왼쪽의 x86_64 기반 AI 모델 컴파일 환경(Host PC)과 오른쪽의 aarch64 기반 런타임 환경(Raspberry Pi 5 Target)이 완벽히 분리되어 동작하는 cross-platform 개발 work flow 도식이다.
                 </figcaption>
             </figure>
@@ -535,7 +582,7 @@ dxtop</code></pre>
                 <figure class="my-8">
                     <img src="assets/image-15.png" alt="Vision AI Development Work Flow">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[그림 8] Vision AI Development Work Flow</strong>
+                        <strong class="text-gray-700">[그림 9] Vision AI Development Work Flow</strong>
                     </figcaption>
                 </figure>
                 <ol class="text-gray-600 leading-relaxed">
@@ -592,7 +639,7 @@ yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
                         <figure class="my-6 not-prose">
                             <img src="assets/image-16.png" alt="netron 으로 yolo26-s-custom.onnx 확인">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[그림 9] netron 으로 yolo26-s-custom.onnx 확인한 결과</strong>
+                                <strong class="text-gray-700">[그림 10] netron 으로 yolo26-s-custom.onnx 확인한 결과</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -693,7 +740,7 @@ cd dx_app</code></pre>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-17.png" alt="dx_tool.sh YOLO26s 코드 추출">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[그림 10] dx_tool.sh 를 사용해서 YOLO26s 관련 python 코드만 추출하는 과정</strong>
+                                <strong class="text-gray-700">[그림 11] dx_tool.sh 를 사용해서 YOLO26s 관련 python 코드만 추출하는 과정</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -767,7 +814,7 @@ python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4</code></pre>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-18.png" alt="Black Bear detection 결과">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[그림 11] Bear 와 Person 이 detection 되는 것을 확인할 수 있다.</strong>
+                                <strong class="text-gray-700">[그림 12] Bear 와 Person 이 detection 되는 것을 확인할 수 있다.</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -971,7 +1018,7 @@ exit 0</code></pre>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-23.png" alt="Black Bear detection 결과">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[그림 12] 4채널 detection 이 동작되는 것을 확인할 수 있다.</strong>
+                                <strong class="text-gray-700">[그림 13] 4채널 detection 이 동작되는 것을 확인할 수 있다.</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -980,7 +1027,7 @@ exit 0</code></pre>
                 <figure class="my-10">
                     <img src="assets/image-19.png" alt="DX-STREAM 파이프라인 구조도" class="rounded-lg border border-slate-200">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[그림 13] DX-STREAM 파이프라인 구조도</strong><br>
+                        <strong class="text-gray-700">[그림 14] DX-STREAM 파이프라인 구조도</strong><br>
                         카메라 비디오 입력(Input) 소스에서 시작하여 <code>dxpreprocess</code>(전처리), NPU 하드웨어에서 가속되는 <code>dxinfer</code>(추론), 결과값을 처리하는 <code>dxpostprocess</code>(후처리)를 거쳐 <code>dxosd</code>를 통해 디스플레이(OSD)로 렌더링되는 전 과정을 보여준다.
                     </figcaption>
                 </figure>
@@ -992,7 +1039,7 @@ exit 0</code></pre>
                 <figure class="my-10">
                     <img src="assets/image-20.png" alt="DX-STREAM 파이프라인 구조도" class="rounded-lg border border-slate-200">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[그림 14] 각 스트림이 중복 자원을 공유하는 DX-STREAM 파이프라인 구조도</strong><br>
+                        <strong class="text-gray-700">[그림 15] 각 스트림이 중복 자원을 공유하는 DX-STREAM 파이프라인 구조도</strong><br>
                          dxinputselector 와 dxoutputselector 를 사용해  <code>dxpreprocess → dxinfer → dxpostprocess</code> pipeline 중복을 최소화 한다.
                     </figcaption>
                 </figure>
@@ -1077,25 +1124,25 @@ names:
             <li><strong>Cloud Training - New Model:</strong> 어노테이션 작업 완료 후, 플랫폼에서 제공하는 cloud GPU를 활용해 모델 학습을 바로 시작할 수 있다. GPU 가 없이 학습에 걸리는 며칠의 시간을 단축할 수 있으며, 정확도 등의 지표를 실시간으로 모니터링할 수 있다. New Model을 선택한다.</li>
                 <figure><img src="assets/image-11.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[그림 15] Ultralytics Platform 의 Annotation 작업 화면</strong><br>
+                    <strong class="text-gray-700">[그림 16] Ultralytics Platform 의 Annotation 작업 화면</strong><br>
                      Annotation 작업이 완료됐으면 위 그림과 같이 New Model 을 선택하여 학습을 시작한다.
                 </figcaption><br>
             <li><strong>Cloud Training - Base Model:</strong> 어떤 모델을 base로 training할지 선정한다.</li>
                 <figure><img src="assets/image-12.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[그림 16] Base Model 선택 화면</strong><br>
+                    <strong class="text-gray-700">[그림 17] Base Model 선택 화면</strong><br>
                      Ultralytics 에서 지원하는 버전의 YOLO 모델들을 선택해서 training 을 할 수 있다. YOLO26n 이 YOLO26 계열에서 가장 light 한 모델이기에 latency 가 낮고 accuracy 가 상대적으로 떨어진다. YOLO26s 를 선택하자.
                 </figcaption><br>
             <li><strong>Cloud Training - Start Training:</strong> Cloud training은 과금 모델이며 약 1300장의 dataset 을 yolo26n 으로 training 시 $0.34 정도의 credit 이 소진된다. Account 생성 시 기업 email 로 가입하면 $25 free credit이 부여된다.</li>
                 <figure><img src="assets/image-13.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[그림 17] Cloud Training 의 과금 정책</strong><br>
+                    <strong class="text-gray-700">[그림 18] Cloud Training 의 과금 정책</strong><br>
                      사용할 Base Model 과 epoch, dataset 의 수, 그리고 GPU type 에 따라 과금이 달라진다. Start Training 을 누르면 학습이 시작된다. 만약 Cloud Training 말고 Local Training 을 선택하면 Cloud 의 dataset 을 기반으로 Local Training 을 할 수 있게 API Key 값을 제공한다. 
                 </figcaption><br>
             <li><strong>내보내기:</strong> 학습이 끝난 완성된 모델 파일을 export하면 <code>yolo26n.dxnn</code> 파일이 생성되며 이를 다운로드하여 NPU 에서 추론용으로 바로 사용 할 수 있다.</li>
                 <figure><img src="assets/image-14.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[그림 18] 간단하게 .dxnn 으로 export 하는 과정</strong><br>
+                    <strong class="text-gray-700">[그림 19] 간단하게 .dxnn 으로 export 하는 과정</strong><br>
                      몇번의 마우스 클릭 만으로 간단하게 DEEPX M1 NPU 에서 바로 사용 가능한 .dxnn 파일이 추출된다.
                 </figcaption>
                 </ol>
