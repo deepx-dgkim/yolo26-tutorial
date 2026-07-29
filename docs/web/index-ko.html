@@ -645,6 +645,9 @@ yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
                     </li>
                     <li class="step-item mb-4">
                         <p class="step-desc"><strong>Calibration Data 준비:</strong> DX-Compiler 에서 FP32 to INT8 Quantization 에 사용될 calibration 이미지가 필요하며 최소 100 장 이상을 권장한다. 실제 input 에 사용되는 dataset 과 유사할수록 accuracy loss 를 최소화할 수 있다. 다만 compile 시 실제 배포 환경과 다른 calibration image 를 쓰면 양자화에 실제 데이터가 반영되지 않아 INT8 정확도가 떨어질 수 있으니 주의한다. 이번 과정에서는 임의 dataset 을 사용하나, 실 사용에서는 반드시 배포 환경에 맞는 dataset 을 사용해야 한다.</p>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
+                            <strong>💡 팁: calibration 이미지란?</strong> FP32 모델을 INT8 로 변환(quantization)하면 모델 크기와 연산량은 줄어들지만 정밀도 손실이 발생할 수 있다. calibration 이미지는 이 손실을 최소화하기 위한 것으로, 모델에 실제로 몇 장을 통과(forward pass)시켜 각 layer 의 activation 값 분포(range)를 통계적으로 측정하고, 이를 바탕으로 최적의 quantization scale/zero-point 를 계산하는 데 사용된다. training 용 dataset 과 달리 label 이 필요 없고 가중치도 업데이트되지 않으며, 오직 activation 범위를 파악하기 위한 샘플 입력이다.
+                        </div>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -1114,6 +1117,9 @@ names:
 
                 <h3 id="section-4-2" class="text-xl font-semibold text-gray-800 mb-4">학습 방법 1: Ultralytics Platform 이용 (Cloud 환경, 초보자 추천)</h3>
 
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    <a href="https://platform.ultralytics.com" target="_blank" class="text-indigo-600 hover:underline">Ultralytics Platform</a> 은 dataset annotation 부터 cloud 학습, 모델 export 까지 컴퓨터 비전 AI 개발 전체 워크플로우를 지원하는 통합 플랫폼이다. SAM 기반의 Smart Annotation 으로 라벨링 속도를 크게 높여주며, NVIDIA GPU 를 활용한 cloud 학습과 다양한 format 으로의 export 기능까지 제공하며 DEEPX NPU 에서 바로 사용할 수 있는 <code>dxnn</code> 포멧도 지원한다.
+                </p>
                 <p class="text-gray-600 leading-relaxed mb-6">
                     코딩이나 별도의 PC 환경 설정 없이 웹 브라우저 GUI 를 사용해서 편리하게 학습을 진행할 수 있는 방법이다.
                 </p>

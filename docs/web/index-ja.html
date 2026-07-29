@@ -646,6 +646,9 @@ yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
                     </li>
                     <li class="step-item mb-4">
                         <p class="step-desc"><strong>Calibration Data の準備:</strong> DX-Compiler の FP32 to INT8 Quantization に使用する calibration 用画像が必要で、最低 100 枚以上を推奨する。実際の input に使う dataset に近いほど accuracy loss を最小化できる。ただし compile 時に実際のデプロイ環境と異なる calibration image を使うと、量子化に実データが反映されず INT8 精度が低下する可能性があるので注意すること。本手順では任意の dataset を使用するが、実運用では必ずデプロイ環境に合った dataset を使用する必要がある。</p>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
+                            <strong>💡 ヒント: calibration 画像とは?</strong> FP32 モデルを INT8 に変換(quantization)すると、モデルサイズと演算量は削減できるが精度の低下が生じ得る。calibration 画像はこの精度低下を最小化するためのもので、モデルに実際に数十~数百枚を通し(forward pass のみ)、各 layer の activation 値の分布(range)を統計的に測定し、それをもとに最適な quantization scale/zero-point を計算するために使用される。training 用 dataset とは異なり label は不要で、重みが更新されることもなく、あくまで activation の範囲を把握するためのサンプル入力にすぎない。
+                        </div>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -1115,6 +1118,9 @@ names:
 
                 <h3 id="section-4-2" class="text-xl font-semibold text-gray-800 mb-4">学習方法 1: Ultralytics Platform の利用 (Cloud 環境、初心者向け)</h3>
 
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    <a href="https://platform.ultralytics.com" target="_blank" class="text-indigo-600 hover:underline">Ultralytics Platform</a> は、dataset の annotation から cloud 学習、モデルの export まで、コンピュータビジョン AI 開発のワークフロー全体をサポートする統合プラットフォームである。SAM ベースの Smart Annotation によりラベリング速度を大幅に向上でき、NVIDIA GPU を活用した cloud 学習や、多様な format への export 機能も提供する。
+                </p>
                 <p class="text-gray-600 leading-relaxed mb-6">
                     コーディングや別途 PC 環境設定なしで、Web ブラウザ GUI から手軽に学習できる方法である。
                 </p>

@@ -646,6 +646,9 @@ yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
                     </li>
                     <li class="step-item mb-4">
                         <p class="step-desc"><strong>Prepare calibration data:</strong> DX-Compiler requires calibration images for FP32 to INT8 quantization; 100 or more are recommended. The closer the images are to the actual input dataset, the more you can minimize accuracy loss. However, using calibration images that differ from the actual deployment environment during compile means real data is not reflected in quantization, which can reduce INT8 accuracy—take care to avoid this. This guide uses an arbitrary dataset, but in production you must use a dataset matched to your deployment environment.</p>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
+                            <strong>💡 Tip: What are calibration images?</strong> Converting an FP32 model to INT8 (quantization) reduces model size and compute, but can introduce accuracy loss. Calibration images minimize this loss: a handful of images are run through the model (forward pass only) to statistically measure each layer's activation value range, which is then used to compute optimal quantization scale/zero-point values. Unlike a training dataset, they need no labels and don't update any weights—they're purely sample inputs used to observe activation ranges.
+                        </div>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -1115,6 +1118,9 @@ names:
 
                 <h3 id="section-4-2" class="text-xl font-semibold text-gray-800 mb-4">Training Method 1: Ultralytics Platform (Cloud, Beginner-Friendly)</h3>
 
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    <a href="https://platform.ultralytics.com" target="_blank" class="text-indigo-600 hover:underline">Ultralytics Platform</a> is an all-in-one platform that covers the full computer vision AI workflow, from dataset annotation to cloud training and model export. It offers SAM-powered Smart Annotation for much faster labeling, plus cloud training on NVIDIA GPUs and export to a wide range of formats.
+                </p>
                 <p class="text-gray-600 leading-relaxed mb-6">
                     Train in the browser without local setup or coding.
                 </p>
