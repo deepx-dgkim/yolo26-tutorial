@@ -441,13 +441,6 @@ sudo apt install ./dxrt-driver-dkms_2.5.1-2_all.deb
 wget https://github.com/DEEPX-AI/dx_rt/raw/main/release/3.4.0/libdxrt-bin_3.4.0_arm64.deb
 sudo apt install ./libdxrt-bin_3.4.0_arm64.deb
 
-# Use a pre-built dx-engine wheel for your python applications
-cd /usr/share/libdxrt-bin/python
-
-# Install the dx_engine Python wheel (Use python virtual env)
-# Note: If your python3 version is different with 3.13, use the proper version
-pip install dx_engine-3.4.0-cp313-cp313-manylinux_2_27_aarch64.whl
-
 # Reboot the system
 sudo reboot</code></pre>
                 </div>
@@ -809,7 +802,7 @@ wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-
 python3 -m venv venv
 source venv/bin/activate
 pip install -U pip
-cd /usr/share/libdxrt/python_package && sudo ./make_whl.sh && pip install dx_engine*.whl && cd -
+pip install dx-engine
 pip install opencv-python
 
 # async mode の Python app を実行（model パスは Raspberry Pi 5 にコピーしたパスに合わせる）
