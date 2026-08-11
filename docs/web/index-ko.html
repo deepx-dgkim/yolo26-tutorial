@@ -741,51 +741,35 @@ cd dx_app</code></pre>
                         </figure>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>4개 class 만 찾는 Custom 모델로 코드 수정:</strong> 기존 YOLO26 모델들은 default 로 80개 class 를 찾도록 pre-trained 된 모델이다. DX-APP 코드도 이에 맞춰져 있어서 이 부분만 수정하면 된다. 아래 diff 부분을 확인해서 코드를 수정한다.</p>
+                        <p class="step-desc"><strong>4개 class 만 찾는 Custom 모델로 config.json 수정:</strong> 기존 YOLO26 모델들은 default 로 80개 class 를 찾도록 pre-trained 된 모델이다. DX-APP 의 공유 프레임워크 코드를 patch 하는 대신, 예제 자체의 <code>config.json</code> 에 커스텀 class 를 선언하는 방식을 사용한다. DX-APP 의 모든 예제는 이미 <code>--config</code> 옵션을 지원하며(생략 시 스크립트 옆의 config.json 을 자동 탐지), factory 가 postprocessor 와 visualizer 를 생성하기 전에 이 값을 병합한다. 자세한 내용은 <a href="https://github.com/DEEPX-AI/dx_app/blob/main/docs/source/docs/12_DX-APP_YOLO_Customizing_Guide.md" target="_blank" class="text-indigo-600 hover:underline">DX-APP YOLO Customizing Guide</a> 의 Step 3 ("Tune config.json", github.com/DEEPX-AI/dx_app → docs/source/docs/12_DX-APP_YOLO_Customizing_Guide.md) 참고.</p>
+                        <p class="step-desc mt-4"><code>config.json</code> 에 <code>num_classes</code> 와 <code>class_names</code> 를 추가한다:</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
                         </div>
-<pre><code class="language-diff">diff --git a/common/utility/labels.py b/common/utility/labels.py
-index 2476a60..6955632 100644
---- a/common/utility/labels.py
-+++ b/common/utility/labels.py
-@@ -12,6 +12,11 @@ _DINING_TABLE = "dining table"
- _TEDDY_BEAR = "teddy bear"
-
-
-+def get_custom_labels() -> List[str]:
-+    return [
-+        "Person", "Deer", "Raccoon", "Bear"
-+    ]
-+
-
- def get_coco_80_labels() -> List[str]:
-     """
-@@ -346,6 +351,7 @@ def get_voc_labels() -> List[str]:
-
-
- _DATASET_LABELS: Dict[str, List[str]] = {
-+    "custom": get_custom_labels(),
-     "coco80": get_coco_80_labels(),
-     "imagenet1000": get_imagenet_labels(),
-     "cityscapes": get_cityscapes_labels(),
-diff --git a/common/visualizers/detection_visualizer.py b/common/visualizers/detection_visualizer.py
-index 6c03a32..deef9fa 100644
---- a/common/visualizers/detection_visualizer.py
-+++ b/common/visualizers/detection_visualizer.py
-@@ -20,7 +20,7 @@ class DetectionVisualizer(IVisualizer):
-     Draws bounding boxes with class labels and confidence scores.
-     """
-
--    def __init__(self, label_set: str = 'coco80', custom_labels: List[str] = None):
-+    def __init__(self, label_set: str = 'custom', custom_labels: List[str] = None):
-         """
-         Initialize detection visualizer.</code></pre>
+<pre><code class="language-json">{
+    "score_threshold": 0.25,
+    "nms_threshold": 0.45,
+    "num_classes": 4,
+    "class_names": ["Person", "Deer", "Raccoon", "Bear"]
+}</code></pre>
                         </div>
+                        <p class="step-desc mt-4">postprocessor 는 이미 <code>config.json</code> 의 <code>num_classes</code> 값을 읽는다(기본값 80). 소스에서 필요한 수정은 단 한 줄, 생성된 예제 자체의 <code>factory/yolo26s_factory.py</code> 에서 visualizer 가 <code>class_names</code> 를 사용하도록 하는 것 뿐이다 (공유 <code>common/</code> 라이브러리는 건드리지 않는다):</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-diff">--- a/src/python_example/object_detection/yolo26s/factory/yolo26s_factory.py
++++ b/src/python_example/object_detection/yolo26s/factory/yolo26s_factory.py
+@@
+     def create_visualizer(self):
+-        return DetectionVisualizer()
++        return DetectionVisualizer(custom_labels=self.config.get('class_names'))</code></pre>
+                        </div>
+                        <p class="step-desc mt-4">이후 다른 class 구성이나 threshold 로 바꾸고 싶다면 <code>config.json</code> 만 수정하면 된다. 예제 코드를 다시 빌드하거나 patch 할 필요가 없다.</p>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Application 실행:</strong> Test 에 사용할 video 파일을 다운로드 후, Python 가상환경에 필수 package인 <code>dx_engine</code>과 <code>opencv-python</code>을 설치하고 <code>yolo26s_async.py</code>를 실행하여 간단한 야생동물 detection application을 실행해 보자.</p>
+                        <p class="step-desc"><strong>Application 실행:</strong> Test 에 사용할 video 파일을 다운로드 후, Python 가상환경에 필수 package인 <code>dx_engine</code>과 <code>opencv-python</code>을 설치하고 <code>yolo26s_async.py</code>를 실행하여 간단한 야생동물 detection application을 실행해 보자. class 구성이 <code>--config</code> 로 지정된다는 것을 명확히 보여주기 위해 옵션을 명시적으로 전달한다 (생략해도 스크립트 옆의 config.json 이 자동으로 사용된다).</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
@@ -805,7 +789,7 @@ pip install dx-engine
 pip install opencv-python
 
 # async mode 의 python app 실행하기, 이때 model 의 경로는 Raspberry Pi 5 에 카피한 경로에 맞게 설정해야 한다.
-python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4</code></pre>
+python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4 --config config.json</code></pre>
                         </div>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-18.png" alt="Black Bear detection 결과">

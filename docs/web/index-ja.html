@@ -742,51 +742,35 @@ cd dx_app</code></pre>
                         </figure>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>4 クラスの Custom モデル向けコード修正:</strong> 既存 YOLO26 モデルはデフォルトで 80 クラス検出向けに pre-trained されている。DX-APP コードもそれに合わせているため、この部分のみ修正すればよい。以下 diff を確認してコードを修正する。</p>
+                        <p class="step-desc"><strong>4 クラスの Custom モデル向けに config.json を設定:</strong> 既存 YOLO26 モデルはデフォルトで 80 クラス検出向けに pre-trained されている。共有されている DX-APP フレームワークのコードに patch を当てる代わりに、例題自身の <code>config.json</code> にカスタム class を宣言する方式を使う。DX-APP のすべての例題はすでに <code>--config</code> オプションに対応しており（省略時はスクリプトの隣にある config.json を自動検出）、factory が postprocessor と visualizer を生成する前にこの値をマージする。詳細は <a href="https://github.com/DEEPX-AI/dx_app/blob/main/docs/source/docs/12_DX-APP_YOLO_Customizing_Guide.md" target="_blank" class="text-indigo-600 hover:underline">DX-APP YOLO Customizing Guide</a> の Step 3（"Tune config.json"、github.com/DEEPX-AI/dx_app → docs/source/docs/12_DX-APP_YOLO_Customizing_Guide.md）を参照。</p>
+                        <p class="step-desc mt-4"><code>config.json</code> に <code>num_classes</code> と <code>class_names</code> を追加する:</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
                         </div>
-<pre><code class="language-diff">diff --git a/common/utility/labels.py b/common/utility/labels.py
-index 2476a60..6955632 100644
---- a/common/utility/labels.py
-+++ b/common/utility/labels.py
-@@ -12,6 +12,11 @@ _DINING_TABLE = "dining table"
- _TEDDY_BEAR = "teddy bear"
-
-
-+def get_custom_labels() -> List[str]:
-+    return [
-+        "Person", "Deer", "Raccoon", "Bear"
-+    ]
-+
-
- def get_coco_80_labels() -> List[str]:
-     """
-@@ -346,6 +351,7 @@ def get_voc_labels() -> List[str]:
-
-
- _DATASET_LABELS: Dict[str, List[str]] = {
-+    "custom": get_custom_labels(),
-     "coco80": get_coco_80_labels(),
-     "imagenet1000": get_imagenet_labels(),
-     "cityscapes": get_cityscapes_labels(),
-diff --git a/common/visualizers/detection_visualizer.py b/common/visualizers/detection_visualizer.py
-index 6c03a32..deef9fa 100644
---- a/common/visualizers/detection_visualizer.py
-+++ b/common/visualizers/detection_visualizer.py
-@@ -20,7 +20,7 @@ class DetectionVisualizer(IVisualizer):
-     Draws bounding boxes with class labels and confidence scores.
-     """
-
--    def __init__(self, label_set: str = 'coco80', custom_labels: List[str] = None):
-+    def __init__(self, label_set: str = 'custom', custom_labels: List[str] = None):
-         """
-         Initialize detection visualizer.</code></pre>
+<pre><code class="language-json">{
+    "score_threshold": 0.25,
+    "nms_threshold": 0.45,
+    "num_classes": 4,
+    "class_names": ["Person", "Deer", "Raccoon", "Bear"]
+}</code></pre>
                         </div>
+                        <p class="step-desc mt-4">postprocessor はすでに <code>config.json</code> の <code>num_classes</code> を読み込む（デフォルト 80）。ソース側で必要な修正はたった一行、生成された例題自身の <code>factory/yolo26s_factory.py</code> で visualizer が <code>class_names</code> を使うようにするだけである（共有 <code>common/</code> ライブラリには触れない）:</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-diff">--- a/src/python_example/object_detection/yolo26s/factory/yolo26s_factory.py
++++ b/src/python_example/object_detection/yolo26s/factory/yolo26s_factory.py
+@@
+     def create_visualizer(self):
+-        return DetectionVisualizer()
++        return DetectionVisualizer(custom_labels=self.config.get('class_names'))</code></pre>
+                        </div>
+                        <p class="step-desc mt-4">これ以降、class 構成や threshold を変えたい場合は <code>config.json</code> を修正するだけでよい。例題コードの再ビルドや再 patch は不要である。</p>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Application の実行:</strong> テスト用 video ファイルをダウンロード後、Python 仮想環境に <code>dx_engine</code> と <code>opencv-python</code> をインストールし、<code>yolo26s_async.py</code> を実行して野生動物 detection application を試す。</p>
+                        <p class="step-desc"><strong>Application の実行:</strong> テスト用 video ファイルをダウンロード後、Python 仮想環境に <code>dx_engine</code> と <code>opencv-python</code> をインストールし、<code>yolo26s_async.py</code> を実行して野生動物 detection application を試す。class 構成が <code>--config</code> で指定されていることを明示するため、オプションを明示的に渡す（省略してもスクリプトの隣の config.json が自動的に使われる）。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
@@ -806,7 +790,7 @@ pip install dx-engine
 pip install opencv-python
 
 # async mode の Python app を実行（model パスは Raspberry Pi 5 にコピーしたパスに合わせる）
-python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4</code></pre>
+python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4 --config config.json</code></pre>
                         </div>
                         <figure class="my-6 not-prose">
                             <img src="assets/image-18.png" alt="Black Bear detection 結果">
