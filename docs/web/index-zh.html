@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja" class="scroll-smooth">
+<html lang="zh" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEEPX M1 NPU と Raspberry Pi 5 で構築する超低消費電力 Edge AI システム</title>
+    <title>使用 DEEPX M1 NPU 和 Raspberry Pi 5 构建超低功耗 Edge AI 系统</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom scrollbar for a cleaner look */
@@ -11,7 +11,7 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
+
         .prose pre {
             background-color: #1e293b;
             color: #f8fafc;
@@ -24,9 +24,9 @@
             line-height: 1.5;
         }
         .prose code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-        
+
         /* Typography tweaks */
-        body { font-family: 'Hiragino Sans', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { font-family: 'PingFang SC', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
 
         /* Tailwind Preflight resets list markers — restore in main content */
         main ol {
@@ -209,18 +209,18 @@
 <body class="bg-gray-50 text-gray-800 antialiased flex flex-col lg:flex-row min-h-screen">
 
     <!-- Language switcher: index.html / index-ko.html / index-ja.html / index-zh.html -->
-    <nav class="fixed top-4 right-4 lg:top-6 lg:right-8 z-30" aria-label="言語選択">
+    <nav class="fixed top-4 right-4 lg:top-6 lg:right-8 z-30" aria-label="语言选择">
         <div class="lang-switch">
             <span class="lang-switch__globe" aria-hidden="true">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                 </svg>
             </span>
-            <div class="lang-switch__options" role="group" aria-label="言語を選択">
+            <div class="lang-switch__options" role="group" aria-label="选择语言">
                 <a href="index.html" class="lang-switch__item" lang="en" title="English">EN</a>
                 <a href="index-ko.html" class="lang-switch__item" lang="ko" title="한국어">KO</a>
-                <span class="lang-switch__item lang-switch__item--active lang-switch__item--ja" aria-current="page" lang="ja" title="日本語">JA</span>
-                <a href="index-zh.html" class="lang-switch__item" lang="zh" title="中文">ZH</a>
+                <a href="index-ja.html" class="lang-switch__item lang-switch__item--ja" lang="ja" title="日本語">JA</a>
+                <span class="lang-switch__item lang-switch__item--active" aria-current="page" lang="zh" title="中文">ZH</span>
             </div>
         </div>
     </nav>
@@ -228,72 +228,72 @@
     <!-- Sidebar / TOC -->
     <aside class="w-full lg:w-72 lg:fixed lg:top-0 lg:bottom-0 lg:left-0 bg-white border-r border-gray-200 p-6 overflow-y-auto shadow-sm z-10">
         <div class="mb-8">
-            <h1 class="text-xl font-bold text-indigo-700 tracking-tight leading-snug">Edge AI システム構築ガイド</h1>
+            <h1 class="text-xl font-bold text-indigo-700 tracking-tight leading-snug">Edge AI 系统构建指南</h1>
             <p class="text-xs text-gray-500 mt-2">DEEPX M1 & Raspberry Pi 5</p>
         </div>
         <nav class="text-sm font-medium text-gray-600 space-y-1">
-            <p class="uppercase tracking-wider text-xs font-semibold text-gray-400 mb-3 mt-6">目次</p>
-            <a href="#intro" class="block py-1.5 hover:text-indigo-600 transition-colors">はじめに</a>
-            
+            <p class="uppercase tracking-wider text-xs font-semibold text-gray-400 mb-3 mt-6">目录</p>
+            <a href="#intro" class="block py-1.5 hover:text-indigo-600 transition-colors">前言</a>
+
             <a href="#section-1" class="block py-1.5 hover:text-indigo-600 transition-colors mt-2">1. DEEPX NPU Introduction</a>
             <div class="pl-4 border-l-2 border-gray-100 space-y-1 my-1">
-                <a href="#section-1-1" class="block py-1 text-gray-500 hover:text-indigo-600">HW アーキテクチャと電力設計</a>
-                <a href="#section-1-2" class="block py-1 text-gray-500 hover:text-indigo-600">メモリ階層構造</a>
+                <a href="#section-1-1" class="block py-1 text-gray-500 hover:text-indigo-600">HW 架构与电源设计</a>
+                <a href="#section-1-2" class="block py-1 text-gray-500 hover:text-indigo-600">内存层级结构</a>
             </div>
 
-            <a href="#section-2" class="block py-1.5 hover:text-indigo-600 transition-colors mt-2">2. Raspberry Pi 5 Edge AI システム</a>
+            <a href="#section-2" class="block py-1.5 hover:text-indigo-600 transition-colors mt-2">2. Raspberry Pi 5 Edge AI 系统</a>
             <div class="pl-4 border-l-2 border-gray-100 space-y-1 my-1">
-                <a href="#section-2-1" class="block py-1 text-gray-500 hover:text-indigo-600">M.2 NPU モジュール取り付け</a>
-                <a href="#section-2-2" class="block py-1 text-gray-500 hover:text-indigo-600">SDK とドライバのインストール</a>
-                <a href="#section-2-3" class="block py-1 text-gray-500 hover:text-indigo-600">CLI ツールによるモニタリング</a>
+                <a href="#section-2-1" class="block py-1 text-gray-500 hover:text-indigo-600">安装 M.2 NPU 模块</a>
+                <a href="#section-2-2" class="block py-1 text-gray-500 hover:text-indigo-600">安装 SDK 与驱动</a>
+                <a href="#section-2-3" class="block py-1 text-gray-500 hover:text-indigo-600">使用 CLI 工具监控</a>
             </div>
 
-            <a href="#section-3" class="block py-1.5 hover:text-indigo-600 transition-colors mt-2">3. カスタム AI モデルのポーティング実践</a>
+            <a href="#section-3" class="block py-1.5 hover:text-indigo-600 transition-colors mt-2">3. Custom AI 模型移植实战</a>
             <div class="pl-4 border-l-2 border-gray-100 space-y-1 my-1">
                 <a href="#section-3-workflow" class="block py-1 text-gray-500 hover:text-indigo-600">Vision AI Work Flow</a>
-                <a href="#section-3-1" class="block py-1 text-gray-500 hover:text-indigo-600">Host PC コンパイル (dxnn)</a>
-                <a href="#section-3-2" class="block py-1 text-gray-500 hover:text-indigo-600">DX-APP による推論実装</a>
-                <a href="#section-3-3" class="block py-1 text-gray-500 hover:text-indigo-600">DX-STREAM による推論実装</a>
+                <a href="#section-3-1" class="block py-1 text-gray-500 hover:text-indigo-600">Host PC 编译 (dxnn)</a>
+                <a href="#section-3-2" class="block py-1 text-gray-500 hover:text-indigo-600">使用 DX-APP 推理</a>
+                <a href="#section-3-3" class="block py-1 text-gray-500 hover:text-indigo-600">使用 DX-STREAM 推理</a>
             </div>
 
-            <a href="#section-4" class="block py-1.5 hover:text-indigo-600 transition-colors mt-2">4. 特別付録 (YOLO26 学習)</a>
+            <a href="#section-4" class="block py-1.5 hover:text-indigo-600 transition-colors mt-2">4. 附录 (YOLO26 训练)</a>
             <div class="pl-4 border-l-2 border-gray-100 space-y-1 my-1">
-                <a href="#section-4-1" class="block py-1 text-gray-500 hover:text-indigo-600">Dataset 構成とフォルダ構造</a>
-                <a href="#section-4-2" class="block py-1 text-gray-500 hover:text-indigo-600">学習方法 1 (Cloud)</a>
-                <a href="#section-4-3" class="block py-1 text-gray-500 hover:text-indigo-600">学習方法 2 (ローカル PC)</a>
-                <a href="#section-4-4" class="block py-1 text-gray-500 hover:text-indigo-600">YOLO26 scale 別性能比較</a>
+                <a href="#section-4-1" class="block py-1 text-gray-500 hover:text-indigo-600">Dataset 结构与目录布局</a>
+                <a href="#section-4-2" class="block py-1 text-gray-500 hover:text-indigo-600">训练方法 1 (Cloud)</a>
+                <a href="#section-4-3" class="block py-1 text-gray-500 hover:text-indigo-600">训练方法 2 (本地 PC)</a>
+                <a href="#section-4-4" class="block py-1 text-gray-500 hover:text-indigo-600">YOLO26 各 scale 性能对比</a>
             </div>
         </nav>
     </aside>
 
     <!-- Main Content -->
     <main class="flex-1 lg:ml-72 p-6 lg:p-12 xl:p-16 w-full max-w-5xl bg-white min-h-screen shadow-sm">
-        
+
         <!-- Header -->
         <header id="intro" class="mb-12">
             <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
-                DEEPX M1 NPU と Raspberry Pi 5 で構築する超低消費電力 Edge AI システム
+                使用 DEEPX M1 NPU 和 Raspberry Pi 5 构建超低功耗 Edge AI 系统
             </h1>
             <p class="text-lg text-gray-600 leading-relaxed mb-6">
-                スマートファクトリー、自動運転、ロボティクス、インテリジェント監視(CCTV)のような産業現場(Physical Edge)において最も重要な技術は、高速・高精度な AI である。ここで、高解像度カメラのストリームデータをクラウドサーバーに送信して処理する従来のクラウド方式は、次のような致命的な問題を引き起こす。
+                在智能工厂、自动驾驶、机器人、智能安防监控(CCTV)等工业物理边缘(Physical Edge)场景中，最核心的技术是高速、高精度的 AI。在这些场景中，将高分辨率摄像头的流数据传输到 cloud server 处理的传统 cloud 方式会带来以下几个致命问题:
             </p>
             <ul class="list-disc pl-6 text-lg text-gray-600 leading-relaxed mb-6 space-y-2">
-                <li><strong>遅延時間 (Latency):</strong> ネットワークの往復時間により、ミリ秒(ms)単位の即時応答が不可能</li>
-                <li><strong>帯域幅とデータコスト (Bandwidth & Cost):</strong> 数十~数百台の高画質カメラ映像を24時間ストリーミングする際に発生する過剰なネットワークトラフィックおよび運用コスト</li>
-                <li><strong>プライバシーとセキュリティ (Privacy & Security):</strong> 現場の機密性の高い映像データが外部ネットワークに流出するリスク</li>
-                <li><strong>接続性・安定性 (Connectivity/Stability):</strong> 通信障害や僻地環境でシステム全体が停止するリスク</li>
+                <li><strong>延迟 (Latency):</strong> 网络往返时间使毫秒(ms)级的即时响应变得不可能</li>
+                <li><strong>带宽与成本 (Bandwidth & Cost):</strong> 数十至数百台高清摄像头 24 小时不间断串流所产生的过量网络流量和运营成本</li>
+                <li><strong>隐私与安全 (Privacy & Security):</strong> 现场敏感视频数据泄露到外部网络的风险</li>
+                <li><strong>连接性/稳定性 (Connectivity/Stability):</strong> 网络故障或偏远环境下系统整体停机的风险</li>
             </ul>
             <p class="text-lg text-gray-600 leading-relaxed mb-6">
-                これらの問題を解決するために Edge AI 技術が必要とされており、近年の Edge AI 技術の進歩により、重いクラウドサーバーを経由せず、デバイス上で複雑な AI モデルをリアルタイムに処理できるようになった。しかし、限られた電力と発熱、そして組み込みボードのコンピューティングリソースの制約は、依然としてエンジニアが解決すべき課題である。
+                为了解决上述问题，Edge AI 技术应运而生。得益于近年来 Edge AI 技术的进步，无需经过庞大的 cloud server，也能在设备端直接实时处理复杂的 AI 模型。但是，受限的功耗、发热，以及嵌入式板卡有限的计算资源，仍然是工程师们必须解决的课题。
             </p>
             <p class="text-lg text-gray-600 leading-relaxed mb-8">
-                本稿では、世界で最も広く使われているシングルボードコンピュータ「Raspberry Pi 5」と、DEEPX の超低消費電力・高性能 AI アクセラレータ「DX-M1 M.2 モジュール」を組み合わせ、強力な Edge AI システムを構築する方法を紹介する。ハードウェアのアーキテクチャから始め、野生動物を認識するカスタムモデルの開発・ポーティング、そして実践的な野生動物監視カメラデモまで、Edge AI 開発のワークフロー全体を詳しく解説する。
+                本文将介绍如何将全球应用最广泛的单板计算机 'Raspberry Pi 5' 与 DEEPX 的超低功耗高性能 AI 加速器 'DX-M1 M.2 模块' 结合，构建一套强大的 Edge AI 系统。我们将从硬件架构入手，深入讲解野生动物检测 custom 模型的开发与移植，直至一个实用的野生动物监控摄像头 demo，完整覆盖 Edge AI 开发的整个工作流程。
             </p>
             <figure class="my-8">
                 <img src="assets/image-01.png">
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[図 1] Host Processor と DX-M1 間のシステム接続概念図</strong><br>
-                    カメラから入力された映像データを ARM ベースの Host Processor (Raspberry Pi 5) が受信し、高速 PCIe インターフェースを介して DX-M1M モジュールへ渡して AI 推論を実行するシステム全体の構成図である。
+                    <strong class="text-gray-700">[图 1] Host Processor 与 DX-M1 之间的系统连接示意图</strong><br>
+                    基于 ARM 的 Host Processor (Raspberry Pi 5) 接收摄像头输入的视频数据，并通过高速 PCIe 接口将其传输给 DX-M1 模块进行 AI 推理，展示了整体系统的构成。
                 </figcaption>
             </figure>
         </header>
@@ -304,25 +304,25 @@
         <section id="section-1" class="mb-16">
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <span class="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-lg">1</span>
-                DEEPX NPU Introduction: 高性能と超低消費電力の調和
+                DEEPX NPU Introduction: 强大性能与超低功耗的结合
             </h2>
 
             <article id="section-1-1" class="mb-8">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">HW アーキテクチャと超低消費電力設計</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">HW 架构与超低功耗设计</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    DEEPX の DX-M1 は最新 5nm 微細プロセスを基盤として製造され、エッジ環境向けに最適化された <strong class="text-indigo-700">25 TOPS (INT8 基準)</strong>の演算性能を提供する AI プロセッサである。単に微細プロセスや高い TOPS 数値に依存しただけでなく、独自アーキテクチャの最適化により、実際の消費電力あたりの推論性能 (Inference-per-Second/Watt) を最大化するよう設計されている点が特徴である。
+                    DEEPX 的 DX-M1 采用最新 5nm 制程打造，提供针对边缘场景优化的 <strong class="text-indigo-700">25 TOPS (INT8 基准)</strong> 强大算力，是一款 AI 处理器。它并非仅仅依赖先进制程或高 TOPS 数值，而是通过自研架构优化，最大化实际功耗下的推理性能(Inference-per-Second/Watt)，这正是其设计上的一大特点。
                 </p>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    具体的な消費電力の指標を見ると、その真価がわかる。軽量オブジェクト検出モデル YOLOv9T 稼働時の消費電力は約 2.69W にとどまり、演算量のはるかに多い YOLOv8L を稼働させても 5.64W 程度と非常に低い。ヒートシンクや小型クーリングファンだけで Raspberry Pi 5 と併用できる条件を満たす。
+                    从具体的功耗指标就能看出它的价值所在。运行轻量级目标检测模型 YOLOv9T 时，功耗仅约 2.69W；即便运行运算量更大的 YOLOv8L，功耗也仅约 5.64W。仅凭散热片或小型风扇散热，就足以与 Raspberry Pi 5 一起稳定运行。
                 </p>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    では、実際の推論速度はどれくらい違うのだろうか。同じ Raspberry Pi 5 環境で、演算量の多い YOLO26-l (640x640) モデルを基準に、NPU なしで CPU のみで推論した場合と DX-M1 NPU を使って推論した場合の速度を実際に測定して比較した。
+                    那么实际的推理速度究竟能提升多少?我们在同一台 Raspberry Pi 5 上，以运算量较大的 YOLO26-l (640x640) 模型为基准，实测比较了仅用 CPU 推理与使用 DX-M1 NPU 推理的速度差异。
                 </p>
                 <figure class="my-8">
                     <div class="rounded-xl border border-gray-200 bg-gray-50 px-6 py-8 md:px-10">
                         <div class="text-center mb-8">
-                            <span class="text-2xl md:text-2xl font-extrabold text-indigo-600">約611倍</span>
-                            <span class="block text-sm text-gray-500 mt-2">DX-M1 NPU 使用時の CPU 単体比 推論速度向上 (YOLO26-l, 640x640 基準)</span>
+                            <span class="text-2xl md:text-2xl font-extrabold text-indigo-600">约 611 倍</span>
+                            <span class="block text-sm text-gray-500 mt-2">使用 DX-M1 NPU 相对于仅用 CPU 的推理速度提升 (YOLO26-l, 640x640 基准)</span>
                         </div>
                         <div class="space-y-6 max-w-2xl mx-auto">
                             <div>
@@ -350,30 +350,30 @@
                                 <span class="absolute -translate-x-full" style="left: 100%">100 FPS</span>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-400 text-center mt-3">* CPU と NPU の速度差が非常に大きいため(約610倍)、バーの長さはログスケール(log scale、底10)で表示した。</p>
-                        <p class="text-xs text-gray-400 text-center mt-1">* テストに使用した YOLO26-l モデルは <a href="https://developer.deepx.ai/modelzoo/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a> からダウンロードした。</p>
+                        <p class="text-xs text-gray-400 text-center mt-3">* 由于 CPU 与 NPU 之间的速度差异过大(约 610 倍)，柱状图长度以对数刻度(log scale，底数 10)显示</p>
+                        <p class="text-xs text-gray-400 text-center mt-1">* 本次测试所用的 YOLO26-l 模型下载自 <a href="https://developer.deepx.ai/modelzoo/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a></p>
                     </div>
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 2] Raspberry Pi 5 での CPU 単体駆動と DX-M1 NPU 使用時の推論速度(FPS)比較</strong><br>
-                        同じ Raspberry Pi 5 で YOLO26-l (640x640) モデルを CPU のみで推論すると 0.14 FPS にとどまるが、DX-M1 M.2 NPU を使用すると 85.5 FPS となり、約611倍向上してようやくリアルタイム処理が可能な水準になる。
+                        <strong class="text-gray-700">[图 2] Raspberry Pi 5 上仅用 CPU 与使用 DX-M1 NPU 时的推理速度(FPS)对比</strong><br>
+                        在同一台 Raspberry Pi 5 上，YOLO26-l (640x640) 模型仅用 CPU 推理时只有 0.14 FPS，而使用 DX-M1 M.2 NPU 后可达到 85.5 FPS，提升约 611 倍，终于达到可实时处理的水平。
                     </figcaption>
                 </figure>
             </article>
 
             <article id="section-1-2">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">内部ブロックダイアグラムとメモリ階層構造</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">内部框图与内存层级结构</h3>
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    DX-M1 チップ内部には Cortex-M55 コアとともに 3 つの NPU コア (NPU0, NPU1, NPU2) が搭載され、並列で演算を処理する。また高速データ処理のため LPDDR5 インターフェースをサポートし、DX-M1 M.2 モジュールには 2G LPDDR が 2 個搭載され、PCIe Gen3 x4 レーンでホストデバイスと超高速通信する。
+                    DX-M1 芯片内部搭载了 Cortex-M55 核心以及 3 个 NPU 核心(NPU0、NPU1、NPU2)以实现并行运算。它还支持 LPDDR5 接口以实现高速数据处理，DX-M1 M.2 模块上搭载了 2 颗 2GB 的 LPDDR，并通过 PCIe Gen3 x4 通道与主机进行超高速通信。
                 </p>
                 <figure class="my-8">
                     <img src="assets/image-07.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 3] DX-M1 M.2 モジュール システムブロックダイアグラム</strong><br>
-                        モジュール内部の 3 つの NPU コアと専用 LPDDR5 メモリ構成、およびホストボードとのデータボトルネックを解消する PCIe Gen3 x4 ベースの高速接続インターフェース構造を示す。
+                        <strong class="text-gray-700">[图 3] DX-M1 M.2 模块系统框图</strong><br>
+                        展示了模块内部的 3 个 NPU 核心、专用 LPDDR5 内存配置，以及为消除与主机之间数据瓶颈而设计的 PCIe Gen3 x4 高速连接接口结构。
                     </figcaption>
                 </figure>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    特に注目すべきは、データ再利用 (Data Reuse) を最大化したメモリ階層構造である。深層学習モデルではメモリ帯域幅がボトルネックになりやすいが、DX-M1 は内部 SRAM と最適化されたデータフロー制御設計により、Weight と Activation データの外部メモリアクセス量を最小化する。
+                    尤其值得关注的是最大化数据复用(Data Reuse)的内存层级结构。深度学习模型的特性容易导致内存带宽成为瓶颈，而 DX-M1 通过内部 SRAM 与经过优化的数据流控制设计，最大限度地减少了 Weight 与 Activation 数据的外部内存访问量。
                 </p>
             </article>
         </section>
@@ -382,49 +382,49 @@
         <section id="section-2" class="mb-16">
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <span class="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-lg">2</span>
-                DX-M1 M.2 NPU で Raspberry Pi 5 を Edge AI システムに変える
+                使用 DX-M1 M.2 NPU 将 Raspberry Pi 5 打造成 Edge AI 系统
             </h2>
 
             <p class="text-gray-600 leading-relaxed mb-6">
-                DEEPX NPU には大きく分けて <a href="https://deepx.ai/products/dx-m1/" target="_blank" class="text-indigo-600 hover:underline">DX-M1</a> と DX-M1M の 2 つの type がある。以下では DX-M1 M.2 モジュールを使う構成と、DX-M1M 一体型 HAT を使う構成の 2 つを紹介する。
+                DEEPX NPU 大致分为两种类型: <a href="https://deepx.ai/products/dx-m1/" target="_blank" class="text-indigo-600 hover:underline">DX-M1</a> 和 DX-M1M。下面我们介绍两种配置方式: 一种使用 DX-M1 M.2 模块，另一种使用 DX-M1M 一体式 HAT。
             </p>
 
             <article id="section-2-1" class="mb-8">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">DX-M1 M.2 NPU モジュールの概要と HW 取り付け方法</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">DX-M1 M.2 NPU 模块简介及硬件安装方法</h3>
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    DEEPX DX-M1 M.2 モジュールは産業標準の M.2 2280 Key M form factor を採用している。Raspberry Pi 5 は公式に PCIe インターフェースをサポートするため、NVMe HAT や M.2 拡張ボードを使えばこの NPU モジュールを容易に取り付けられる。
+                    DEEPX DX-M1 M.2 模块采用了业界标准的 M.2 2280 Key M form factor。Raspberry Pi 5 官方支持 PCIe 接口，因此使用 NVMe HAT 或 M.2 扩展板即可轻松安装该 NPU 模块。
                 </p>
                 <figure>
                     <img src="assets/image-08.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 4] Raspberry Pi 5 ベース Edge AI システムに必要な機材</strong><br>
-                        Raspberry Pi 5 (8G RAM 以上推奨) と DX-M1 M.2 モジュールが必要で、これらを PCIe インターフェースで接続する HAT ボード (PCIe Gen3 x1 対応) が必要である。
+                        <strong class="text-gray-700">[图 4] 基于 Raspberry Pi 5 的 Edge AI 系统所需硬件</strong><br>
+                        需要准备 Raspberry Pi 5 (建议 8GB RAM 以上)、DX-M1 M.2 模块，以及用于通过 PCIe 接口连接两者的 HAT 板(支持 PCIe Gen3 x1)。
                     </figcaption>
                 </figure><br>
                 <figure>
                     <img src="assets/image-09.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 5] Raspberry Pi 5 と DX-M1 M.2 の取り付け方法</strong><br>
-                        Raspberry Pi 5 と HAT ボードを PCIe ケーブルで接続 → HAT ボードの M.2 ポートに DX-M1 M.2 モジュールを取り付ける
+                        <strong class="text-gray-700">[图 5] Raspberry Pi 5 与 DX-M1 M.2 的连接方法</strong><br>
+                        将 Raspberry Pi 5 与 HAT 板通过 PCIe Cable 连接 → 将 DX-M1 M.2 模块安装到 HAT 板的 M.2 插槽上
                     </figcaption>
                 </figure>
-                <h3 class="text-xl font-semibold text-gray-800 mb-4 mt-8">DX-M1M モジュールの概要と一体型 HAT 取り付け方法</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 mt-8">DX-M1M 模块简介及一体式 HAT 安装方法</h3>
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    DEEPX DX-M1M チップは 1GB または 2GB の DDR4 RAM が内蔵されたソリューションである。DDR5 RAM を使用する DX-M1 に比べて推論性能は約 20% ほど低くなるが、価格やチップサイズの面で利点がある。DEEPX と Sixfab の協業により、DX-M1M チップをオンボード形態で搭載した製品を提供し、Raspberry Pi 5 専用に検証された AI HAT フォームファクタを提供する。ハードウェアは以下の方式で取り付けて使用できる。
+                    DEEPX DX-M1M 芯片是一款内置 1GB 或 2GB DDR4 RAM 的解决方案。相较于使用 DDR5 RAM 的 DX-M1，其推理性能约低 20%，但在价格与芯片尺寸上具有优势。DEEPX 与 Sixfab 合作，推出了将 DX-M1M 芯片以板载(on-board)形式搭载的产品，提供了经过 Raspberry Pi 5 验证的 AI HAT form factor。硬件可以按以下方式安装使用。
                 </p>
                 <figure>
                     <img src="assets/image-24.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 6] Sixfab On-board discrete chip design for AI HAT using DX-M1M</strong><br>
-                        <a href="https://sixfab.com/product/ai-hat-plus-raspberry-pi-5/" target="_blank" class="text-indigo-600 hover:underline">https://sixfab.com/product/ai-hat-plus-raspberry-pi-5</a> で販売されている DX-M1M 一体型 HAT ボードを PCIe で Raspberry Pi 5 に接続する。
+                        <strong class="text-gray-700">[图 6] Sixfab On-board discrete chip design for AI HAT using DX-M1M</strong><br>
+                        将 <a href="https://sixfab.com/product/ai-hat-plus-raspberry-pi-5/" target="_blank" class="text-indigo-600 hover:underline">https://sixfab.com/product/ai-hat-plus-raspberry-pi-5</a> 上销售的 DX-M1M 一体式 HAT 板通过 PCIe 连接到 Raspberry Pi 5。
                     </figcaption>
                 </figure>
             </article>
 
             <article id="section-2-2" class="mb-8 prose max-w-none">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">必須 SDK (DX-RT) とドライバの簡易インストール方法</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">安装 DX-RT SDK 及驱动</h3>
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    Raspberry Pi 5 は aarch64 (ARM64) アーキテクチャベースの OS を使用する。DEEPX のランタイムソフトウェア DX-RT とデバイスドライバは、aarch64 環境の Ubuntu および Debian OS を公式に完全サポートする。Raspberry Pi デフォルト OS の Debian 13 を基準とした DX-RT および NPU ドライバのインストール手順は以下のとおりである。
+                    Raspberry Pi 5 运行 aarch64 (ARM64) 架构。DEEPX 的 DX-RT 与 NPU 驱动正式支持 aarch64 环境下的 Ubuntu 与 Debian。以下以 Raspberry Pi 默认 OS Debian 13 为例，说明 DX-RT 及 NPU 驱动的安装步骤。
                 </p>
                 <div class="code-panel">
 
@@ -448,7 +448,7 @@ sudo reboot</code></pre>
 
 
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    DX-M1 M.2 モジュールの firmware (FW) バージョンが低い場合、API 互換性の問題が発生する。以下の手順で NPU FW をアップグレードすること。DX-RT v3.4.0 を基準に、NPU FW バージョン v2.7.3 以上を推奨する。
+                    如果 DX-M1 M.2 模块的 firmware(FW) 版本过低，会发生 API 兼容性问题。因此需要按以下方式升级 NPU FW。以 DX-RT v3.4.0 为基准，建议 NPU FW 版本为 v2.7.3 以上。
                 </p>
                 <div class="code-panel">
 
@@ -475,7 +475,7 @@ systemctl start dxrt.service</code></pre>
 
 
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    インストールが正常に完了したか検証する方法は以下のとおりである。
+                    验证安装是否成功的方法如下。
                 </p>
                 <div class="code-panel">
 
@@ -511,22 +511,22 @@ run_model -m yolo26-n_640x640.dxnn -t 3 | grep FPS</code></pre>
 
 
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    PCIe の Speed が 8GT/s ではなく 5GT/s の場合、Raspberry Pi 5 の PCIe が Gen3 ではなく Gen2 に設定されている状態である。以下のリンクを参照して Gen3 に変更すると、NPU の利用効率を高められる。
+                    如果 PCIe 的 Speed 不是 8GT/s 而是 5GT/s，说明 Raspberry Pi 5 的 PCIe 被设置成了 Gen2 而不是 Gen3。请参考下方链接切换为 Gen3，以提升 NPU 的使用效率。
                 </p>
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    👉 <a href="https://github.com/DEEPX-AI/dx-tutorials/blob/main/docs/raspberrypi5.md" target="_blank" class="text-indigo-600 hover:underline">Raspberry Pi 5 の PCIe を Gen3 に設定する</a>
+                    👉 <a href="https://github.com/DEEPX-AI/dx-tutorials/blob/main/docs/raspberrypi5.md" target="_blank" class="text-indigo-600 hover:underline">将 Raspberry Pi 5 的 PCIe 设置为 Gen3</a>
                 </p>
 
             </article>
 
             <article id="section-2-3" class="mb-8 prose max-w-none">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">CLI ツールを使った NPU モニタリング実習</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">使用 CLI 工具监控 NPU 实战</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    ソフトウェアのインストールが完了したら、DEEPX が提供する強力な CLI ユーティリティで NPU の状態を確認できる。最もおすすめのモニタリングツールは <strong><code>dxtop</code></strong>である。このツールはターミナルで NPU のリアルタイム状態を直感的に表示し、NPU コアごとの利用率、温度、電圧、動作クロックに加え、専用メモリ使用量まで一目で把握できる。
+                    软件安装完成后，可以通过 DEEPX 提供的强大 CLI 工具来查看 NPU 状态。最推荐的监控工具是 <strong><code>dxtop</code></strong>。该工具可在终端直观显示 NPU 的实时状态，一目了然地展示各 NPU 核心的实时占用率、温度、电压、工作频率，以及专用内存的使用量。
                 </p>
                 <div class="code-panel">
 
-                
+
                 <!-- Badge for Target -->
                 <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                     🍓 Target (Raspberry Pi 5)
@@ -535,12 +535,12 @@ run_model -m yolo26-n_640x640.dxnn -t 3 | grep FPS</code></pre>
 dxtop</code></pre>
                 </div>
 
-                
+
                 <figure class="my-6">
                     <img src="assets/image-10.png">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 7] dxtop 実行画面</strong><br>
-                        DX-M1 の NPU メモリ使用量および 3 コアそれぞれの Utilization / Temp / Voltage / Clock をリアルタイムでモニタリングできる。
+                        <strong class="text-gray-700">[图 7] dxtop 运行画面</strong><br>
+                        可以实时监控 DX-M1 的 NPU 内存使用量，以及 3 个核心各自的 Utilization / Temp / Voltage / Clock 数值。
                     </figcaption>
                 </figure>
             </article>
@@ -550,54 +550,54 @@ dxtop</code></pre>
         <section id="section-3" class="mb-16">
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <span class="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-lg">3</span>
-                クロスプラットフォーム開発: カスタム AI モデルのポーティング実践
+                跨平台开发: Custom AI 模型移植实战
             </h2>
 
             <p class="text-gray-600 leading-relaxed mb-6">
-                実際の現場で使える「野生動物 detection 監視カメラ」を構築してみよう。開発過程で混同してはいけない概念は <strong class="text-indigo-700">コンパイル環境 (Host) とランタイム環境 (Target) の分離</strong>である。
+                接下来让我们构建一套实际现场可用的"野生动物 detection 监控摄像头"。开发过程中不能混淆的一个概念是 <strong class="text-indigo-700">编译环境(Host)与运行环境(Target)的分离</strong>。
             </p>
 
             <figure class="my-8">
-                <img src="assets/image-04.png" alt="DEEPX SDK アーキテクチャ">
-                <img src="assets/image-05.png" alt="DEEPX SDK アーキテクチャ">
+                <img src="assets/image-04.png" alt="DEEPX SDK 架构">
+                <img src="assets/image-05.png" alt="DEEPX SDK 架构">
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[図 8] DEEPX SDK アーキテクチャ</strong><br>
-                    左側の x86_64 ベース AI モデルコンパイル環境 (Host PC) と右側の aarch64 ベースランタイム環境 (Raspberry Pi 5 Target) が完全に分離して動作する cross-platform 開発 workflow の図である。
+                    <strong class="text-gray-700">[图 8] DEEPX SDK 架构</strong><br>
+                    左侧是基于 x86_64 的 AI 模型编译环境(Host PC)，右侧是基于 aarch64 的运行环境(Raspberry Pi 5 Target)，两者完全分离运作的跨平台(cross-platform)开发 work flow 示意图。
                 </figcaption>
             </figure>
 
             <p class="text-gray-600 leading-relaxed mb-6">
-                野生動物を detection する custom model を開発する過程と、実際に推論を実行するシステムは分けて考える必要がある。AI モデルを開発し DEEPX NPU で動作する <code>.dxnn</code> format への変換までの工程は別途高性能なシステムで行い、実際に AI モデルで推論を実行する Edge Device (例: Raspberry Pi 5 + DX-M1 M.2 module) では DX-Runtime 上で動作する application を開発する。
+                开发用于检测野生动物的 custom model 的过程，与实际执行推理的系统需要分开考虑。开发 AI 模型并将其转换为可在 DEEPX NPU 上运行的 <code>.dxnn</code> format 的过程，应在另一台性能优秀的系统上进行；而在实际使用该模型执行推理的 Edge Device (例如: Raspberry Pi 5 + DX-M1 M.2 module) 上，则需要开发运行在 DX-Runtime 之上的 application。
             </p>
 
             <article id="section-3-workflow" class="mb-10">
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    AI Development Work Flow 全体は、以下の 5 段階で表現できる。
+                    整个 AI Development Work Flow 可以用以下 5 个步骤来表示。
                 </p>
                 <figure class="my-8">
                     <img src="assets/image-15.png" alt="Vision AI Development Work Flow">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 9] Vision AI Development Work Flow</strong>
+                        <strong class="text-gray-700">[图 9] Vision AI Development Work Flow</strong>
                     </figcaption>
                 </figure>
                 <ol class="text-gray-600 leading-relaxed">
-                    <li><strong>AI Use Case:</strong> YOLO26 モデルを使用して Object Detection を実行する。</li>
-                    <li><strong>Data Preparation:</strong> Training に使用する dataset を収集し annotation 作業を行う。詳細は <strong class="text-indigo-700">4. 特別付録</strong> を参照する。</li>
-                    <li><strong>Training:</strong> 収集した dataset で野生動物を detection する YOLO26 モデルを training により生成する工程である。詳細は <strong class="text-indigo-700">4. 特別付録</strong> を参照する。</li>
-                    <li><strong>Optimization with DX-Compiler:</strong> Pre-trained された PyTorch ベースの weight を ONNX format に変換し、DEEPX NPU で使用可能な <code>.dxnn</code> 形式に変換する工程である。<strong class="text-indigo-700">4. 特別付録</strong> では Ultralytics platform 経由で Cloud から <code>.dxnn</code> format へ直接 export する方法もある。本稿では Local PC で DX-COM を使って直接 compile する方法を説明する。</li>
-                    <li><strong>Deployment:</strong> <code>.dxnn</code>を使って DEEPX NPU 上で推論を実行する object detection application を作成し、実行してみる。</li>
+                    <li><strong>AI Use Case:</strong> 使用 YOLO26 模型执行 Object Detection。</li>
+                    <li><strong>Data Preparation:</strong> 收集用于 Training 的 dataset 并进行 annotation 工作。详细内容请参考 <strong class="text-indigo-700">4. 附录</strong>。</li>
+                    <li><strong>Training:</strong> 利用已收集的 dataset，通过 training 生成用于检测野生动物的 YOLO26 模型。详细内容请参考 <strong class="text-indigo-700">4. 附录</strong>。</li>
+                    <li><strong>Optimization with DX-Compiler:</strong> 将 pre-trained 的 PyTorch weight 转换为 ONNX format，再转换为可在 DEEPX NPU 上使用的 <code>.dxnn</code> format 的过程。<strong class="text-indigo-700">4. 附录</strong> 中还介绍了通过 Ultralytics platform 直接从 Cloud export 为 <code>.dxnn</code> format 的方法；这里我们介绍在 Local PC 上使用 DX-COM 直接 compile 的方法。</li>
+                    <li><strong>Deployment:</strong> 使用 <code>.dxnn</code> 构建一个能在 DEEPX NPU 上执行推理的 object detection application 并运行它。</li>
                 </ol>
             </article>
 
             <article id="section-3-1" class="mb-8 prose max-w-none">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">[Host PC] 学習済み野生動物 Detection モデルを DEEPX 向け dxnn format にコンパイルする</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">[Host PC] 将训练好的野生动物检测模型编译为 DEEPX 可用的 dxnn format</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    DEEPX のコンパイラ <strong>DX-COM は x86_64 アーキテクチャの PC 環境でのみ動作</strong>する。したがってモデル学習とバイナリコンパイルは開発用 PC で行い、Debian 系 Linux system を推奨する。このシステムに DX-M1 M.2 モジュールは必須ではない。PyTorch 等で学習した weight ファイル (pt) から ONNX format のモデル (例: YOLO26s) を抽出し、DX-COM で DEEPX ハードウェア専用バイナリ format である <code>.dxnn</code>に変換する。
+                    DEEPX 的编译器 <strong>DX-COM 只能在 x86_64 架构的 PC 环境中运行</strong>。因此模型训练与二进制编译需要在开发用 PC 上进行，推荐使用 Debian 系 Linux system。该系统并不一定需要配备 DX-M1 M.2 模块。从通过 PyTorch 等训练得到的 weight 文件(pt)中提取 ONNX format 的模型(例如: YOLO26s)后，再用 DX-COM 将其转换为 DEEPX 硬件专用的二进制 format <code>.dxnn</code>。
                 </p>
 
                 <ol class="text-gray-600 leading-relaxed mb-6">
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>YOLO26s の pre-trained weight をダウンロード:</strong> YOLO26s をベースに学習した野生動物 YOLO26 モデルの weight をダウンロードする。<code>yolo26s-custom.pt</code> ファイルがダウンロードされる。(学習の便宜上 pt ファイルを提供するが、custom model を自分で training した weight (pt) ファイルを使用しても差し支えない)
+                        <p class="step-desc"><strong>下载 YOLO26s pre-trained weight:</strong> 下载基于 YOLO26s 训练得到的野生动物 YOLO26 模型的 weight 值，会得到 <code>yolo26s-custom.pt</code> 文件。(为方便起见提供了该 pt 文件，你也可以使用自己训练的 custom model 的 weight(pt) 文件替代)
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -606,12 +606,12 @@ dxtop</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>必須パッケージのインストール:</strong> ターミナルまたはコマンドプロンプトを開き、Python 仮想環境を作成後、<code>pip</code> で <code>ultralytics</code> パッケージをインストールする。このコマンド一つで数分以内に必要なツールがすべてインストールされる。</p>
+                        <p class="step-desc"><strong>安装必要的软件包:</strong> 打开终端或命令行窗口，创建 Python 虚拟环境后，使用 <code>pip</code> 命令安装 <code>ultralytics</code> 软件包。仅需这一条命令，几分钟内即可完成所有必需工具的安装。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
                         </div>
-<pre><code class="language-bash"># Python 仮想環境の作成と有効化
+<pre><code class="language-bash"># Create and activate Python virtual environment
 python -m venv venv
 source venv/bin/activate
 pip install -U pip
@@ -621,40 +621,40 @@ pip install ultralytics dx-com</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>ONNX 変換:</strong> DX-Compiler は ONNX への一次変換が必要であり、それを <code>.dxnn</code>に変換できる。ONNX 抽出時は batch size を必ず 1 に固定する。NPU では low latency が重要なため multi batch size は考慮せず、固定 batch 1 のみ使用する設計である。</p>
+                        <p class="step-desc"><strong>转换为 ONNX:</strong> DX-Compiler 需要先转换为 ONNX，才能进一步转换为 <code>.dxnn</code>。导出 ONNX 时必须将 batch size 固定为 1。因为 NPU 在设计上追求 low latency，不考虑 multi batch size，只使用固定的单个 batch。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
                         </div>
-<pre><code class="language-bash"># yolo export で ONNX format に抽出 (input size = 640, batch size = 1)
+<pre><code class="language-bash"># Export to ONNX with yolo export (input size = 640, batch size = 1)
 yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
 # wget -O yolo26s-wild.pt https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.onnx</code></pre>
                         </div>
-                        <p class="step-desc"><code>yolo26s-custom.onnx</code> ファイルが生成されれば成功である。抽出された ONNX ファイルの batch size が 1 に固定されているか <a href="https://netron.app" target="_blank" class="text-indigo-600 hover:underline">https://netron.app</a> で確認する。ブラウザで <code>yolo26s-custom.onnx</code> ファイルを読み込み、最上部の images レイヤーをクリックして input tensor shape が <code>1x3x640x640</code> と表示されればよい。</p>
+                        <p class="step-desc">当 <code>yolo26s-custom.onnx</code> 文件生成后即为成功。可以在 <a href="https://netron.app" target="_blank" class="text-indigo-600 hover:underline">https://netron.app</a> 中打开该文件，点击最上方的 <code>images</code> 层，确认 input tensor shape 显示为 <code>1x3x640x640</code>。</p>
                         <figure class="my-6 not-prose">
-                            <img src="assets/image-16.png" alt="netron で yolo26-s-custom.onnx を確認">
+                            <img src="assets/image-16.png" alt="用 Netron 查看 yolo26s-custom.onnx">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[図 10] netron で yolo26-s-custom.onnx を確認した結果</strong>
+                                <strong class="text-gray-700">[图 10] 用 Netron 查看 yolo26s-custom.onnx 的结果</strong>
                             </figcaption>
                         </figure>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Calibration Data の準備:</strong> DX-Compiler の FP32 to INT8 Quantization に使用する calibration 用画像が必要で、最低 100 枚以上を推奨する。実際の input に使う dataset に近いほど accuracy loss を最小化できる。ただし compile 時に実際のデプロイ環境と異なる calibration image を使うと、量子化に実データが反映されず INT8 精度が低下する可能性があるので注意すること。本手順では任意の dataset を使用するが、実運用では必ずデプロイ環境に合った dataset を使用する必要がある。</p>
+                        <p class="step-desc"><strong>准备 calibration 数据:</strong> DX-Compiler 在进行 FP32 到 INT8 量化时需要 calibration 图像，建议至少准备 100 张以上。图像越接近实际 input 所使用的 dataset，就越能降低 accuracy loss。但如果在 compile 时使用与实际部署环境不同的 calibration image，会导致量化过程无法反映真实数据，从而降低 INT8 精度，需要注意这一点。本教程使用的是任意 dataset，实际使用时必须使用与部署环境相匹配的 dataset。</p>
                         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
-                            <strong>💡 ヒント: calibration 画像とは?</strong> FP32 モデルを INT8 に変換(quantization)すると、モデルサイズと演算量は削減できるが精度の低下が生じ得る。calibration 画像はこの精度低下を最小化するためのもので、モデルに実際に数十~数百枚を通し(forward pass のみ)、各 layer の activation 値の分布(range)を統計的に測定し、それをもとに最適な quantization scale/zero-point を計算するために使用される。training 用 dataset とは異なり label は不要で、重みが更新されることもなく、あくまで activation の範囲を把握するためのサンプル入力にすぎない。
+                            <strong>💡 提示: 什么是 calibration 图像?</strong> 将 FP32 模型转换为 INT8(量化，quantization)可以减小模型体积和计算量，但可能引入精度损失。calibration 图像的作用就是最大限度降低这种损失: 让少量图像通过模型进行一次前向传播(forward pass)，以统计方式测量各 layer 的 activation 值分布(range)，并据此计算出最优的 quantization scale/zero-point 值。与训练用 dataset 不同，calibration 图像不需要 label，也不会更新任何权重，仅作为观察 activation 范围的样本输入。
                         </div>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
                         </div>
-<pre><code class="language-bash"># DX-Compiler の FP32 to INT8 Quantization 用 calibration 画像をダウンロード
+<pre><code class="language-bash"># Download calibration images for FP32 to INT8 quantization in DX-Compiler
 wget "https://sdk.deepx.ai/dataset/calibration_dataset.tar.gz"
 tar xzf calibration_dataset.tar.gz</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>コンパイル configuration の作成:</strong> 以下の内容で <code>yolo26s-custom.json</code> ファイルを作成する。詳細は DEEPX 開発者ページの DX-COM user manual を参照する。ドキュメントのダウンロードには、まず DEEPX 開発者ページでアカウントを作成しログインが必要である。
-                        <a href="https://developer.deepx.ai/download/?id=510" target="_blank" class="text-indigo-600 hover:underline break-all">https://developer.deepx.ai/download/?id=510</a> からダウンロード可能である。</p>
+                        <p class="step-desc"><strong>创建编译 configuration:</strong> 按以下内容创建 <code>yolo26s-custom.json</code> 文件。详细内容请参考 DEEPX 开发者网站上的 DX-COM user manual (需要登录)。
+                        下载地址: <a href="https://developer.deepx.ai/download/?id=510" target="_blank" class="text-indigo-600 hover:underline break-all">https://developer.deepx.ai/download/?id=510</a></p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -680,19 +680,19 @@ tar xzf calibration_dataset.tar.gz</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>DX-COM でコンパイル実行:</strong> 設定が完了したら以下のコマンドでコンパイルする。詳細は DEEPX 開発者ページの DX-COM user manual を参照。
-                        <a href="https://developer.deepx.ai/download/?id=510" target="_blank" class="text-indigo-600 hover:underline break-all">https://developer.deepx.ai/download/?id=510</a> からダウンロード可能である。</p>
+                        <p class="step-desc"><strong>使用 DX-COM 进行编译:</strong> 配置完成后，运行以下命令进行编译。详细内容请参考 DEEPX 开发者网站上的 DX-COM user manual。
+                        下载地址: <a href="https://developer.deepx.ai/download/?id=510" target="_blank" class="text-indigo-600 hover:underline break-all">https://developer.deepx.ai/download/?id=510</a></p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
                         </div>
 <pre><code class="language-bash">dxcom -m yolo26s-custom.onnx -c yolo26s-custom.json -o output
 
-# コンパイル完了後、以下のように yolo26s-custom.dxnn ファイルが生成される。
+# After compile, yolo26s-custom.dxnn is created under output/
 # ├── output
 # │   └── yolo26s-custom.dxnn</code></pre>
                         </div>
-                        <p class="step-desc">生成された <code>yolo26s-custom.dxnn</code> を target device (Raspberry Pi 5) にコピーする。上記工程を省略し、コンパイル済みの <code>.dxnn</code> ファイルのみ取得して次の工程に進む場合は、以下のリンクから野生動物 detection 用のコンパイル済み <code>yolo26s-custom.dxnn</code> ファイルをダウンロードできる。</p>
+                        <p class="step-desc">将 <code>yolo26s-custom.dxnn</code> 复制到 target device(Raspberry Pi 5)。如果想省略以上过程，直接获取已编译好的 <code>.dxnn</code> 文件进行后续步骤，可以从以下链接下载已编译好的野生动物检测用 <code>yolo26s-custom.dxnn</code> 文件。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -704,20 +704,20 @@ tar xzf calibration_dataset.tar.gz</code></pre>
             </article>
 
             <article id="section-3-2" class="mb-8 prose max-w-none">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">[Raspberry Pi 5 Target] DX-APP を使った Custom YOLO26 Object Detection Application の実装</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">[Raspberry Pi 5 Target] 使用 DX-APP 实现 Custom YOLO26 Object Detection</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    コンパイル済み <code>.dxnn</code> を Raspberry Pi 5 に移したら推論を実行する段階である。DEEPX NPU 上で動作する YOLO26 モデルの application を作る最も簡単な方法は、DEEPX が提供する sample code を修正する方式である。DX-APP では DEEPX Model Zoo で検証済みの全 AI モデルに 1:1 対応する sample application code を提供し、C++ と Python の両方をサポートする。
+                    将编译好的 <code>.dxnn</code> 文件转移到 Raspberry Pi 5 后，就可以执行推理了。要在 DEEPX NPU 上运行 YOLO26 模型的 application，最简单的方式是修改 DEEPX 提供的 sample code。DX-APP 为 DEEPX Model Zoo 中所有已验证的 AI 模型都提供了 1:1 对应的 sample application code，同时支持 C++ 和 Python 两个版本。
                 </p>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    DEEPX Model Zoo では、DEEPX が検証済みの AI モデルのコンパイル前 ONNX ファイル、コンパイル済み <code>.dxnn</code> ファイルとコンパイル configuration ファイル、sample application code を提供しており、sample application code を含むコンポーネントが DX-APP である。<a href="https://developer.deepx.ai/modelzoo/" target="_blank" class="text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a> で確認できる。
+                    DEEPX Model Zoo 提供了目前 DEEPX 已验证的 AI 模型的编译前 ONNX 文件、编译后的 <code>.dxnn</code> 文件、编译 configuration 文件以及 sample application code，其中包含 sample application code 的组件就是 DX-APP。详情可参见 <a href="https://developer.deepx.ai/modelzoo/" target="_blank" class="text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a>。
                 </p>
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    DX-APP を使って、自作 YOLO26 モデルの Application を簡単に作成してみよう。
+                    让我们使用 DX-APP 轻松构建自己 YOLO26 模型的 Application。
                 </p>
 
                 <ol class="text-gray-600 leading-relaxed mb-6">
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>DX-APP repository の取得:</strong> <code>dx_app</code> git repository を <code>git clone</code> で取得する。</p>
+                        <p class="step-desc"><strong>克隆 DX-APP repository:</strong> 通过 <code>git clone</code> 命令克隆 <code>dx_app</code> git repository。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
@@ -727,24 +727,24 @@ cd dx_app</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>yolo26s object detection 用サンプルコードの抽出:</strong> DX-APP の script で必要な sample コードのみ抽出する。本手順では <code>object_detection/yolo26s</code> 関連コードのみ抽出して使用する。</p>
+                        <p class="step-desc"><strong>提取 yolo26s object detection 示例代码:</strong> 使用 DX-APP 提供的 script 只提取所需的 sample 代码。此过程仅提取并使用与 <code>object_detection/yolo26s</code> 相关的代码。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
                         </div>
-<pre><code class="language-bash"># スクリプト実行後、以下のような選択メニューが表示される。
+<pre><code class="language-bash"># Execute the script to display a selection menu.
 ./scripts/dx_tool.sh</code></pre>
                         </div>
                         <figure class="my-6 not-prose">
-                            <img src="assets/image-17.png" alt="dx_tool.sh で YOLO26s コードを抽出">
+                            <img src="assets/image-17.png" alt="用 dx_tool.sh 提取 YOLO26s 代码">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[図 11] dx_tool.sh で YOLO26s 関連 Python コードのみ抽出する手順</strong>
+                                <strong class="text-gray-700">[图 11] 使用 dx_tool.sh 只提取 YOLO26s 相关 Python 代码的过程</strong>
                             </figcaption>
                         </figure>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>4 クラスの Custom モデル向けに config.json を設定:</strong> 既存 YOLO26 モデルはデフォルトで 80 クラス検出向けに pre-trained されている。共有されている DX-APP フレームワークのコードに patch を当てる代わりに、例題自身の <code>config.json</code> にカスタム class を宣言する方式を使う。DX-APP のすべての例題はすでに <code>--config</code> オプションに対応しており（省略時はスクリプトの隣にある config.json を自動検出）、factory が postprocessor と visualizer を生成する前にこの値をマージする。詳細は <a href="https://github.com/DEEPX-AI/dx_app/blob/main/docs/source/docs/12_DX-APP_YOLO_Customizing_Guide.md" target="_blank" class="text-indigo-600 hover:underline">DX-APP YOLO Customizing Guide</a> の Step 3（"Tune config.json"、github.com/DEEPX-AI/dx_app → docs/source/docs/12_DX-APP_YOLO_Customizing_Guide.md）を参照。</p>
-                        <p class="step-desc mt-4"><code>config.json</code> に <code>num_classes</code> と <code>class_names</code> を追加する:</p>
+                        <p class="step-desc"><strong>通过 config.json 配置只识别 4 个 class 的 Custom 模型:</strong> 现有 YOLO26 模型默认是针对识别 80 个 class 进行 pre-trained 的。这里不去修改 DX-APP 共享框架代码本身，而是在示例自身的 <code>config.json</code> 中声明 custom class。DX-APP 的所有示例都已经支持 <code>--config</code> 选项(省略时会自动检测脚本旁的 config.json)，factory 会在创建 postprocessor 和 visualizer 之前合并这些配置值。详细内容请参考 <a href="https://github.com/DEEPX-AI/dx_app/blob/main/docs/source/docs/12_DX-APP_YOLO_Customizing_Guide.md" target="_blank" class="text-indigo-600 hover:underline">DX-APP YOLO Customizing Guide</a> 的 Step 3 ("Tune config.json"，github.com/DEEPX-AI/dx_app → docs/source/docs/12_DX-APP_YOLO_Customizing_Guide.md)。</p>
+                        <p class="step-desc mt-4">在 <code>config.json</code> 中添加 <code>num_classes</code> 和 <code>class_names</code>:</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
@@ -756,7 +756,7 @@ cd dx_app</code></pre>
     "class_names": ["Person", "Deer", "Raccoon", "Bear"]
 }</code></pre>
                         </div>
-                        <p class="step-desc mt-4">postprocessor はすでに <code>config.json</code> の <code>num_classes</code> を読み込む（デフォルト 80）。ソース側で必要な修正はたった一行、生成された例題自身の <code>factory/yolo26s_factory.py</code> で visualizer が <code>class_names</code> を使うようにするだけである（共有 <code>common/</code> ライブラリには触れない）:</p>
+                        <p class="step-desc mt-4">postprocessor 已经会读取 <code>config.json</code> 中的 <code>num_classes</code>(默认值为 80)。源码上唯一需要的修改，是在生成的示例自身的 <code>factory/yolo26s_factory.py</code> 中改一行代码，让 visualizer 使用 <code>class_names</code> —— 而不需要触碰共享的 <code>common/</code> 库:</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
@@ -768,10 +768,10 @@ cd dx_app</code></pre>
 -        return DetectionVisualizer()
 +        return DetectionVisualizer(custom_labels=self.config.get('class_names'))</code></pre>
                         </div>
-                        <p class="step-desc mt-4">これ以降、class 構成や threshold を変えたい場合は <code>config.json</code> を修正するだけでよい。例題コードの再ビルドや再 patch は不要である。</p>
+                        <p class="step-desc mt-4">从此以后，如果想切换到不同的 class 组合或阈值，只需修改 <code>config.json</code> 即可 —— 无需重新构建或重新 patch 示例代码。</p>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>Application の実行:</strong> テスト用 video ファイルをダウンロード後、Python 仮想環境に <code>dx_engine</code> と <code>opencv-python</code> をインストールし、<code>yolo26s_async.py</code> を実行して野生動物 detection application を試す。class 構成が <code>--config</code> で指定されていることを明示するため、オプションを明示的に渡す（省略してもスクリプトの隣の config.json が自動的に使われる）。</p>
+                        <p class="step-desc"><strong>运行 app:</strong> 下载测试视频，在虚拟环境中安装 <code>dx_engine</code> 和 <code>opencv-python</code>，然后执行 <code>yolo26s_async.py</code> 运行一个简单的野生动物检测 demo。这里显式传入 <code>--config</code> 是为了让 class 组合的选择过程更直观(省略时也会自动检测脚本旁的 config.json)。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
@@ -783,20 +783,20 @@ wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-
 wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-3.mp4"
 wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-4.mp4"
 
-# Python 仮想環境作成後、dx-engine と opencv-python パッケージをインストール
+# Create venv and install dx_engine and opencv-python
 python3 -m venv venv
 source venv/bin/activate
 pip install -U pip
 pip install dx-engine
 pip install opencv-python
 
-# async mode の Python app を実行（model パスは Raspberry Pi 5 にコピーしたパスに合わせる）
+# Execute the async Python app; set -m to the .dxnn path on your target device.
 python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4 --config config.json</code></pre>
                         </div>
                         <figure class="my-6 not-prose">
-                            <img src="assets/image-18.png" alt="Black Bear detection 結果">
+                            <img src="assets/image-18.png" alt="Black Bear 检测结果">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[図 12] Bear と Person が検出されることを確認できる</strong>
+                                <strong class="text-gray-700">[图 12] 可以看到 Bear 和 Person 被检测出来</strong>
                             </figcaption>
                         </figure>
                     </li>
@@ -805,48 +805,48 @@ python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4 --config con
 
 
             <article id="section-3-3" class="mb-8 prose max-w-none">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">[Raspberry Pi 5 Target] DX-STREAM を使った Multi-Stream YOLO26 Object Detection の実装</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">[Raspberry Pi 5 Target] 使用 DX-STREAM 实现 Multi-Stream YOLO26 Detection</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    DX-STREAM は GStreamer ベースのビデオ処理プラットフォームで、多様なビデオ処理機能を提供する。その中の Object Detection 機能を使い、Multi-Stream YOLO26 Object Detection を実装できる。
+                    DX-STREAM 是一个基于 GStreamer 的视频处理平台，提供多种视频处理功能。其中就包括 Object Detection 功能，可以借助它实现 Multi-Stream YOLO26 Object Detection。
                 </p>
 
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    DX-STREAM を使って、自作 YOLO26 モデルの Multi-Stream Object Detection Application を簡単に作成してみよう。
+                    让我们使用 DX-STREAM，轻松构建自己 YOLO26 模型的 Multi-Stream Object Detection Application。
                 </p>
 
                 <ol class="text-gray-600 leading-relaxed mb-6">
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>DX-STREAM repository の取得とインストール:</strong> <code>dx_stream</code> git repository を <code>git clone</code> で取得し、以下の手順でインストールする。</p>
+                        <p class="step-desc"><strong>克隆并安装 DX-STREAM:</strong> 通过 <code>git clone</code> 克隆 <code>dx_stream</code> git repository，并按以下步骤安装。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
                         </div>
 <pre><code class="language-bash">git clone https://github.com/DEEPX-AI/dx_stream.git
 cd dx_stream
-./install.sh # インストールスクリプト実行
-./build.sh # ビルドスクリプト実行</code></pre>
+./install.sh # run install script
+./build.sh # run build script</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>DX-STREAM 動作検証:</strong> <code>run_demo.sh</code> を実行して DX-STREAM の動作を検証する。0〜10 以上の実行オプションがあり、0 番で動作を確認する。続いて yolo26n モデルで object detection デモが実行されれば正常動作である。</p>
+                        <p class="step-desc"><strong>验证 DX-STREAM:</strong> 执行 <code>run_demo.sh</code> 并选择选项 0。如果出现 YOLO26n 检测 demo，说明运行正常。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
                         </div>
-<pre><code class="language-bash">source ~/.bashrc # 環境変数ロード（ターミナル再起動時は不要）
-./run_demo.sh <<< 0 # デモスクリプト実行後 0 を選択</code></pre>
+<pre><code class="language-bash">source ~/.bashrc # load env vars (skip after new shell)
+./run_demo.sh <<< 0 # execute demo, select 0</code></pre>
                         </div>
-                        <img src="assets/image-21.png" alt="dx_tool.sh で YOLO26s コードを抽出"><br>
-                        <img src="assets/image-22.png" alt="dx_tool.sh で YOLO26s コードを抽出">
+                        <img src="assets/image-21.png" alt="用 dx_tool.sh 提取 YOLO26s 代码"><br>
+                        <img src="assets/image-22.png" alt="用 dx_tool.sh 提取 YOLO26s 代码">
                     </li>
 
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>YOLO26 モデル postprocessing lib の修正:</strong> デフォルト 80 クラス検出の YOLO26 を 4 クラスの Custom モデルにするには postprocessing lib を修正する必要がある。</p>
+                        <p class="step-desc"><strong>修改 YOLO26 postprocess 库:</strong> 将 postprocess lib 从 80 个 class 改为你的 4 个 custom class。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
                         </div>
-<pre><code class="language-diff"># diff で修正箇所を確認
+<pre><code class="language-diff"># Review required changes via diff
 diff --git a/dx_stream/custom_library/postprocess_library/yolo26_od/postprocess.cpp b/dx_stream/custom_library/postprocess_library/yolo26_od/postprocess.cpp
 index 8d768e5..113e154 100644
 --- a/dx_stream/custom_library/postprocess_library/yolo26_od/postprocess.cpp
@@ -875,27 +875,27 @@ index 8d768e5..113e154 100644
 <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
     🍓 Target (Raspberry Pi 5)
 </div>
-<pre><code class="language-bash"># 修正後、以下のコマンドで再ビルド
+<pre><code class="language-bash"># Rebuild after edits
 ./build.sh --clean</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>1 Stream の GStreamer Pipeline 構成/実行:</strong> 1 Stream のみ処理する GStreamer Pipeline を構成して実行する。既存の dxnn モデルとテスト用ビデオ入力をダウンロードして使用する。</p>
+                        <p class="step-desc"><strong>单流 GStreamer pipeline:</strong> 使用你的 .dxnn 模型和测试视频构建并部署一个单流 pipeline。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
                         </div>
-<pre><code class="language-bash"># Test Video download - 前の手順で既にダウンロード済みなら skip
+<pre><code class="language-bash"># Test video download — skip if already downloaded
 wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-0.mp4"
 wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-1.mp4"
 wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-2.mp4"
 wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-3.mp4"
 wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-4.mp4"
 
-# YOLO26 モデルのダウンロード - 前の手順で既にダウンロード済み、または自作 dxnn がある場合は skip
+# YOLO26 model download — skip if you already have .dxnn
 wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.dxnn"
 
-# 1 Stream の GStreamer Pipeline 構成/実行
+# Single-stream GStreamer pipeline
 gst-launch-1.0 urisourcebin uri=file://$(pwd)/test-video-1.mp4 ! decodebin ! \
                     dxpreprocess \
                         preprocess-id=1 \
@@ -918,14 +918,14 @@ gst-launch-1.0 urisourcebin uri=file://$(pwd)/test-video-1.mp4 ! decodebin ! \
                         </div>
                     </li>
                     <li class="step-item mb-4">
-                        <p class="step-desc"><strong>4 Multi-Stream の GStreamer Pipeline 構成/実行:</strong> 4 Multi-Stream を処理する GStreamer Pipeline を構成して実行する。既存の dxnn モデルとテスト用ビデオ入力をダウンロードして使用する。</p>
+                        <p class="step-desc"><strong>四路 GStreamer pipeline:</strong> 使用你的 .dxnn 模型和测试视频构建并部署一个 4 路 pipeline。</p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                             🍓 Target (Raspberry Pi 5)
                         </div>
 <pre><code class="language-bash">#!/bin/bash
 # =========================================================
-# Configuration (ユーザー設定領域)
+# Configuration (user settings)
 # =========================================================
 NUM_PIPELINES=4
 OUTPUT_WIDTH=1280
@@ -998,31 +998,31 @@ eval "${LAUNCH_CMD}"
 exit 0</code></pre>
                         </div>
                         <figure class="my-6 not-prose">
-                            <img src="assets/image-23.png" alt="Black Bear detection 結果">
+                            <img src="assets/image-23.png" alt="Black Bear 检测结果">
                             <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                                <strong class="text-gray-700">[図 13] 4 チャネル検出が動作することを確認できる</strong>
+                                <strong class="text-gray-700">[图 13] 四路检测运行中</strong>
                             </figcaption>
                         </figure>
                     </li>
                 </ol>
 
                 <figure class="my-10">
-                    <img src="assets/image-19.png" alt="DX-STREAM パイプライン構造図" class="rounded-lg border border-slate-200">
+                    <img src="assets/image-19.png" alt="DX-STREAM pipeline 结构图" class="rounded-lg border border-slate-200">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 14] DX-STREAM パイプライン構造図</strong><br>
-                        カメラビデオ入力 (Input) から <code>dxpreprocess</code> (前処理)、NPU ハードウェアで加速される <code>dxinfer</code> (推論)、結果を処理する <code>dxpostprocess</code> (後処理) を経て、<code>dxosd</code> でディスプレイ (OSD) にレンダリングされる一連の流れを示す。
+                        <strong class="text-gray-700">[图 14] DX-STREAM pipeline 结构图</strong><br>
+                        流程: 输入 → <code>dxpreprocess</code> → NPU <code>dxinfer</code> → <code>dxpostprocess</code> → <code>dxosd</code> 显示。
                     </figcaption>
                 </figure>
 
                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
-                    <strong>💡 ヒント:</strong> Multi-stream pipeline 実装時、すべて同一 AI モデルを使う場合は、必ずしも <code>dxpreprocess → dxinfer → dxpostprocess</code> を stream ごとに分離する必要はない。むしろ <code>dxinputselector</code> と <code>dxoutputselector</code> を使えば各 stream が plugin を共有でき、同一モデルを NPU に重複 load するリソース浪費を最小化できる。<br> 以下の pipeline 構造図はその実装例であり、<code>dx_stream/pipelines/multi_stream/run_multi_stream_selector.sh</code> を参照すると実装の詳細がわかる。
+                    <strong>💡 提示:</strong> 当所有 stream 都使用同一个模型时，并不需要为每个 stream 单独构建一套 <code>dxpreprocess → dxinfer → dxpostprocess</code> 链路。可以使用 <code>dxinputselector</code> 和 <code>dxoutputselector</code> 让这些 plugin 被多个 stream 共享，避免在 NPU 上重复加载同一模型所造成的资源浪费。<br> 参见下方的结构图以及 <code>dx_stream/pipelines/multi_stream/run_multi_stream_selector.sh</code>。
                 </div>
 
                 <figure class="my-10">
-                    <img src="assets/image-20.png" alt="DX-STREAM パイプライン構造図" class="rounded-lg border border-slate-200">
+                    <img src="assets/image-20.png" alt="DX-STREAM pipeline 结构图" class="rounded-lg border border-slate-200">
                     <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                        <strong class="text-gray-700">[図 15] 各ストリームが重複リソースを共有する DX-STREAM パイプライン構造図</strong><br>
-                         dxinputselector と dxoutputselector を使い <code>dxpreprocess → dxinfer → dxpostprocess</code> pipeline の重複を最小化する。
+                        <strong class="text-gray-700">[图 15] 共享资源的 DX-STREAM pipeline 结构图</strong><br>
+                         <code>dxinputselector</code> 和 <code>dxoutputselector</code> 减少了重复的 preprocess/infer/postprocess 链路。
                     </figcaption>
                 </figure>
             </article>
@@ -1032,45 +1032,45 @@ exit 0</code></pre>
         <section id="section-4" class="mb-16">
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <span class="bg-gray-800 text-white w-8 h-8 rounded-lg flex items-center justify-center text-lg">4</span>
-                特別付録: 独自 YOLO26 custom モデル学習ガイド
+                附录: 训练你自己的 YOLO26 Custom 模型
             </h2>
             <p class="text-gray-600 leading-relaxed mb-6">
-                最新オブジェクト検出モデル YOLO26 は NMS (Non-Maximum Suppression) 後処理不要の End-to-End 推論をサポートし、edge device 向けに最適化された次世代 Vision AI モデルである。初めての方でも独自 dataset を構築し YOLO26 を学習できるよう、2 つの方法を紹介する。
+                YOLO26 是一款为边缘设备优化的视觉模型，支持端到端推理(无需 NMS 后处理)。本节介绍两种训练工作流，适合入门者与经验丰富的开发者。
             </p>
             <p class="text-gray-600 leading-relaxed mb-6">
-                参考用 dataset は以下のリンクからダウンロード可能である。当該 dataset は IP 上の理由で少量の data のみ含むため、概念理解用として使用すること。研究目的の精度を得るには最低 1000 枚以上の dataset が必要であり、商用化目的の精度を得るには最低 10000 枚以上の多様な dataset が必要である。
+                下方链接提供了一个示例 dataset。由于许可限制，该 dataset 数据量很小，仅用于了解目录结构。若追求研究级精度，dataset 至少需要 1,000 张图像；若追求商用级精度，dataset 至少需要 10,000 张多样化图像。
             </p>
             <p class="text-gray-600 leading-relaxed mb-6">
-            👉 ダウンロードリンク: <a href="https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/dataset.tar.gz" target="_blank">https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/dataset.tar.gz</a>
+            👉 下载地址: <a href="https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/dataset.tar.gz" target="_blank">https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/dataset.tar.gz</a>
             </p>
             <br>
 
             <article id="section-4-1" class="prose max-w-none">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Dataset 作成とファイル/フォルダ構造</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Dataset 结构与目录布局</h3>
 
                 <p class="text-gray-600 leading-relaxed mb-6">
-                YOLO モデルの学習には、画像ファイル群と各画像内のオブジェクト位置 (Bounding box) を記録したラベルテキストファイルが必要である。Ultralytics プラットフォームとモデルは YOLO、COCO、VOC など多様な format を広くサポートする。一般的な custom dataset のフォルダ構造は以下のとおりである。
+                训练需要图像文件，以及记录边界框(bounding box)的标签文件。Ultralytics 支持 YOLO、COCO、VOC 等多种 format。典型的 custom dataset 目录布局如下:
                 </p>
                 <div class="code-panel">
 
-                
+
                 <!-- Badge for Host -->
                 <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                     💻 Host PC (Data Prep)
                 </div>
 <pre><code class="language-text">dataset/
-├── data.yaml          # クラス情報と学習/検証データパスを定義した設定ファイル
+├── data.yaml          # Config: class names and train/val paths
 ├── images/
-│   ├── train/         # モデル学習用の元画像 (.jpg, .png 等)
-│   └── val/           # モデル検証用の画像
+│   ├── train/         # Training images (.jpg, .png, etc.)
+│   └── val/           # Validation images
 └── labels/
-    ├── train/         # 学習用画像と同名のラベルテキストファイル (.txt)
-    └── val/           # 検証用ラベルテキストファイル</code></pre>
+    ├── train/         # Label .txt files (same base name as train images)
+    └── val/           # Validation label files</code></pre>
                 </div>
 
 
                 <p class="text-gray-600 leading-relaxed mt-6 mb-2">
-                    4 クラスの人物と野生動物を定義した custom モデル用 dataset の <code>data.yaml</code> は以下のとおり定義する。
+                    对于一个包含人类和野生动物共 4 个 class 的模型，<code>data.yaml</code> 内容如下:
                 </p>
                 <div class="code-panel">
 
@@ -1090,62 +1090,62 @@ names:
                 </div>
 
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    For more details on YOLO dataset, refer to the following Ultralytics YOLO Dataset Overview.<br>
-                    👉 Link: <a href="https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset" target="_blank">https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset</a>
+                    关于 YOLO dataset 的更多细节，请参考以下 Ultralytics YOLO Dataset Overview。<br>
+                    👉 参考链接: <a href="https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset" target="_blank">https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset</a>
                 </p>
 
-                <h3 id="section-4-2" class="text-xl font-semibold text-gray-800 mb-4">学習方法 1: Ultralytics Platform の利用 (Cloud 環境、初心者向け)</h3>
+                <h3 id="section-4-2" class="text-xl font-semibold text-gray-800 mb-4">训练方法 1: 使用 Ultralytics Platform (Cloud 环境，适合初学者)</h3>
 
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    <a href="https://platform.ultralytics.com" target="_blank" class="text-indigo-600 hover:underline">Ultralytics Platform</a> は、dataset の annotation から cloud 学習、モデルの export まで、コンピュータビジョン AI 開発のワークフロー全体をサポートする統合プラットフォームである。SAM ベースの Smart Annotation によりラベリング速度を大幅に向上でき、NVIDIA GPU を活用した cloud 学習や、多様な format への export 機能も提供する。
+                    <a href="https://platform.ultralytics.com" target="_blank" class="text-indigo-600 hover:underline">Ultralytics Platform</a> 是一个一站式平台，覆盖了从 dataset annotation 到 cloud 训练、模型 export 的完整计算机视觉 AI 工作流。它提供基于 SAM 的 Smart Annotation 大幅加快标注速度，还提供基于 NVIDIA GPU 的 cloud 训练以及多种格式的 export 功能。
                 </p>
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    コーディングや別途 PC 環境設定なしで、Web ブラウザ GUI から手軽に学習できる方法である。
+                    无需本地环境配置或编写代码，即可在浏览器中完成训练。
                 </p>
 
                 <ol class="text-gray-600 leading-relaxed mb-8">
-            <li><strong>アクセスとデータアップロード:</strong> <a href="https://platform.ultralytics.com" target="_blank">https://platform.ultralytics.com</a> にログインし、新規プロジェクトを作成して raw 画像をアップロードする。</li>
-            <li><strong>スマートラベリング:</strong> プラットフォーム内蔵の AI ベース Smart Annotation ツールで、クリック一回でバウンディングボックスを自動生成できる。この機能により手作業比最大 10 倍速く高品質 dataset を完成できる。</li>
-            <li><strong>Cloud Training - New Model:</strong> アノテーション完了後、プラットフォームの cloud GPU でモデル学習をすぐ開始できる。GPU なしで学習にかかる日数を短縮でき、精度などの指標をリアルタイムでモニタリングできる。New Model を選択する。</li>
+            <li><strong>登录并上传:</strong> 登录 <a href="https://platform.ultralytics.com" target="_blank">https://platform.ultralytics.com</a>，创建一个项目并上传图像。</li>
+            <li><strong>智能标注:</strong> 使用 Smart Annotation 自动生成边界框 —— 比手动标注快约 10 倍。</li>
+            <li><strong>Cloud Training - New Model:</strong> 标注完成后，即可在 cloud GPU 上开始训练，实时查看各项指标，并选择 New Model。</li>
                 <figure><img src="assets/image-11.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[図 16] Ultralytics Platform の Annotation 作業画面</strong><br>
-                     Annotation 作業が完了したら上図のとおり New Model を選択して学習を開始する。
+                    <strong class="text-gray-700">[图 16] Ultralytics Platform 的标注界面</strong><br>
+                     标注完成后，如图所示选择 New Model 开始训练。
                 </figcaption><br>
-            <li><strong>Cloud Training - Base Model:</strong> base となるモデルを選定する。</li>
+            <li><strong>Cloud Training - Base Model:</strong> 选择用于训练的基础 YOLO 模型。</li>
                 <figure><img src="assets/image-12.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[図 17] Base Model 選択画面</strong><br>
-                     Ultralytics がサポートするバージョンの YOLO モデルを選択して training できる。YOLO26n は YOLO26 系で最も light なモデルであり latency は低く accuracy は相対的に低い。YOLO26s を選択する。
+                    <strong class="text-gray-700">[图 17] 基础模型选择</strong><br>
+                     选择一个受支持的 YOLO 版本。YOLO26n 最小(延迟低、精度较低)。这里我们选择 YOLO26s。
                 </figcaption><br>
-            <li><strong>Cloud Training - Start Training:</strong> Cloud training は従量課金で、約 1300 枚の dataset を yolo26n で training すると約 $0.34 の credit を消費する。Account 作成時に企業 email で登録すると $25 free credit が付与される。</li>
+            <li><strong>Cloud Training - Start Training:</strong> Cloud 训练为付费服务(约 1,300 张图像用 yolo26n 训练约消耗 $0.34 credit)。使用企业邮箱注册可获得 $25 免费 credit。</li>
                 <figure><img src="assets/image-13.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[図 18] Cloud Training の課金ポリシー</strong><br>
-                     使用する Base Model と epoch、dataset の数、GPU type により課金が変わる。Start Training を押すと学習が開始される。Cloud Training ではなく Local Training を選択すると、Cloud の dataset を基に Local Training できる API Key が提供される。
+                    <strong class="text-gray-700">[图 18] Cloud 训练计费</strong><br>
+                     费用取决于基础模型、epoch 数、dataset 大小和 GPU 类型。点击 Start Training 即可开始。选择 Local Training 则会提供一个 API key，可用它在本地基于 cloud dataset 进行训练。
                 </figcaption><br>
-            <li><strong>エクスポート:</strong> 学習完了後、完成モデルを export すると <code>yolo26n.dxnn</code> が生成され、ダウンロードして NPU 推論にそのまま使用できる。</li>
+            <li><strong>导出:</strong> 导出训练好的模型即可得到可直接用于 NPU 推理的 <code>yolo26n.dxnn</code>。</li>
                 <figure><img src="assets/image-14.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
-                    <strong class="text-gray-700">[図 19] 簡単に .dxnn へ export する手順</strong><br>
-                     数回のマウスクリックだけで DEEPX M1 NPU でそのまま使える .dxnn ファイルが抽出される。
+                    <strong class="text-gray-700">[图 19] 导出为 .dxnn</strong><br>
+                     只需几次点击，即可生成一个可直接用于 DEEPX M1 NPU 的 .dxnn 文件。
                 </figcaption>
                 </ol>
 
                 <p class="text-gray-600 leading-relaxed mb-6">
-                    For more details, refer to the following Ultralytics DEEPX Integration Guide.<br>
-                    👉 Link: <a href="https://github.com/ultralytics/ultralytics/blob/main/docs/en/integrations/deepx.md" target="_blank" class="text-indigo-600 hover:underline">https://github.com/ultralytics/ultralytics/blob/main/docs/en/integrations/deepx.md</a>
+                    更多细节请参考以下 Ultralytics DEEPX Integration Guide。<br>
+                    👉 参考链接: <a href="https://github.com/ultralytics/ultralytics/blob/main/docs/en/integrations/deepx.md" target="_blank" class="text-indigo-600 hover:underline">https://github.com/ultralytics/ultralytics/blob/main/docs/en/integrations/deepx.md</a>
                 </p>
                 <br>
 
 
-                <h3 id="section-4-3" class="text-xl font-semibold text-gray-800 mb-4">学習方法 2: ローカル PC で直接学習する</h3>
-                <p class="text-gray-600 leading-relaxed mb-6">自身の PC リソースを使って custom model を直接 training する方法である。GPU 環境を推奨し、GPU 関連開発環境がインストール済みであることを前提とする。</p>
+                <h3 id="section-4-3" class="text-xl font-semibold text-gray-800 mb-4">训练方法 2: 在本地 PC 上训练</h3>
+                <p class="text-gray-600 leading-relaxed mb-6">在你自己的 PC 上训练(建议配备 GPU)。本节假定 GPU 开发环境已经配置完成。</p>
                 <ol class="text-gray-600 leading-relaxed mb-8">
             <li class="step-item">
-                <p class="step-desc"><strong>パッケージのインストール:</strong> ターミナルまたはコマンドプロンプトを開き、Python 仮想環境を作成後、<code>pip</code> で <code>ultralytics</code> パッケージをインストールする。このコマンド一つで数分以内に必要なツールがすべてインストールされる。</p>
+                <p class="step-desc"><strong>安装软件包:</strong> 创建 Python 虚拟环境并 <code>pip install ultralytics</code>。</p>
                 <div class="code-panel editor-note">
-                    <pre><code class="language-bash"># Python 仮想環境の作成と有効化
+                    <pre><code class="language-bash"># Create and activate Python virtual environment
 python -m venv venv
 source venv/bin/activate
 pip install -U pip
@@ -1155,7 +1155,7 @@ pip install ultralytics</code></pre>
                 </div>
             </li>
             <li class="step-item">
-                <p class="step-desc"><strong>Dataset の準備:</strong> Training 用 dataset を以下のとおり YOLO format で準備する。</p>
+                <p class="step-desc"><strong>准备 dataset:</strong> 按以下方式以 YOLO format 布置训练数据。</p>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">.
 ├── dataset
@@ -1182,28 +1182,28 @@ pip install ultralytics</code></pre>
 
             </li>
             <li class="step-item">
-                <p class="step-desc"><strong>CLI で学習開始:</strong> ターミナルで <code>yolo TASK train</code> を実行して学習を開始する。YOLO26 Object Detection を custom dataset (<code>data.yaml</code>) に適用する場合は以下のとおり入力する。本稿では nano より重いが精度の高い small で training する。training に要するリソースと時間は nano より多い。(選択可能: yolo26n.pt / yolo26s.pt / yolo26m.pt / yolo26l.pt / yolo26x.pt)</p>
+                <p class="step-desc"><strong>开始训练(CLI):</strong> 针对你的 <code>data.yaml</code> 执行 <code>yolo detect train data=dataset model=yolo26s.pt</code> 进行 object detection。这里我们使用 YOLO26s(比 nano 更精确但更慢)。可选: yolo26n/s/m/l/x.pt。</p>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">yolo detect train data=dataset model=yolo26s.pt</code></pre>
                 </div>
                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
-                    <strong>💡 ヒント: </strong>train には多様な option がある。上記のとおり train コマンドを実行すると default option で training する。default option を確認するには以下のコマンドを入力する。</div>
+                    <strong>💡 提示:</strong> 存在许多训练选项。上面的命令使用的是默认值。运行 <code>yolo cfg</code> 查看默认值。 </div>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">yolo cfg</code></pre>
                 </div>
                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
-                    <strong>💡 ヒント: </strong>dataset が十分でない場合、または現在の dataset をより効果的に使いたい場合は以下の dataset augmentation を参照すること。</div>
-                    👉 Link: <a href="https://docs.ultralytics.com/guides/yolo-data-augmentation" target="_blank" class="text-indigo-600 hover:underline">https://docs.ultralytics.com/guides/yolo-data-augmentation</a>
+                    <strong>💡 提示:</strong> 如果数据量有限，请参考下方的 dataset augmentation。</div>
+                    👉 参考链接: <a href="https://docs.ultralytics.com/guides/yolo-data-augmentation" target="_blank" class="text-indigo-600 hover:underline">https://docs.ultralytics.com/guides/yolo-data-augmentation</a>
             </li>
-            <li><strong>結果の出力と活用:</strong> 学習中に loss や推論指標が出力される。正常完了すると <code>.pt</code> 形式の weight ファイルが生成される。生成場所は training log に記載されるため必ず確認すること。</li>
+            <li><strong>输出:</strong> 训练过程中会打印 loss 和各项指标。成功后会得到一个 <code>.pt</code> weight 文件 —— 具体路径请查看日志。</li>
             <li class="step-item">
-                <p class="step-desc"><strong>CLI で Export:</strong> ターミナルで <code>yolo TASK export</code> を実行し、学習済み torch モデルを DEEPX NPU で使用可能な形式に変換する。内部では <code>.pt</code> を <code>.onnx</code> format に export した後、DX-COM compile で <code>.dxnn</code> に変換する。FP32 to INT8 quantization の calibration には custom dataset (<code>dataset/data.yaml</code>) を使用する。</p>
+                <p class="step-desc"><strong>导出(CLI):</strong> 执行 <code>yolo export model=&lt;path&gt;/weights/best.pt format=deepx data=dataset</code> 生成可用于 NPU 的输出。该命令会导出 ONNX，运行 DX-COM 转换为 <code>.dxnn</code>，并利用你的 dataset 对 FP32 到 INT8 模型进行 calibration。</p>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">yolo export model=&lt;path to trained pt&gt;/weights/best.pt format=deepx data=dataset # creates 'best_deepx_model/'</code></pre>
                 </div>
             </li>
             <li class="step-item">
-                <p class="step-desc"><strong>結果の確認:</strong> export が正常完了すると <code>&lt;path to trained pt&gt;/weights/best_deepx_model</code> に <code>best.dxnn</code> が生成され、DEEPX NPU でそのまま実行可能な format である。</p>
+                <p class="step-desc"><strong>检查输出:</strong> 导出完成后，<code>best.dxnn</code> 会出现在 <code>&lt;train path&gt;/weights/best_deepx_model</code> 下，可直接在 DEEPX NPU 上运行。</p>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash">.
 ├── best_deepx_model     # Generated directory
@@ -1216,19 +1216,19 @@ pip install ultralytics</code></pre>
             </article>
 
             <article id="section-4-4" class="prose max-w-none">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">YOLO26 モデルの scale 別性能比較</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">YOLO26 不同 Model Scale 的性能对比</h3>
 
-                <p class="text-gray-600 leading-relaxed mb-6"> Ultralytics YOLO26 シリーズのモデル名末尾の n, s, m, l, x はモデルのサイズ (Scale) と演算複雑度による区分である。要約すると「パラメータ数 (容量) と演算量 (速度) のバランスによる区分」である。アルファベットはそれぞれ次を意味する。</p>
+                <p class="text-gray-600 leading-relaxed mb-6"> 在 YOLO26 的命名中，n、s、m、l、x 表示模型的大小和计算量。简单来说，就是在模型大小(参数量)与速度之间进行权衡。</p>
 
                 <ol class="text-gray-600 leading-relaxed mb-8">
-                    <li><strong>n (Nano):</strong> 最小・最軽量モデル (速度最優先、超軽量デバイス向け)</li>
-                    <li><strong>s (Small):</strong> 小型モデル (速度と精度の良い妥協点)</li>
-                    <li><strong>m (Medium):</strong> 中サイズモデル (バランスの取れた性能)</li>
-                    <li><strong>l (Large):</strong> 大型モデル (高精度が必要な場合)</li>
-                    <li><strong>x (XLarge):</strong> 最大モデル (速度より精度最優先)</li>
+                    <li><strong>n (Nano):</strong> 最小、最轻量(速度优先，适合微型设备)</li>
+                    <li><strong>s (Small):</strong> 小型模型(速度与精度的平衡)</li>
+                    <li><strong>m (Medium):</strong> 中等大小(整体均衡)</li>
+                    <li><strong>l (Large):</strong> 大型模型(需要更高精度时使用)</li>
+                    <li><strong>x (XLarge):</strong> 最大(精度优先于速度)</li>
                 </ol>
 
-                <p class="text-gray-600 leading-relaxed mb-6"> Raspberry Pi 5 + DX-M1 M.2 で YOLO26 モデルの性能を測定した結果は以下のとおりである。</p>
+                <p class="text-gray-600 leading-relaxed mb-6"> 在 Raspberry Pi 5 + DX-M1 M.2 上的基准测试结果:</p>
 
                 <div class="overflow-x-auto mb-8">
                     <table class="min-w-full text-sm text-left border border-gray-200 rounded-lg overflow-hidden shadow-sm">
@@ -1268,12 +1268,12 @@ pip install ultralytics</code></pre>
                         </tbody>
                     </table>
                     <p class="mt-2 text-xs text-gray-500">
-                        測定に使用した <code class="text-gray-600">.dxnn</code> ファイルは DEEPX Official Model Zoo (<a href="https://developer.deepx.ai/modelzoo/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a>) からダウンロードした。
+                        本次测量所用的 <code class="text-gray-600">.dxnn</code> 文件下载自 DEEPX Official Model Zoo (<a href="https://developer.deepx.ai/modelzoo/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a>)。
                     </p>
                     <p class="mt-2 text-xs text-gray-500">
-                        測定コマンド例:
+                        测量命令示例:
                         <code class="text-gray-600">run_model -m yolo26s.dxnn --use-ort -t 3</code>
-                        (モデル scale に応じて <code class="text-gray-600">yolo26n.dxnn</code>, <code class="text-gray-600">yolo26s.dxnn</code> 等ファイル名を変更)
+                        (按 scale 更改模型名称: <code class="text-gray-600">yolo26n.dxnn</code>、<code class="text-gray-600">yolo26s.dxnn</code> 等)
                     </p>
                 </div>
 
@@ -1293,10 +1293,10 @@ pip install ultralytics</code></pre>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                             </svg>
                         </span>
-                        <h2 class="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">参考資料</h2>
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">延伸阅读</h2>
                     </div>
                     <p class="text-sm text-gray-500 mb-8 max-w-2xl">
-                        本ガイドとあわせて参照するとよい公式リポジトリと開発者ポータルである。カードをクリックすると新しいタブで開く。
+                        与本指南搭配阅读的官方仓库和开发者门户，卡片会在新标签页打开。
                     </p>
 
                     <ul class="ref-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1310,7 +1310,7 @@ pip install ultralytics</code></pre>
                                 <span class="min-w-0 flex-1">
                                     <span class="block text-xs font-semibold uppercase tracking-wider text-indigo-600 mb-0.5">GitHub</span>
                                     <span class="block font-semibold text-gray-900 group-hover:text-indigo-700 transition-colors">DEEPX SDK</span>
-                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">DX-APP、DX-COM、DX-Runtime など Edge AI 開発用統合 SDK</span>
+                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">统一的 Edge AI SDK: DX-APP、DX-COM、DX-Runtime</span>
                                     <span class="block text-xs text-indigo-500/80 mt-2 truncate font-mono">github.com/DEEPX-AI/dx-all-suite</span>
                                 </span>
                                 <span class="ref-arrow" aria-hidden="true">
@@ -1328,7 +1328,7 @@ pip install ultralytics</code></pre>
                                 <span class="min-w-0 flex-1">
                                     <span class="block text-xs font-semibold uppercase tracking-wider text-violet-600 mb-0.5">GitHub</span>
                                     <span class="block font-semibold text-gray-900 group-hover:text-violet-700 transition-colors">DEEPX Tutorials</span>
-                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">Jupyter Lab ベースの hands-on チュートリアル集</span>
+                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">基于 Jupyter Lab 的实操教程集</span>
                                     <span class="block text-xs text-violet-500/80 mt-2 truncate font-mono">github.com/DEEPX-AI/dx-tutorials</span>
                                 </span>
                                 <span class="ref-arrow" aria-hidden="true">
@@ -1346,7 +1346,7 @@ pip install ultralytics</code></pre>
                                 <span class="min-w-0 flex-1">
                                     <span class="block text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-0.5">Portal</span>
                                     <span class="block font-semibold text-gray-900 group-hover:text-emerald-700 transition-colors">DEEPX Developer Site</span>
-                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">SW・ドキュメントダウンロード、講座、Modelzoo</span>
+                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">软件与文档下载、课程、Model Zoo</span>
                                     <span class="block text-xs text-emerald-500/80 mt-2 truncate font-mono">developer.deepx.ai</span>
                                 </span>
                                 <span class="ref-arrow" aria-hidden="true">
@@ -1364,7 +1364,7 @@ pip install ultralytics</code></pre>
                                 <span class="min-w-0 flex-1">
                                     <span class="block text-xs font-semibold uppercase tracking-wider text-amber-600 mb-0.5">GitHub</span>
                                     <span class="block font-semibold text-gray-900 group-hover:text-amber-700 transition-colors">Ultralytics YOLO</span>
-                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">YOLO26 学習・export および DEEPX NPU 連携</span>
+                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">YOLO26 训练、export 及 DEEPX NPU 集成</span>
                                     <span class="block text-xs text-amber-600/80 mt-2 truncate font-mono">github.com/ultralytics/ultralytics</span>
                                 </span>
                                 <span class="ref-arrow" aria-hidden="true">
