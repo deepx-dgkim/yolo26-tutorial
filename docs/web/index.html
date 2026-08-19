@@ -460,14 +460,14 @@ sudo reboot</code></pre>
 <pre><code class="language-bash"># Stop dxrt.service before FW upgrade
 systemctl stop dxrt.service
 
-# Download NPU FW v2.7.3
-wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/2.7.3/mdot2/fw.bin
+# Download NPU FW v2.7.4
+wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/2.7.4/mdot2/fw.bin
 
 # For DX-M1M module, you need to download the M1M FW bin instead of the M1 FW bin
-# wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1m/2.7.3/mdot2/fw.bin
+# wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1m/2.7.4/mdot2/fw.bin
 
-# Upgrade NPU FW to v2.7.3
-dxrt-cli -u fw.bin
+# Upgrade NPU FW to v2.7.4
+dxcli -u fw.bin
 
 # Restart dxrt.service after FW upgrade
 systemctl start dxrt.service</code></pre>
@@ -502,11 +502,11 @@ ls /dev/dxrt*
 systemctl status dxrt.service
 
 # Check the DX-RT and other version info -> expected: DXRT v3.3.2, FW v2.5.6
-dxrt-cli -s
+dxcli -s
 
 # Perform a quick validation by inferencing a model -> expected: 'FPS: higher than 90'
 wget https://sdk.deepx.ai/modelzoo/dxnn/2_4_0/yolo26-n_640x640.dxnn
-run_model -m yolo26-n_640x640.dxnn -t 3 | grep FPS</code></pre>
+dxrun -m yolo26-n_640x640.dxnn -t 3 | grep FPS</code></pre>
                 </div>
 
 
@@ -654,7 +654,7 @@ tar xzf calibration_dataset.tar.gz</code></pre>
                     </li>
                     <li class="step-item mb-4">
                         <p class="step-desc"><strong>Create compile config:</strong> Create <code>yolo26s-custom.json</code> as below. See the DX-COM user manual on the DEEPX developer site (sign in required).
-                        Download: <a href="https://developer.deepx.ai/download/?id=510" target="_blank" class="text-indigo-600 hover:underline break-all">https://developer.deepx.ai/download/?id=510</a></p>
+                        Download: <a href="https://developer.deepx.ai/download/?id=581" target="_blank" class="text-indigo-600 hover:underline break-all">https://developer.deepx.ai/download/?id=581</a></p>
                         <div class="code-panel">
                         <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
                             💻 Host PC (Ubuntu/x86_64)
@@ -1272,7 +1272,7 @@ pip install ultralytics</code></pre>
                     </p>
                     <p class="mt-2 text-xs text-gray-500">
                         Example benchmark command:
-                        <code class="text-gray-600">run_model -m yolo26s.dxnn --use-ort -t 3</code>
+                        <code class="text-gray-600">dxrun -m yolo26s.dxnn --use-ort -t 3</code>
                         (change model name per scale: <code class="text-gray-600">yolo26n.dxnn</code>, <code class="text-gray-600">yolo26s.dxnn</code>, etc.)
                     </p>
                 </div>

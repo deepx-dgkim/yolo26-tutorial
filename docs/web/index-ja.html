@@ -460,14 +460,14 @@ sudo reboot</code></pre>
 <pre><code class="language-bash"># Stop dxrt.service before FW upgrade
 systemctl stop dxrt.service
 
-# Download NPU FW v2.7.3
-wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/2.7.3/mdot2/fw.bin
+# Download NPU FW v2.7.4
+wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/2.7.4/mdot2/fw.bin
 
 # For DX-M1M module, you need to download the M1M FW bin instead of the M1 FW bin
-# wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1m/2.7.3/mdot2/fw.bin
+# wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1m/2.7.4/mdot2/fw.bin
 
-# Upgrade NPU FW to v2.7.3
-dxrt-cli -u fw.bin
+# Upgrade NPU FW to v2.7.4
+dxcli -u fw.bin
 
 # Restart dxrt.service after FW upgrade
 systemctl start dxrt.service</code></pre>
@@ -502,11 +502,11 @@ ls /dev/dxrt*
 systemctl status dxrt.service
 
 # Check the DX-RT and other version info -> expected: DXRT v3.3.2, FW v2.5.6
-dxrt-cli -s
+dxcli -s
 
 # Perform a quick validation by inferencing a model -> expected: 'FPS: higher than 90'
 wget https://sdk.deepx.ai/modelzoo/dxnn/2_4_0/yolo26-n_640x640.dxnn
-run_model -m yolo26-n_640x640.dxnn -t 3 | grep FPS</code></pre>
+dxrun -m yolo26-n_640x640.dxnn -t 3 | grep FPS</code></pre>
                 </div>
 
 
@@ -1272,7 +1272,7 @@ pip install ultralytics</code></pre>
                     </p>
                     <p class="mt-2 text-xs text-gray-500">
                         測定コマンド例:
-                        <code class="text-gray-600">run_model -m yolo26s.dxnn --use-ort -t 3</code>
+                        <code class="text-gray-600">dxrun -m yolo26s.dxnn --use-ort -t 3</code>
                         (モデル scale に応じて <code class="text-gray-600">yolo26n.dxnn</code>, <code class="text-gray-600">yolo26s.dxnn</code> 等ファイル名を変更)
                     </p>
                 </div>
