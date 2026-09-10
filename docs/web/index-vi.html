@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xây dựng hệ thống Edge AI siêu tiết kiệm điện với DEEPX M1 NPU và Raspberry Pi 5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .prose pre {
+            background-color: #1e293b;
+            color: #f8fafc;
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        .prose code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+        /* Typography tweaks */
+        body { font-family: 'Be Vietnam Pro', 'Noto Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+
+        /* Tailwind Preflight resets list markers — restore in main content */
+        main ol {
+            list-style-type: decimal;
+            list-style-position: outside;
+            padding-left: 1.75rem;
+            margin: 1rem 0 1.5rem;
+        }
+        main ol li { margin-bottom: 1.25rem; }
+        main ol li::marker { font-weight: 600; color: #4f46e5; }
+        /* inline-flex badges sit on the same line as text — force block stack */
+        main ol li .step-desc { display: block; margin-bottom: 0.75rem; }
+        main ol li > .code-panel,
+        main ol li > .editor-note,
+        main ol li > pre,
+        main ol li > figure { display: block; width: 100%; clear: both; margin-top: 1rem; }
+        main ol li .inline-flex,
+        main ol li .code-badge { display: flex !important; width: max-content; clear: both; margin-top: 1rem; margin-bottom: 0; }
+        main ol li .code-panel .code-badge { margin-top: 0; }
+        main ol li .code-panel pre { margin-top: 0; }
+        main ul {
+            list-style-type: disc;
+            list-style-position: outside;
+            padding-left: 1.75rem;
+            margin: 1rem 0 1.5rem;
+        }
+        main ul li { margin-bottom: 0.5rem; }
+
+        /* Text / code separation */
+        .step-desc {
+            display: block;
+            margin-bottom: 0.75rem;
+            line-height: 1.75;
+        }
+        .code-panel {
+            display: block;
+            width: 100%;
+            margin-top: 1rem;
+            margin-bottom: 1.25rem;
+            clear: both;
+        }
+        .code-panel > pre,
+        .code-panel > .editor-note {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        .code-panel .code-badge {
+            display: flex;
+            width: max-content;
+        }
+        .code-panel pre {
+            margin-top: 0;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0.5rem;
+        }
+
+        .editor-note {
+            background-color: #f8fafc;
+            border-left: 4px solid #cbd5e1;
+            border-radius: 0 0.375rem 0.375rem 0;
+            overflow: hidden;
+        }
+        .editor-note pre { margin-bottom: 0; border-radius: 0; }
+
+        main figure img { max-width: 100%; height: auto; border-radius: 0.5rem; }
+
+        /* References — link cards */
+        #references .ref-grid { list-style: none; padding: 0; margin: 0; }
+        .ref-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem 1.35rem;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.875rem;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .ref-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px -8px rgba(79, 70, 229, 0.18);
+            border-color: #c7d2fe;
+        }
+        .ref-card .ref-icon {
+            flex-shrink: 0;
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+        .ref-card:hover .ref-icon { transform: scale(1.06); }
+        .ref-card .ref-arrow {
+            flex-shrink: 0;
+            margin-left: auto;
+            opacity: 0;
+            transform: translate(-4px, 0);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            color: #6366f1;
+        }
+        .ref-card:hover .ref-arrow {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+
+        /* Language switcher */
+        .lang-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid #e2e8f0;
+            border-radius: 9999px;
+            box-shadow: 0 4px 20px -4px rgba(79, 70, 229, 0.15), 0 2px 8px -2px rgba(15, 23, 42, 0.08);
+        }
+        .lang-switch__globe {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            margin-left: 0.15rem;
+            border-radius: 9999px;
+            color: #6366f1;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+        }
+        .lang-switch__options {
+            display: flex;
+            align-items: center;
+            gap: 0.125rem;
+            padding-right: 0.2rem;
+        }
+        .lang-switch__item {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.5rem;
+            padding: 0.4rem 0.65rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-decoration: none;
+            color: #64748b;
+            border-radius: 9999px;
+            transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+        .lang-switch__item:hover:not(.lang-switch__item--active) {
+            color: #4f46e5;
+            background: #f8fafc;
+        }
+        .lang-switch__item--active {
+            color: #fff;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            box-shadow: 0 2px 8px -1px rgba(79, 70, 229, 0.45);
+            cursor: default;
+            pointer-events: none;
+        }
+        .lang-switch__item--ja {
+            min-width: 2.85rem;
+            font-size: 0.68rem;
+        }
+
+    </style>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-diff.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased flex flex-col lg:flex-row min-h-screen">
+
+    <!-- Language switcher: index.html / index-ko.html / index-ja.html / index-zh.html / index-vi.html -->
+    <nav class="fixed top-4 right-4 lg:top-6 lg:right-8 z-30" aria-label="Ngôn ngữ">
+        <div class="lang-switch">
+            <span class="lang-switch__globe" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                </svg>
+            </span>
+            <div class="lang-switch__options" role="group" aria-label="Chọn ngôn ngữ">
+                <a href="index.html" class="lang-switch__item" lang="en" title="English">EN</a>
+                <a href="index-ko.html" class="lang-switch__item" lang="ko" title="한국어">KO</a>
+                <a href="index-ja.html" class="lang-switch__item lang-switch__item--ja" lang="ja" title="日本語">JA</a>
+                <a href="index-zh.html" class="lang-switch__item" lang="zh" title="中文">ZH</a>
+                <span class="lang-switch__item lang-switch__item--active" aria-current="page" lang="vi" title="Tiếng Việt">VI</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar / TOC -->
+    <aside class="w-full lg:w-72 lg:fixed lg:top-0 lg:bottom-0 lg:left-0 bg-white border-r border-gray-200 p-6 overflow-y-auto shadow-sm z-10">
+        <div class="mb-8">
+            <h1 class="text-xl font-bold text-indigo-700 tracking-tight leading-snug">Hướng dẫn xây dựng hệ thống Edge AI</h1>
+            <p class="text-xs text-gray-500 mt-2">DEEPX M1 & Raspberry Pi 5</p>
+        </div>
+        <nav class="text-sm font-medium text-gray-600 space-y-1">
+            <p class="uppercase tracking-wider text-xs font-semibold text-gray-400 mb-3 mt-6">Nội dung</p>
+            <a href="#intro" class="block py-1.5 hover:text-indigo-600 transition-colors">Giới thiệu</a>
+
+            <a href="#section-1" class="block py-1.5 hover:text-indigo-600 transition-colors mt-2">1. Giới thiệu DEEPX NPU</a>
+            <div class="pl-4 border-l-2 border-gray-100 space-y-1 my-1">
+                <a href="#section-1-1" class="block py-1 text-gray-500 hover:text-indigo-600">Kiến trúc HW và thiết kế điện năng</a>
+                <a href="#section-1-2" class="block py-1 text-gray-500 hover:text-indigo-600">Cấu trúc phân cấp bộ nhớ</a>
+            </div>
+
+            <a href="#section-2" class="block py-1.5 hover:text-indigo-600 transition-colors mt-2">2. Hệ thống Edge AI trên Raspberry Pi 5</a>
+            <div class="pl-4 border-l-2 border-gray-100 space-y-1 my-1">
+                <a href="#section-2-1" class="block py-1 text-gray-500 hover:text-indigo-600">Lắp đặt module NPU M.2</a>
+                <a href="#section-2-2" class="block py-1 text-gray-500 hover:text-indigo-600">Cài đặt SDK và driver</a>
+                <a href="#section-2-3" class="block py-1 text-gray-500 hover:text-indigo-600">Giám sát bằng công cụ CLI</a>
+            </div>
+
+            <a href="#section-3" class="block py-1.5 hover:text-indigo-600 transition-colors mt-2">3. Chuyển đổi mô hình AI custom</a>
+            <div class="pl-4 border-l-2 border-gray-100 space-y-1 my-1">
+                <a href="#section-3-workflow" class="block py-1 text-gray-500 hover:text-indigo-600">Quy trình Vision AI</a>
+                <a href="#section-3-1" class="block py-1 text-gray-500 hover:text-indigo-600">Biên dịch trên Host PC (dxnn)</a>
+                <a href="#section-3-2" class="block py-1 text-gray-500 hover:text-indigo-600">Suy luận với DX-APP</a>
+                <a href="#section-3-3" class="block py-1 text-gray-500 hover:text-indigo-600">Suy luận với DX-STREAM</a>
+            </div>
+
+            <a href="#section-4" class="block py-1.5 hover:text-indigo-600 transition-colors mt-2">4. Phụ lục (Huấn luyện YOLO26)</a>
+            <div class="pl-4 border-l-2 border-gray-100 space-y-1 my-1">
+                <a href="#section-4-1" class="block py-1 text-gray-500 hover:text-indigo-600">Bố cục và cấu trúc dataset</a>
+                <a href="#section-4-2" class="block py-1 text-gray-500 hover:text-indigo-600">Phương pháp huấn luyện 1 (Cloud)</a>
+                <a href="#section-4-3" class="block py-1 text-gray-500 hover:text-indigo-600">Phương pháp huấn luyện 2 (PC cục bộ)</a>
+                <a href="#section-4-4" class="block py-1 text-gray-500 hover:text-indigo-600">Hiệu năng YOLO26 theo từng scale</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-72 p-6 lg:p-12 xl:p-16 w-full max-w-5xl bg-white min-h-screen shadow-sm">
+
+        <!-- Header -->
+        <header id="intro" class="mb-12">
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+                Xây dựng hệ thống Edge AI siêu tiết kiệm điện với DEEPX M1 NPU và Raspberry Pi 5
+            </h1>
+            <p class="text-lg text-gray-600 leading-relaxed mb-6">
+                Trong các môi trường physical edge công nghiệp như nhà máy thông minh, xe tự lái, robot, và giám sát an ninh thông minh (CCTV), công nghệ cốt lõi là AI nhanh, độ chính xác cao. Ở đây, phương thức cloud truyền thống — gửi dữ liệu video độ phân giải cao từ camera đến cloud server để xử lý — gây ra những vấn đề nghiêm trọng như sau:
+            </p>
+            <ul class="list-disc pl-6 text-lg text-gray-600 leading-relaxed mb-6 space-y-2">
+                <li><strong>Độ trễ (Latency):</strong> Thời gian round-trip của mạng khiến việc phản hồi thời gian thực ở mức mili-giây trở nên bất khả thi</li>
+                <li><strong>Băng thông & Chi phí (Bandwidth & Cost):</strong> Lưu lượng mạng và chi phí vận hành quá lớn khi truyền stream liên tục hàng chục đến hàng trăm camera độ phân giải cao suốt 24 giờ</li>
+                <li><strong>Quyền riêng tư & Bảo mật (Privacy & Security):</strong> Rủi ro dữ liệu video nhạy cảm tại hiện trường bị rò rỉ ra mạng bên ngoài</li>
+                <li><strong>Kết nối/Ổn định (Connectivity/Stability):</strong> Rủi ro toàn bộ hệ thống ngừng hoạt động khi mạng bị gián đoạn hoặc ở môi trường vùng sâu vùng xa</li>
+            </ul>
+            <p class="text-lg text-gray-600 leading-relaxed mb-6">
+                Công nghệ Edge AI ra đời để giải quyết những vấn đề này. Những tiến bộ gần đây của edge AI cho phép chạy các mô hình phức tạp theo thời gian thực ngay trên thiết bị, loại bỏ nhu cầu xử lý qua cloud. Tuy nhiên, công suất, nhiệt độ, và tài nguyên tính toán hạn chế trên các board nhúng vẫn là những thách thức lớn mà các kỹ sư phải giải quyết.
+            </p>
+            <p class="text-lg text-gray-600 leading-relaxed mb-8">
+                Bài viết này trình bày cách kết hợp máy tính nhúng một board được sử dụng rộng rãi Raspberry Pi 5 với bộ tăng tốc AI M.2 DX-M1 siêu tiết kiệm điện, hiệu năng cao của DEEPX để tạo thành một hệ thống edge AI mạnh mẽ. Chúng ta sẽ đi qua toàn bộ quy trình — từ kiến trúc phần cứng đến việc huấn luyện và chuyển đổi một mô hình phát hiện động vật hoang dã (wildlife detection) custom, cùng một demo camera giám sát động vật hoang dã thực tế.
+            </p>
+            <figure class="my-8">
+                <img src="assets/image-01.png">
+                <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                    <strong class="text-gray-700">[Hình 1] Kết nối hệ thống giữa host processor và DX-M1</strong><br>
+                    Host processor dựa trên ARM (Raspberry Pi 5) nhận tín hiệu video từ camera và truyền qua kết nối PCIe tốc độ cao đến module DX-M1 M.2 để thực hiện suy luận AI.
+                </figcaption>
+            </figure>
+        </header>
+
+        <div class="border-b border-gray-200 mb-12"></div>
+
+        <!-- Section 1 -->
+        <section id="section-1" class="mb-16">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <span class="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-lg">1</span>
+                Giới thiệu DEEPX NPU: Hiệu năng cao và siêu tiết kiệm điện
+            </h2>
+
+            <article id="section-1-1" class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Kiến trúc HW và thiết kế siêu tiết kiệm điện</h3>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    DEEPX DX-M1 được chế tạo trên tiến trình 5 nm và mang lại <strong class="text-indigo-700">25 TOPS (INT8)</strong> được tối ưu cho mục đích edge. Thiết kế này tối ưu hiệu năng suy luận trên mỗi watt — không chỉ dựa vào tiến trình chế tạo hay TOPS đỉnh — thông qua việc tối ưu kiến trúc riêng.
+                </p>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Các chỉ số công suất cho thấy rõ lợi ích này. YOLOv9T chạy ở mức khoảng 2.69 W; ngay cả YOLOv8L nặng hơn cũng chỉ ở mức khoảng 5.64 W. Chỉ cần một tấm tản nhiệt nhỏ hoặc quạt là đủ để vận hành cùng Raspberry Pi 5.
+                </p>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Vậy trên thực tế tốc độ nhanh hơn bao nhiêu? Sử dụng cùng một Raspberry Pi 5, chúng tôi đã đo mô hình YOLO26-l (640x640) nặng hơn khi chạy chỉ bằng CPU so với khi chạy trên DX-M1 NPU.
+                </p>
+                <figure class="my-8">
+                    <div class="rounded-xl border border-gray-200 bg-gray-50 px-6 py-8 md:px-10">
+                        <div class="text-center mb-8">
+                            <span class="text-2xl md:text-2xl font-extrabold text-indigo-600">~611 lần</span>
+                            <span class="block text-sm text-gray-500 mt-2">Tăng tốc suy luận với DX-M1 NPU so với chỉ dùng CPU (YOLO26-l, 640x640)</span>
+                        </div>
+                        <div class="space-y-6 max-w-2xl mx-auto">
+                            <div>
+                                <div class="flex items-center justify-between text-sm mb-1.5">
+                                    <span class="font-medium text-gray-500">Raspberry Pi 5 (CPU only)</span>
+                                    <span class="font-semibold text-gray-500 tabular-nums">0.14 FPS</span>
+                                </div>
+                                <div class="h-3 w-full rounded-full bg-gray-200">
+                                    <div class="h-3 rounded-r-full bg-gray-400" style="width: 4.9%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between text-sm mb-1.5">
+                                    <span class="font-medium text-gray-900">Raspberry Pi 5 + DX-M1 NPU</span>
+                                    <span class="font-semibold text-indigo-600 tabular-nums">85.5 FPS</span>
+                                </div>
+                                <div class="h-3 w-full rounded-full bg-gray-200">
+                                    <div class="h-3 rounded-r-full bg-indigo-600" style="width: 97.7%"></div>
+                                </div>
+                            </div>
+                            <div class="relative h-4 text-[11px] text-gray-400 tabular-nums">
+                                <span class="absolute" style="left: 0%">0.1</span>
+                                <span class="absolute -translate-x-1/2" style="left: 33.33%">1</span>
+                                <span class="absolute -translate-x-1/2" style="left: 66.67%">10</span>
+                                <span class="absolute -translate-x-full" style="left: 100%">100 FPS</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 text-center mt-3">* Chênh lệch giữa CPU và NPU quá lớn (~610 lần) nên độ dài thanh được biểu diễn theo thang log (cơ số 10).</p>
+                        <p class="text-xs text-gray-400 text-center mt-1">* Mô hình YOLO26-l dùng cho bài test này được tải về từ <a href="https://developer.deepx.ai/modelzoo/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a></p>
+                    </div>
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[Hình 2] Tốc độ suy luận (FPS) trên Raspberry Pi 5: chỉ dùng CPU so với dùng DX-M1 NPU</strong><br>
+                        Trên cùng một Raspberry Pi 5, YOLO26-l (640x640) chỉ đạt 0.14 FPS khi chạy bằng CPU, nhưng đạt 85.5 FPS khi dùng DX-M1 M.2 NPU — nhanh hơn khoảng 611 lần, cuối cùng đủ nhanh để xử lý thời gian thực.
+                    </figcaption>
+                </figure>
+            </article>
+
+            <article id="section-1-2">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Sơ đồ khối nội bộ và cấu trúc phân cấp bộ nhớ</h3>
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Chip DX-M1 bao gồm các lõi Cortex-M55 và ba lõi NPU (NPU0, NPU1, NPU2) để tính toán song song. Nó hỗ trợ LPDDR5; module M.2 có hai chip LPDDR 2 GB và kết nối với host qua PCIe Gen3 x4.
+                </p>
+                <figure class="my-8">
+                    <img src="assets/image-07.png">
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[Hình 3] Sơ đồ khối hệ thống module DX-M1 M.2</strong><br>
+                        Minh họa ba lõi NPU, LPDDR5 chuyên dụng, và PCIe Gen3 x4 kết nối đến host nhằm giảm nghẽn cổ chai dữ liệu.
+                    </figcaption>
+                </figure>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Cấu trúc phân cấp bộ nhớ tối ưu việc tái sử dụng dữ liệu để giảm bớt giới hạn băng thông. Deep learning thường gặp giới hạn về băng thông bộ nhớ; DX-M1 sử dụng SRAM on-chip và luồng dữ liệu được tinh chỉnh để giảm số lần truy cập bộ nhớ ngoài cho weight và activation.
+                </p>
+            </article>
+        </section>
+
+        <!-- Section 2 -->
+        <section id="section-2" class="mb-16">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <span class="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-lg">2</span>
+                Biến Raspberry Pi 5 thành hệ thống Edge AI với DX-M1 M.2 NPU
+            </h2>
+
+            <p class="text-gray-600 leading-relaxed mb-6">
+                NPU của DEEPX có hai loại chính: <a href="https://deepx.ai/products/dx-m1/" target="_blank" class="text-indigo-600 hover:underline">DX-M1</a> và DX-M1M. Bên dưới chúng tôi giới thiệu hai cách lắp đặt: một dùng module DX-M1 M.2, và một dùng HAT tích hợp DX-M1M.
+            </p>
+
+            <article id="section-2-1" class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Tổng quan module DX-M1 M.2 NPU và lắp đặt phần cứng</h3>
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Module DEEPX DX-M1 M.2 sử dụng form factor tiêu chuẩn M.2 2280 Key M. Raspberry Pi 5 hỗ trợ PCIe chính thức, nên bạn có thể gắn NPU bằng NVMe HAT hoặc board mở rộng M.2.
+                </p>
+                <figure>
+                    <img src="assets/image-08.png">
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[Hình 4] Phần cứng cho hệ thống edge AI Raspberry Pi 5</strong><br>
+                        Bạn cần Raspberry Pi 5 (khuyến nghị 8 GB RAM trở lên), module DX-M1 M.2, và một board HAT (PCIe Gen3 x1) để kết nối chúng.
+                    </figcaption>
+                </figure><br>
+                <figure>
+                    <img src="assets/image-09.png">
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[Hình 5] Kết nối Raspberry Pi 5 và DX-M1 M.2</strong><br>
+                        Kết nối Pi 5 với HAT bằng cáp PCIe → lắp module DX-M1 M.2 vào khe M.2 trên HAT
+                    </figcaption>
+                </figure>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 mt-8">Tổng quan module DX-M1M và lắp đặt HAT tích hợp</h3>
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Chip DEEPX DX-M1M là giải pháp có sẵn 1 GB hoặc 2 GB RAM DDR4 tích hợp. So với DX-M1 sử dụng RAM DDR5, nó mang lại hiệu năng suy luận thấp hơn khoảng 20%, nhưng có lợi thế về giá và kích thước chip. Thông qua hợp tác giữa DEEPX và Sixfab, họ cung cấp một sản phẩm gắn sẵn chip DX-M1M trên board, mang đến dạng AI HAT đã được xác thực cho Raspberry Pi 5. Bạn có thể lắp đặt và sử dụng phần cứng như bên dưới.
+                </p>
+                <figure>
+                    <img src="assets/image-24.png">
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[Hình 6] Thiết kế chip rời on-board của Sixfab cho AI HAT dùng DX-M1M</strong><br>
+                        Kết nối board HAT tích hợp DX-M1M được bán tại <a href="https://sixfab.com/product/ai-hat-plus-raspberry-pi-5/" target="_blank" class="text-indigo-600 hover:underline">https://sixfab.com/product/ai-hat-plus-raspberry-pi-5</a> với Raspberry Pi 5 qua PCIe.
+                    </figcaption>
+                </figure>
+            </article>
+
+            <article id="section-2-2" class="mb-8 prose max-w-none">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Cài đặt DX-RT SDK và driver</h3>
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Raspberry Pi 5 chạy kiến trúc aarch64 (ARM64). DEEPX DX-RT và driver NPU hỗ trợ chính thức Ubuntu và Debian trên aarch64. Các bước sau đây mô tả quy trình cài đặt trên Debian 13 (mặc định của Raspberry Pi OS).
+                </p>
+                <div class="code-panel">
+
+
+                <!-- Badge for Target -->
+                <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                    🍓 Target (Raspberry Pi 5)
+                </div>
+<pre><code class="language-bash"># Install NPU driver
+sudo apt update
+wget https://github.com/DEEPX-AI/dx_rt_npu_linux_driver/raw/main/release/2.5.1/dxrt-driver-dkms_2.5.1-2_all.deb
+sudo apt install ./dxrt-driver-dkms_2.5.1-2_all.deb
+
+# Install libdxrt runtime
+wget https://github.com/DEEPX-AI/dx_rt/raw/main/release/3.4.0/libdxrt-bin_3.4.0_arm64.deb
+sudo apt install ./libdxrt-bin_3.4.0_arm64.deb
+
+# Reboot the system
+sudo reboot</code></pre>
+                </div>
+
+
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Firmware DX-M1 M.2 cũ có thể gây ra lỗi tương thích API. Hãy nâng cấp NPU FW như bên dưới. Với DX-RT v3.4.0, hãy dùng NPU FW v2.7.3 trở lên.
+                </p>
+                <div class="code-panel">
+
+
+                <!-- Badge for Target -->
+                <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                    🍓 Target (Raspberry Pi 5)
+                </div>
+<pre><code class="language-bash"># Stop dxrt.service before FW upgrade
+systemctl stop dxrt.service
+
+# Download NPU FW v2.7.4
+wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/2.7.4/mdot2/fw.bin
+
+# For DX-M1M module, you need to download the M1M FW bin instead of the M1 FW bin
+# wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1m/2.7.4/mdot2/fw.bin
+
+# Upgrade NPU FW to v2.7.4
+dxcli -u fw.bin
+
+# Restart dxrt.service after FW upgrade
+systemctl start dxrt.service</code></pre>
+                </div>
+
+
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Xác nhận việc cài đặt bằng các lệnh sau:
+                </p>
+                <div class="code-panel">
+
+
+                <!-- Badge for Target -->
+                <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                    🍓 Target (Raspberry Pi 5)
+                </div>
+<pre><code class="language-bash"># Check the PCIe device status -> expected: 'Processing accelerators: DEEPX...'
+lspci | grep acc
+
+# Check the PCIe generation and the number of lane for your NPU
+# DX-M1 delivers the best performance on PCIe Gen3 (8GT/s), x4 lane
+# Expected for Raspberry Pi 5 -> LnkSta: Speed 8GT/s, Width x1 (downgraded)
+sudo lspci -vvv | grep -iA 33 accelerators | grep "LnkSta"
+
+# Check NPU kernel driver status -> expected: dxrt_driver, dx_dma
+lsmod | grep dxrt
+
+# Check NPU device files -> expected: '/dev/dxrt0'
+ls /dev/dxrt*
+
+# Check NPU daemon status -> expected: dxrt.service - DX-RT Service is active (running) state
+systemctl status dxrt.service
+
+# Check the DX-RT and other version info -> expected: DXRT v3.3.2, FW v2.5.6
+dxcli -s
+
+# Perform a quick validation by inferencing a model -> expected: 'FPS: higher than 90'
+wget https://sdk.deepx.ai/modelzoo/dxnn/2_4_0/yolo26-n_640x640.dxnn
+dxrun -m yolo26-n_640x640.dxnn -t 3 | grep FPS</code></pre>
+                </div>
+
+
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Nếu tốc độ PCIe là 5 GT/s thay vì 8 GT/s, nghĩa là Pi đang được đặt ở Gen2, không phải Gen3. Làm theo liên kết bên dưới để chuyển sang Gen3 nhằm tăng hiệu quả NPU.
+                </p>
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    👉 <a href="https://github.com/DEEPX-AI/dx-tutorials/blob/main/docs/raspberrypi5.md" target="_blank" class="text-indigo-600 hover:underline">Đặt PCIe của Raspberry Pi 5 về Gen3</a>
+                </p>
+
+            </article>
+
+            <article id="section-2-3" class="mb-8 prose max-w-none">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Giám sát NPU bằng công cụ CLI</h3>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Sau khi cài đặt, hãy dùng các công cụ CLI của DEEPX để kiểm tra trạng thái NPU. <strong><code>dxtop</code></strong> là công cụ giám sát được khuyến nghị. Nó hiển thị mức sử dụng theo từng lõi, nhiệt độ, điện áp, xung nhịp, và mức sử dụng bộ nhớ chuyên dụng ngay trên terminal.
+                </p>
+                <div class="code-panel">
+
+
+                <!-- Badge for Target -->
+                <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                    🍓 Target (Raspberry Pi 5)
+                </div>
+<pre><code class="language-bash"># CLI based NPU monitoring tool
+dxtop</code></pre>
+                </div>
+
+
+                <figure class="my-6">
+                    <img src="assets/image-10.png">
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[Hình 7] Màn hình dxtop</strong><br>
+                        Giám sát bộ nhớ và mức sử dụng, nhiệt độ, điện áp, và xung nhịp của DX-M1 NPU cho cả ba lõi theo thời gian thực.
+                    </figcaption>
+                </figure>
+            </article>
+        </section>
+
+        <!-- Section 3 -->
+        <section id="section-3" class="mb-16">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <span class="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-lg">3</span>
+                Phát triển đa nền tảng: Chuyển đổi mô hình AI custom
+            </h2>
+
+            <p class="text-gray-600 leading-relaxed mb-6">
+                Tiếp theo, chúng ta sẽ xây dựng một hệ thống camera phát hiện động vật hoang dã thực tế. Lưu ý rằng việc biên dịch và chạy mô hình được thực hiện ở hai môi trường riêng biệt: biên dịch diễn ra trên host, còn suy luận được triển khai trên target.
+            </p>
+
+            <figure class="my-8">
+                <img src="assets/image-04.png" alt="DEEPX SDK architecture">
+                <img src="assets/image-05.png" alt="DEEPX SDK architecture">
+                <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                    <strong class="text-gray-700">[Hình 8] Kiến trúc DEEPX SDK</strong><br>
+                    Quy trình đa nền tảng: host x86_64 để biên dịch mô hình (bên trái) và target aarch64 Raspberry Pi 5 để chạy runtime (bên phải).
+                </figcaption>
+            </figure>
+
+            <p class="text-gray-600 leading-relaxed mb-6">
+                Tách riêng quá trình phát triển mô hình (phát hiện động vật hoang dã) và triển khai suy luận. Huấn luyện và chuyển đổi sang <code>.dxnn</code> trên một host PC đủ mạnh; xây dựng ứng dụng trên thiết bị edge (ví dụ: Raspberry Pi 5 + DX-M1 M.2) để chạy trên DX-Runtime.
+            </p>
+
+            <article id="section-3-workflow" class="mb-10">
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Quy trình phát triển vision AI gồm năm bước:
+                </p>
+                <figure class="my-8">
+                    <img src="assets/image-15.png" alt="Vision AI Development Work Flow">
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[Hình 9] Quy trình phát triển Vision AI</strong>
+                    </figcaption>
+                </figure>
+                <ol class="text-gray-600 leading-relaxed">
+                    <li><strong>AI Use Case:</strong> Chạy object detection với YOLO26.</li>
+                    <li><strong>Chuẩn bị dữ liệu:</strong> Thu thập tập dữ liệu huấn luyện và gán nhãn hình ảnh. Xem <strong class="text-indigo-700">Phụ lục 4</strong> để biết chi tiết.</li>
+                    <li><strong>Huấn luyện:</strong> Huấn luyện mô hình YOLO26 phát hiện động vật hoang dã trên dataset của bạn. Xem <strong class="text-indigo-700">Phụ lục 4</strong> để biết chi tiết.</li>
+                    <li><strong>Tối ưu với DX-Compiler:</strong> Chuyển đổi weight PyTorch đã huấn luyện sẵn sang ONNX, rồi sang <code>.dxnn</code> cho DEEPX NPU. Phụ lục 4 đề cập đến xuất mô hình qua cloud bằng Ultralytics; ở đây chúng ta biên dịch cục bộ bằng DX-COM.</li>
+                    <li><strong>Triển khai:</strong> Xây dựng và chạy ứng dụng object detection thực hiện suy luận trên DEEPX NPU bằng file <code>.dxnn</code> của bạn.</li>
+                </ol>
+            </article>
+
+            <article id="section-3-1" class="mb-8 prose max-w-none">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">[Host PC] Biên dịch mô hình phát hiện động vật hoang dã sang .dxnn cho DEEPX</h3>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Trình biên dịch DEEPX <strong>DX-COM chỉ chạy trên PC x86_64</strong>. Thực hiện việc huấn luyện mô hình và biên dịch binary trên một PC phát triển (khuyến nghị dùng Linux dựa trên Debian). Máy host hoạt động độc lập với module DX-M1 M.2 trong quá trình biên dịch. Xuất ONNX từ file <code>.pt</code> của PyTorch (ví dụ: YOLO26s), sau đó dùng DX-COM để tạo ra <code>.dxnn</code>.
+                </p>
+
+                <ol class="text-gray-600 leading-relaxed mb-6">
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Tải weight YOLO26s đã huấn luyện sẵn:</strong> Tải weight cho mô hình YOLO26 phát hiện động vật hoang dã dựa trên YOLO26s. Bạn sẽ nhận được <code>yolo26s-custom.pt</code>. (Chúng tôi cung cấp sẵn file .pt để tiện sử dụng; bạn cũng có thể dùng file weight (.pt) từ một mô hình custom mà bạn tự huấn luyện.)
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
+                            💻 Host PC (Ubuntu/x86_64)
+                        </div>
+<pre><code class="language-bash">wget -O yolo26s-custom.pt https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/best.pt</code></pre>
+                        </div>
+                    </li>
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Cài đặt package:</strong> Mở terminal, tạo một virtual environment Python, và chạy <code>pip install ultralytics</code>. Quá trình cài đặt chỉ mất vài phút.</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
+                            💻 Host PC (Ubuntu/x86_64)
+                        </div>
+<pre><code class="language-bash"># Create and activate Python virtual environment
+python -m venv venv
+source venv/bin/activate
+pip install -U pip
+
+# Install ultralytics & dx-com package
+pip install ultralytics dx-com</code></pre>
+                        </div>
+                    </li>
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Xuất sang ONNX:</strong> DX-Compiler cần ONNX trước, sau đó mới đến <code>.dxnn</code>. Cố định batch size là 1 khi xuất. NPU được tối ưu cho độ trễ thấp với một batch cố định duy nhất, không phải multi-batch.</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
+                            💻 Host PC (Ubuntu/x86_64)
+                        </div>
+<pre><code class="language-bash"># Export to ONNX with yolo export (input size = 640, batch size = 1)
+yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
+# wget -O yolo26s-wild.pt https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.onnx</code></pre>
+                        </div>
+                        <p class="step-desc">Thành công khi <code>yolo26s-custom.onnx</code> tồn tại. Mở nó trong <a href="https://netron.app" target="_blank" class="text-indigo-600 hover:underline">https://netron.app</a>, nhấp vào layer <code>images</code> trên cùng, và xác nhận input shape <code>1x3x640x640</code>.</p>
+                        <figure class="my-6 not-prose">
+                            <img src="assets/image-16.png" alt="yolo26s-custom.onnx in Netron">
+                            <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                                <strong class="text-gray-700">[Hình 10] yolo26s-custom.onnx trong Netron</strong>
+                            </figcaption>
+                        </figure>
+                    </li>
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Chuẩn bị dữ liệu calibration:</strong> DX-Compiler cần hình ảnh calibration để lượng tử hóa từ FP32 sang INT8; khuyến nghị 100 ảnh trở lên. Hình ảnh càng gần với tập input thực tế thì càng giảm được sai số về độ chính xác. Tuy nhiên, nếu dùng ảnh calibration khác biệt với môi trường triển khai thực tế trong quá trình biên dịch thì dữ liệu thực tế sẽ không được phản ánh vào việc lượng tử hóa, có thể làm giảm độ chính xác INT8 — cần lưu ý để tránh điều này. Hướng dẫn này sử dụng một dataset bất kỳ, nhưng trong thực tế bạn phải dùng một dataset phù hợp với môi trường triển khai của mình.</p>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
+                            <strong>💡 Tip: Hình ảnh calibration là gì?</strong> Chuyển đổi một mô hình FP32 sang INT8 (lượng tử hóa) giúp giảm kích thước mô hình và khối lượng tính toán, nhưng có thể gây ra sai số về độ chính xác. Hình ảnh calibration giúp giảm thiểu sai số này: một số ít hình ảnh được đưa qua mô hình (chỉ forward pass) để đo thống kê phạm vi giá trị activation của từng layer, sau đó dùng để tính toán giá trị scale/zero-point lượng tử hóa tối ưu. Khác với dataset huấn luyện, chúng không cần nhãn và không cập nhật bất kỳ weight nào — chúng chỉ đơn thuần là các input mẫu dùng để quan sát phạm vi activation.
+                        </div>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
+                            💻 Host PC (Ubuntu/x86_64)
+                        </div>
+<pre><code class="language-bash"># Download calibration images for FP32 to INT8 quantization in DX-Compiler
+wget "https://sdk.deepx.ai/dataset/calibration_dataset.tar.gz"
+tar xzf calibration_dataset.tar.gz</code></pre>
+                        </div>
+                    </li>
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Tạo file cấu hình biên dịch:</strong> Tạo <code>yolo26s-custom.json</code> như bên dưới. Tham khảo tài liệu hướng dẫn sử dụng DX-COM trên trang phát triển DEEPX (cần đăng nhập).
+                        Tải về: <a href="https://developer.deepx.ai/download/?id=581" target="_blank" class="text-indigo-600 hover:underline break-all">https://developer.deepx.ai/download/?id=581</a></p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
+                            💻 Host PC (Ubuntu/x86_64)
+                        </div>
+<pre><code class="language-json">{
+  "inputs": { "images": [1, 3, 640, 640] },
+  "calibration_num": 100,
+  "calibration_method": "ema",
+  "train_batchsize": 32,
+  "num_samples": 1024,
+  "default_loader": {
+    "dataset_path": "calibration_dataset",
+    "file_extensions": ["jpeg", "jpg", "png", "JPEG"],
+    "preprocessings": [
+      { "resize": { "mode": "pad", "size": 640, "pad_location": "edge", "pad_value": [114, 114, 114] } },
+      { "div": { "x": 255 } },
+      { "convertColor": { "form": "BGR2RGB" } },
+      { "transpose": { "axis": [2, 0, 1] } },
+      { "expandDim": { "axis": 0 } }
+    ]
+  }
+}</code></pre>
+                        </div>
+                    </li>
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Biên dịch với DX-COM:</strong> Chạy lệnh bên dưới khi file cấu hình đã sẵn sàng. Tham khảo tài liệu hướng dẫn sử dụng DX-COM trên trang phát triển DEEPX.
+                        Tải về: <a href="https://developer.deepx.ai/download/?id=510" target="_blank" class="text-indigo-600 hover:underline break-all">https://developer.deepx.ai/download/?id=510</a></p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
+                            💻 Host PC (Ubuntu/x86_64)
+                        </div>
+<pre><code class="language-bash">dxcom -m yolo26s-custom.onnx -c yolo26s-custom.json -o output
+
+# After compile, yolo26s-custom.dxnn is created under output/
+# ├── output
+# │   └── yolo26s-custom.dxnn</code></pre>
+                        </div>
+                        <p class="step-desc">Sao chép <code>yolo26s-custom.dxnn</code> sang target (Raspberry Pi 5). Để bỏ qua bước biên dịch, hãy tải file <code>yolo26s-custom.dxnn</code> phát hiện động vật hoang dã đã biên dịch sẵn từ liên kết bên dưới.</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
+                            💻 Host PC (Ubuntu/x86_64)
+                        </div>
+<pre><code class="language-bash">wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.dxnn"</code></pre>
+                        </div>
+                    </li>
+                </ol>
+            </article>
+
+            <article id="section-3-2" class="mb-8 prose max-w-none">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">[Raspberry Pi 5 Target] Object Detection YOLO26 custom với DX-APP</h3>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Sau khi file <code>.dxnn</code> đã được triển khai trên Raspberry Pi 5, tiến hành chạy suy luận. Chúng tôi khuyến nghị sử dụng các ứng dụng mẫu do DEEPX cung cấp sẵn. DX-APP bao gồm các mẫu đã được cấu hình và xác thực sẵn cho các mô hình trong Model Zoo, ở cả C++ và Python.
+                </p>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Model Zoo liệt kê các mô hình đã được xác thực cùng với ONNX, <code>.dxnn</code>, file cấu hình biên dịch, và ứng dụng mẫu (DX-APP). Xem <a href="https://developer.deepx.ai/modelzoo/" target="_blank" class="text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a>.
+                </p>
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Hãy cùng xây dựng một ứng dụng cho mô hình YOLO26 của bạn với DX-APP.
+                </p>
+
+                <ol class="text-gray-600 leading-relaxed mb-6">
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Clone repo DX-APP:</strong> <code>git clone</code> repository <code>dx_app</code>.</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-bash">git clone https://github.com/DEEPX-AI/dx_app
+cd dx_app</code></pre>
+                        </div>
+                    </li>
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Trích xuất mã nguồn mẫu YOLO26s:</strong> Dùng script của DX-APP để chỉ lấy các mẫu <code>object_detection/yolo26s</code>.</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-bash"># Execute the script to display a selection menu.
+./scripts/dx_tool.sh</code></pre>
+                        </div>
+                        <figure class="my-6 not-prose">
+                            <img src="assets/image-17.png" alt="dx_tool.sh YOLO26s code extract">
+                            <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                                <strong class="text-gray-700">[Hình 11] Trích xuất mã nguồn Python YOLO26s bằng dx_tool.sh</strong>
+                            </figcaption>
+                        </figure>
+                    </li>
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Cấu hình mô hình custom 4 class qua config.json:</strong> YOLO26 mặc định sử dụng 80 class của COCO. Thay vì chỉnh sửa mã nguồn framework dùng chung của DX-APP, hãy khai báo các class custom ngay trong <code>config.json</code> riêng của ví dụ. Mỗi ví dụ DX-APP đã hỗ trợ sẵn cờ <code>--config</code> (tự động phát hiện cạnh script nếu bỏ qua), và factory sẽ merge cấu hình này trước khi postprocessor và visualizer được khởi tạo — xem <a href="https://github.com/DEEPX-AI/dx_app/blob/main/docs/source/docs/12_DX-APP_YOLO_Customizing_Guide.md" target="_blank" class="text-indigo-600 hover:underline">DX-APP YOLO Customizing Guide</a>, Bước 3 ("Tune config.json", github.com/DEEPX-AI/dx_app → docs/source/docs/12_DX-APP_YOLO_Customizing_Guide.md).</p>
+                        <p class="step-desc mt-4">Thêm <code>num_classes</code> và <code>class_names</code> vào <code>config.json</code>:</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-json">{
+    "score_threshold": 0.25,
+    "nms_threshold": 0.45,
+    "num_classes": 4,
+    "class_names": ["Person", "Deer", "Raccoon", "Bear"]
+}</code></pre>
+                        </div>
+                        <p class="step-desc mt-4">Postprocessor đã đọc sẵn <code>num_classes</code> từ <code>config.json</code> (mặc định 80). Thay đổi mã nguồn duy nhất cần thiết là chỉnh một dòng trong file <code>factory/yolo26s_factory.py</code> riêng của ví dụ được tạo ra — không phải thư viện dùng chung <code>common/</code> — để visualizer nhận được <code>class_names</code>:</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-diff">--- a/src/python_example/object_detection/yolo26s/factory/yolo26s_factory.py
++++ b/src/python_example/object_detection/yolo26s/factory/yolo26s_factory.py
+@@
+     def create_visualizer(self):
+-        return DetectionVisualizer()
++        return DetectionVisualizer(custom_labels=self.config.get('class_names'))</code></pre>
+                        </div>
+                        <p class="step-desc mt-4">Từ đây trở đi, việc chuyển sang một bộ class hoặc ngưỡng khác chỉ đơn giản là chỉnh sửa <code>config.json</code> — không cần rebuild hay chỉnh sửa lại mã nguồn ví dụ.</p>
+                    </li>
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Chạy ứng dụng:</strong> Tải video test, cài đặt <code>dx_engine</code> và <code>opencv-python</code> trong venv, và chạy <code>yolo26s_async.py</code> cho một demo phát hiện động vật hoang dã đơn giản. Truyền <code>--config</code> một cách tường minh để việc chọn bộ class được hiển thị rõ ràng (nếu không thì nó sẽ tự động được phát hiện cạnh script).</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-bash"># Test Video download
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-0.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-1.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-2.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-3.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-4.mp4"
+
+# Create venv and install dx_engine and opencv-python
+python3 -m venv venv
+source venv/bin/activate
+pip install -U pip
+pip install dx-engine
+pip install opencv-python
+
+# Execute the async Python app; set -m to the .dxnn path on your target device.
+python3 yolo26s_async.py -m yolo26s-custom.dxnn -v test-video-3.mp4 --config config.json</code></pre>
+                        </div>
+                        <figure class="my-6 not-prose">
+                            <img src="assets/image-18.png" alt="Black Bear detection result">
+                            <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                                <strong class="text-gray-700">[Hình 12] Phát hiện Bear và Person</strong>
+                            </figcaption>
+                        </figure>
+                    </li>
+                </ol>
+            </article>
+
+
+            <article id="section-3-3" class="mb-8 prose max-w-none">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">[Raspberry Pi 5 Target] Phát hiện YOLO26 đa luồng (multi-stream) với DX-STREAM</h3>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    DX-STREAM là một nền tảng video dựa trên GStreamer. Các plugin object detection của nó hỗ trợ và quản lý các pipeline YOLO26 đa luồng.
+                </p>
+
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Hãy cùng xây dựng một ứng dụng phát hiện đa luồng dùng mô hình YOLO26 của bạn với DX-STREAM.
+                </p>
+
+                <ol class="text-gray-600 leading-relaxed mb-6">
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Clone và cài đặt DX-STREAM:</strong> <code>git clone</code> <code>dx_stream</code> và chạy các script cài đặt bên dưới.</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-bash">git clone https://github.com/DEEPX-AI/dx_stream.git
+cd dx_stream
+./install.sh # run install script
+./build.sh # run build script</code></pre>
+                        </div>
+                    </li>
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Xác nhận DX-STREAM:</strong> Chạy <code>run_demo.sh</code> và chọn tùy chọn 0. Nếu thấy demo phát hiện YOLO26n nghĩa là nó hoạt động.</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-bash">source ~/.bashrc # load env vars (skip after new shell)
+./run_demo.sh <<< 0 # execute demo, select 0</code></pre>
+                        </div>
+                        <img src="assets/image-21.png" alt="dx_tool.sh YOLO26s code extract"><br>
+                        <img src="assets/image-22.png" alt="dx_tool.sh YOLO26s code extract">
+                    </li>
+
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Chỉnh sửa thư viện postprocess YOLO26:</strong> Thay đổi thư viện postprocess từ 80 class sang 4 class custom của bạn.</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-diff"># Review required changes via diff
+diff --git a/dx_stream/custom_library/postprocess_library/yolo26_od/postprocess.cpp b/dx_stream/custom_library/postprocess_library/yolo26_od/postprocess.cpp
+index 8d768e5..113e154 100644
+--- a/dx_stream/custom_library/postprocess_library/yolo26_od/postprocess.cpp
++++ b/dx_stream/custom_library/postprocess_library/yolo26_od/postprocess.cpp
+@@ -19,19 +19,9 @@ struct YoloConfig {
+    int input_width = 640;
+    int input_height = 640;
+    float conf_threshold = 0.25f;
+-    int num_classes = 80;
++    int num_classes = 4;
+    std::vector<std::string> class_names = {
+-        "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck",
+-        "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench",
+-        "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra",
+-        "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee",
+-        "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove",
+-        "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup",
+-        "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange",
+-        "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch",
+-        "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse",
+-        "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink",
+-        "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"
++        "Person", "Deer", "Raccoon", "Bear"
+    };
+};</code></pre>
+<div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+    🍓 Target (Raspberry Pi 5)
+</div>
+<pre><code class="language-bash"># Rebuild after edits
+./build.sh --clean</code></pre>
+                        </div>
+                    </li>
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Pipeline GStreamer một luồng (single-stream):</strong> Xây dựng và triển khai một pipeline một luồng dùng mô hình .dxnn và video test của bạn.</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-bash"># Test video download — skip if already downloaded
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-0.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-1.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-2.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-3.mp4"
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/test-video-4.mp4"
+
+# YOLO26 model download — skip if you already have .dxnn
+wget "https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.dxnn"
+
+# Single-stream GStreamer pipeline
+gst-launch-1.0 urisourcebin uri=file://$(pwd)/test-video-1.mp4 ! decodebin ! \
+                    dxpreprocess \
+                        preprocess-id=1 \
+                        resize-width=640 \
+                        resize-height=640 ! \
+                    queue max-size-buffers=1 ! \
+                    dxinfer \
+                        preprocess-id=1 \
+                        inference-id=1 \
+                        model-path=yolo26s-custom.dxnn ! \
+                    queue max-size-buffers=1 ! \
+                    dxpostprocess \
+                        inference-id=1 \
+                        library-file-path=/usr/local/share/gstdxstream/lib/libpostprocess_yolo26od.so \
+                        function-name=PostProcess ! \
+                    queue max-size-buffers=1 ! \
+                    dxosd ! \
+                    videoconvert ! fpsdisplaysink sync=false</code></pre>
+</code></pre>
+                        </div>
+                    </li>
+                    <li class="step-item mb-4">
+                        <p class="step-desc"><strong>Pipeline GStreamer bốn luồng (four-stream):</strong> Xây dựng và triển khai một pipeline 4 luồng dùng .dxnn và video test của bạn.</p>
+                        <div class="code-panel">
+                        <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
+                            🍓 Target (Raspberry Pi 5)
+                        </div>
+<pre><code class="language-bash">#!/bin/bash
+# =========================================================
+# Configuration (user settings)
+# =========================================================
+NUM_PIPELINES=4
+OUTPUT_WIDTH=1280
+OUTPUT_HEIGHT=720
+
+MODEL_NAME="yolo26s-custom.dxnn"
+POSTPROCESS_LIB="/usr/local/share/gstdxstream/lib/libpostprocess_yolo26od.so"
+
+# =========================================================
+# Grid Layout Calculation
+# =========================================================
+COLS=1
+while [[ $((COLS * COLS)) -lt ${NUM_PIPELINES} ]]; do
+    COLS=$((COLS + 1))
+done
+ROWS=$(((NUM_PIPELINES + COLS - 1) / COLS))
+
+STREAM_WIDTH=$((OUTPUT_WIDTH / COLS))
+STREAM_HEIGHT=$((OUTPUT_HEIGHT / ROWS))
+
+echo "=================================================="
+echo " Pipeline Configuration"
+echo " - Streams: ${NUM_PIPELINES}"
+echo " - Grid: ${ROWS} rows x ${COLS} columns"
+echo " - Individual Stream Size: ${STREAM_WIDTH}x${STREAM_HEIGHT}"
+echo " - Total Output Resolution: ${OUTPUT_WIDTH}x${OUTPUT_HEIGHT}"
+echo "=================================================="
+
+# =========================================================
+# Pipeline Generation
+# =========================================================
+PIPELINE_STR=""
+COMPOSITOR_PROPS=""
+
+for i in $(seq 0 $((NUM_PIPELINES - 1))); do
+    VIDEO_FILE="test-video-$((i+1)).mp4"
+    URI="file://$(pwd)/${VIDEO_FILE}"
+
+    # Calculate x, y positions for the compositor
+    ROW_IDX=$((i / COLS))
+    COL_IDX=$((i % COLS))
+    X_POS=$((COL_IDX * STREAM_WIDTH))
+    Y_POS=$((ROW_IDX * STREAM_HEIGHT))
+
+    echo " Adding stream ${i}: ${VIDEO_FILE}"
+
+    # Build the individual stream pipeline
+    SRC_PIPE="urisourcebin uri=\"${URI}\" ! queue max-size-buffers=6 ! decodebin ! queue max-size-buffers=6 ! \
+        dxpreprocess preprocess-id=1 resize-width=640 resize-height=640 ! queue max-size-buffers=6 ! \
+        dxinfer preprocess-id=1 inference-id=1 model-path=\"${MODEL_NAME}\" ! queue max-size-buffers=6 ! \
+        dxpostprocess inference-id=1 library-file-path=\"${POSTPROCESS_LIB}\" function-name=PostProcess ! queue max-size-buffers=6 ! \
+        dxosd ! queue max-size-buffers=6 ! \
+        dxscale width=${STREAM_WIDTH} height=${STREAM_HEIGHT} ! queue max-size-buffers=6 ! comp.sink_${i}"
+
+    PIPELINE_STR="${PIPELINE_STR} ${SRC_PIPE}"
+    COMPOSITOR_PROPS="${COMPOSITOR_PROPS} sink_${i}::xpos=${X_POS} sink_${i}::ypos=${Y_POS}"
+done
+
+# =========================================================
+# Launch Pipeline
+# =========================================================
+LAUNCH_CMD="gst-launch-1.0 -e ${PIPELINE_STR} compositor name=comp ${COMPOSITOR_PROPS} ! videoconvert ! fpsdisplaysink sync=false"
+
+echo "--------------------------------------------------"
+echo "Launching GStreamer pipeline..."
+echo "--------------------------------------------------"
+
+eval "${LAUNCH_CMD}"
+
+exit 0</code></pre>
+                        </div>
+                        <figure class="my-6 not-prose">
+                            <img src="assets/image-23.png" alt="Black Bear detection result">
+                            <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                                <strong class="text-gray-700">[Hình 13] Chạy phát hiện bốn kênh</strong>
+                            </figcaption>
+                        </figure>
+                    </li>
+                </ol>
+
+                <figure class="my-10">
+                    <img src="assets/image-19.png" alt="DX-STREAM pipeline diagram" class="rounded-lg border border-slate-200">
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[Hình 14] Sơ đồ pipeline DX-STREAM</strong><br>
+                        Luồng xử lý: input → <code>dxpreprocess</code> → NPU <code>dxinfer</code> → <code>dxpostprocess</code> → hiển thị <code>dxosd</code>.
+                    </figcaption>
+                </figure>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
+                    <strong>💡 Tip:</strong> Khi tất cả các luồng dùng cùng một mô hình, bạn không cần các chuỗi <code>dxpreprocess → dxinfer → dxpostprocess</code> riêng cho từng luồng. Hãy dùng <code>dxinputselector</code> và <code>dxoutputselector</code> để chia sẻ plugin và tránh việc nạp cùng một mô hình lên NPU nhiều lần.<br> Xem sơ đồ bên dưới và <code>dx_stream/pipelines/multi_stream/run_multi_stream_selector.sh</code>.
+                </div>
+
+                <figure class="my-10">
+                    <img src="assets/image-20.png" alt="DX-STREAM pipeline diagram" class="rounded-lg border border-slate-200">
+                    <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                        <strong class="text-gray-700">[Hình 15] Pipeline DX-STREAM với tài nguyên dùng chung</strong><br>
+                         <code>dxinputselector</code> và <code>dxoutputselector</code> giúp giảm các chuỗi preprocess/infer/postprocess trùng lặp.
+                    </figcaption>
+                </figure>
+            </article>
+        </section>
+
+        <!-- Section 4 -->
+        <section id="section-4" class="mb-16">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <span class="bg-gray-800 text-white w-8 h-8 rounded-lg flex items-center justify-center text-lg">4</span>
+                Phụ lục: Tự huấn luyện mô hình YOLO26 custom của riêng bạn
+            </h2>
+            <p class="text-gray-600 leading-relaxed mb-6">
+                YOLO26 là một mô hình vision được tối ưu cho thiết bị edge với suy luận end-to-end (không cần hậu xử lý NMS). Hướng dẫn này bao gồm hai quy trình huấn luyện, phù hợp cho cả người mới bắt đầu lẫn nhà phát triển có kinh nghiệm.
+            </p>
+            <p class="text-gray-600 leading-relaxed mb-6">
+                Một dataset mẫu có sẵn tại liên kết bên dưới. Nó khá nhỏ do vấn đề bản quyền — chỉ dùng để tìm hiểu cấu trúc. Để đạt độ chính xác cấp nghiên cứu, bạn cần một dataset ít nhất 1.000 ảnh. Để đạt độ chính xác cấp thương mại, bạn cần ít nhất 10.000 ảnh đa dạng trong dataset của mình.
+            </p>
+            <p class="text-gray-600 leading-relaxed mb-6">
+            👉 Tải về: <a href="https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/dataset.tar.gz" target="_blank">https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/dataset.tar.gz</a>
+            </p>
+            <br>
+
+            <article id="section-4-1" class="prose max-w-none">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Bố cục dataset và cấu trúc thư mục</h3>
+
+                <p class="text-gray-600 leading-relaxed mb-6">
+                Huấn luyện cần hình ảnh cộng với các file nhãn (label) chứa bounding box. Ultralytics hỗ trợ định dạng YOLO, COCO, VOC, và nhiều định dạng khác. Bố cục dataset custom điển hình:
+                </p>
+                <div class="code-panel">
+
+
+                <!-- Badge for Host -->
+                <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
+                    💻 Host PC (Data Prep)
+                </div>
+<pre><code class="language-text">dataset/
+├── data.yaml          # Config: class names and train/val paths
+├── images/
+│   ├── train/         # Training images (.jpg, .png, etc.)
+│   └── val/           # Validation images
+└── labels/
+    ├── train/         # Label .txt files (same base name as train images)
+    └── val/           # Validation label files</code></pre>
+                </div>
+
+
+                <p class="text-gray-600 leading-relaxed mt-6 mb-2">
+                    Đối với một mô hình 4 class person/wildlife, <code>data.yaml</code> sẽ trông như sau:
+                </p>
+                <div class="code-panel">
+
+                <!-- Badge for Host -->
+                <div class="code-badge flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-blue-200 border-b-0 shadow-sm">
+                    💻 Host PC (Data Prep)
+                </div>
+<pre><code class="language-yaml"># YOLO detection - 4 custom classes
+train: images/train
+val: images/val
+
+names:
+  0: Person
+  1: Deer
+  2: Raccoon
+  3: Bear</code></pre>
+                </div>
+
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Để biết thêm chi tiết về dataset YOLO, hãy tham khảo Ultralytics YOLO Dataset Overview sau đây.<br>
+                    👉 Liên kết: <a href="https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset" target="_blank">https://docs.ultralytics.com/datasets/detect#how-do-i-start-training-a-yolo26-model-using-my-dataset</a>
+                </p>
+
+                <h3 id="section-4-2" class="text-xl font-semibold text-gray-800 mb-4">Phương pháp huấn luyện 1: Ultralytics Platform (Cloud, dễ dùng cho người mới)</h3>
+
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    <a href="https://platform.ultralytics.com" target="_blank" class="text-indigo-600 hover:underline">Ultralytics Platform</a> là một nền tảng tất cả trong một bao quát toàn bộ quy trình AI thị giác máy tính, từ gán nhãn dataset đến huấn luyện trên cloud và xuất mô hình. Nó cung cấp Smart Annotation dùng SAM để gán nhãn nhanh hơn nhiều, cùng với huấn luyện trên cloud bằng GPU NVIDIA và xuất sang nhiều định dạng khác nhau.
+                </p>
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Huấn luyện ngay trên trình duyệt mà không cần cài đặt cục bộ hay viết code.
+                </p>
+
+                <ol class="text-gray-600 leading-relaxed mb-8">
+            <li><strong>Đăng nhập và tải lên:</strong> Đăng nhập tại <a href="https://platform.ultralytics.com" target="_blank">https://platform.ultralytics.com</a>, tạo một project, và tải hình ảnh lên.</li>
+            <li><strong>Gán nhãn thông minh:</strong> Dùng Smart Annotation để tự động vẽ bounding box — nhanh hơn gán nhãn thủ công khoảng 10 lần.</li>
+            <li><strong>Cloud Training - New Model:</strong> Sau khi gán nhãn xong, bắt đầu huấn luyện trên GPU cloud, theo dõi số liệu theo thời gian thực, và chọn New Model.</li>
+                <figure><img src="assets/image-11.png"></figure>
+                <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                    <strong class="text-gray-700">[Hình 16] Gán nhãn trên Ultralytics Platform</strong><br>
+                     Khi gán nhãn hoàn tất, chọn New Model như hình để bắt đầu huấn luyện.
+                </figcaption><br>
+            <li><strong>Cloud Training - Base Model:</strong> Chọn mô hình YOLO nền tảng để huấn luyện.</li>
+                <figure><img src="assets/image-12.png"></figure>
+                <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                    <strong class="text-gray-700">[Hình 17] Chọn mô hình nền tảng (base model)</strong><br>
+                     Chọn một phiên bản YOLO được hỗ trợ. YOLO26n nhỏ nhất (độ trễ thấp, độ chính xác thấp hơn). Chúng ta chọn YOLO26s.
+                </figcaption><br>
+            <li><strong>Cloud Training - Start Training:</strong> Huấn luyện trên cloud có tính phí (~0,34 USD credit cho khoảng 1.300 ảnh với yolo26n). Đăng ký bằng email doanh nghiệp được tặng 25 USD credit miễn phí.</li>
+                <figure><img src="assets/image-13.png"></figure>
+                <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                    <strong class="text-gray-700">[Hình 18] Bảng giá huấn luyện trên cloud</strong><br>
+                     Chi phí phụ thuộc vào base model, số epoch, kích thước dataset, và GPU. Nhấp Start Training để bắt đầu. Local Training cung cấp một API key để huấn luyện trên dataset cloud ngay tại máy cục bộ.
+                </figcaption><br>
+            <li><strong>Export:</strong> Xuất mô hình đã huấn luyện để nhận file <code>yolo26n.dxnn</code> dùng để suy luận trực tiếp trên NPU.</li>
+                <figure><img src="assets/image-14.png"></figure>
+                <figcaption class="mt-3 text-sm text-gray-500 text-center">
+                    <strong class="text-gray-700">[Hình 19] Xuất sang .dxnn</strong><br>
+                     Chỉ vài cú nhấp chuột để tạo ra một file .dxnn sẵn sàng cho DEEPX M1 NPU.
+                </figcaption>
+                </ol>
+
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Để biết thêm chi tiết, hãy tham khảo Ultralytics DEEPX Integration Guide sau đây.<br>
+                    👉 Liên kết: <a href="https://github.com/ultralytics/ultralytics/blob/main/docs/en/integrations/deepx.md" target="_blank" class="text-indigo-600 hover:underline">https://github.com/ultralytics/ultralytics/blob/main/docs/en/integrations/deepx.md</a>
+                </p>
+                <br>
+
+
+                <h3 id="section-4-3" class="text-xl font-semibold text-gray-800 mb-4">Phương pháp huấn luyện 2: Huấn luyện trên PC cục bộ của bạn</h3>
+                <p class="text-gray-600 leading-relaxed mb-6">Huấn luyện trên chính PC của bạn (khuyến nghị có GPU). Hướng dẫn này giả định môi trường phát triển GPU đã được thiết lập sẵn.</p>
+                <ol class="text-gray-600 leading-relaxed mb-8">
+            <li class="step-item">
+                <p class="step-desc"><strong>Cài đặt package:</strong> Tạo một Python venv và chạy <code>pip install ultralytics</code>.</p>
+                <div class="code-panel editor-note">
+                    <pre><code class="language-bash"># Create and activate Python virtual environment
+python -m venv venv
+source venv/bin/activate
+pip install -U pip
+
+# Install ultralytics package
+pip install ultralytics</code></pre>
+                </div>
+            </li>
+            <li class="step-item">
+                <p class="step-desc"><strong>Chuẩn bị dataset:</strong> Bố trí dữ liệu huấn luyện theo định dạng YOLO như bên dưới.</p>
+                <div class="code-panel editor-note">
+                    <pre><code class="language-bash">.
+├── dataset
+│   ├── data.yaml
+│   ├── images
+│   │   ├── train
+│   │   │   ├── dataset_00001.jpg
+│   │   │   ├── dataset_00002.jpg
+│   │   │   ├── ...
+│   │   └── val
+│   │   │   ├── dataset_00101.jpg
+│   │   │   ├── dataset_00102.jpg
+│   │   │   ├── ...
+│   └── labels
+│   │   ├── train
+│   │   │   ├── dataset_00001.txt
+│   │   │   ├── dataset_00002.txt
+│   │   │   ├── ...
+│   │   └── val
+│   │   │   ├── dataset_00101.txt
+│   │   │   ├── dataset_00102.txt
+│   │   │   ├── ...
+└── venv</code></pre></div>
+
+            </li>
+            <li class="step-item">
+                <p class="step-desc"><strong>Bắt đầu huấn luyện (CLI):</strong> Chạy <code>yolo detect train data=dataset model=yolo26s.pt</code> để thực hiện object detection trên <code>data.yaml</code> của bạn. Chúng ta dùng YOLO26s (chính xác hơn, chậm hơn nano). Các lựa chọn khác: yolo26n/s/m/l/x.pt.</p>
+                <div class="code-panel editor-note">
+                    <pre><code class="language-bash">yolo detect train data=dataset model=yolo26s.pt</code></pre>
+                </div>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
+                    <strong>💡 Tip:</strong> Có rất nhiều tùy chọn huấn luyện. Lệnh trên dùng các giá trị mặc định. Chạy <code>yolo cfg</code> để xem các giá trị mặc định. </div>
+                <div class="code-panel editor-note">
+                    <pre><code class="language-bash">yolo cfg</code></pre>
+                </div>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-md shadow-sm">
+                    <strong>💡 Tip:</strong> Nếu dữ liệu còn hạn chế, hãy xem phần tăng cường dữ liệu (data augmentation) bên dưới.</div>
+                    👉 Liên kết: <a href="https://docs.ultralytics.com/guides/yolo-data-augmentation" target="_blank" class="text-indigo-600 hover:underline">https://docs.ultralytics.com/guides/yolo-data-augmentation</a>
+            </li>
+            <li><strong>Kết quả:</strong> Quá trình huấn luyện in ra loss và các chỉ số. Khi thành công bạn sẽ có một file weight <code>.pt</code> — kiểm tra log để biết đường dẫn của nó.</li>
+            <li class="step-item">
+                <p class="step-desc"><strong>Export (CLI):</strong> Chạy <code>yolo export model=&lt;path&gt;/weights/best.pt format=deepx data=dataset</code> để tạo ra output sẵn sàng cho NPU. Lệnh này xuất ONNX, chạy DX-COM để tạo <code>.dxnn</code>, và sử dụng dataset của bạn để calibrate các mô hình FP32 sang INT8.</p>
+                <div class="code-panel editor-note">
+                    <pre><code class="language-bash">yolo export model=&lt;path to trained pt&gt;/weights/best.pt format=deepx data=dataset # creates 'best_deepx_model/'</code></pre>
+                </div>
+            </li>
+            <li class="step-item">
+                <p class="step-desc"><strong>Kiểm tra output:</strong> Sau khi export, <code>best.dxnn</code> nằm trong <code>&lt;train path&gt;/weights/best_deepx_model</code> và chạy được trên DEEPX NPU.</p>
+                <div class="code-panel editor-note">
+                    <pre><code class="language-bash">.
+├── best_deepx_model     # Generated directory
+│   ├── config.json      # configuration file for DX-COM
+│   ├── metadata.yaml
+│   └── best.dxnn        # DX-COM result to be the deployment-ready binary for DEEPX NPU</code></pre>
+                </div>
+            </li>
+                </ol>
+            </article>
+
+            <article id="section-4-4" class="prose max-w-none">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Hiệu năng YOLO26 theo scale của mô hình</h3>
+
+                <p class="text-gray-600 leading-relaxed mb-6"> Trong tên gọi YOLO26, n, s, m, l, và x biểu thị kích thước và khối lượng tính toán. Nói ngắn gọn, chúng đánh đổi kích thước mô hình (số tham số) để lấy tốc độ.</p>
+
+                <ol class="text-gray-600 leading-relaxed mb-8">
+                    <li><strong>n (Nano):</strong> Nhỏ nhất, nhẹ nhất (ưu tiên tốc độ, thiết bị siêu nhỏ)</li>
+                    <li><strong>s (Small):</strong> Mô hình nhỏ (cân bằng giữa tốc độ và độ chính xác)</li>
+                    <li><strong>m (Medium):</strong> Kích thước trung bình (cân bằng tổng thể)</li>
+                    <li><strong>l (Large):</strong> Mô hình lớn (khi cần độ chính xác cao hơn)</li>
+                    <li><strong>x (XLarge):</strong> Lớn nhất (ưu tiên độ chính xác hơn tốc độ)</li>
+                </ol>
+
+                <p class="text-gray-600 leading-relaxed mb-6"> Kết quả benchmark trên Raspberry Pi 5 + DX-M1 M.2:</p>
+
+                <div class="overflow-x-auto mb-8">
+                    <table class="min-w-full text-sm text-left border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                        <thead class="bg-indigo-50 text-indigo-900">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 font-semibold border-b border-gray-200">Mô hình (640x640)</th>
+                                <th scope="col" class="px-4 py-3 font-semibold border-b border-gray-200">FPS</th>
+                                <th scope="col" class="px-4 py-3 font-semibold border-b border-gray-200">Độ chính xác (mAP)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white text-gray-700">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium">YOLO26n</td>
+                                <td class="px-4 py-3 text-gray-400">110.56</td>
+                                <td class="px-4 py-3 text-gray-400">39.256</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium">YOLO26s</td>
+                                <td class="px-4 py-3 text-gray-400">109.96</td>
+                                <td class="px-4 py-3 text-gray-400">46.767</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium">YOLO26m</td>
+                                <td class="px-4 py-3 text-gray-400">96.81</td>
+                                <td class="px-4 py-3 text-gray-400">51.261</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium">YOLO26l</td>
+                                <td class="px-4 py-3 text-gray-400">70.10</td>
+                                <td class="px-4 py-3 text-gray-400">53.149</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium">YOLO26x</td>
+                                <td class="px-4 py-3 text-gray-400">40.12</td>
+                                <td class="px-4 py-3 text-gray-400">55.115</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="mt-2 text-xs text-gray-500">
+                        Các file <code class="text-gray-600">.dxnn</code> dùng cho các phép đo này được tải về từ DEEPX Official Model Zoo (<a href="https://developer.deepx.ai/modelzoo/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">https://developer.deepx.ai/modelzoo/</a>).
+                    </p>
+                    <p class="mt-2 text-xs text-gray-500">
+                        Ví dụ lệnh benchmark:
+                        <code class="text-gray-600">dxrun -m yolo26s.dxnn --use-ort -t 3</code>
+                        (thay đổi tên mô hình theo từng scale: <code class="text-gray-600">yolo26n.dxnn</code>, <code class="text-gray-600">yolo26s.dxnn</code>, v.v.)
+                    </p>
+                </div>
+
+            </article>
+
+        </section>
+
+        <section id="references" class="mb-16">
+            <div class="relative overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-violet-50 p-8 md:p-10 shadow-sm">
+                <div class="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-indigo-200/30 blur-3xl" aria-hidden="true"></div>
+                <div class="pointer-events-none absolute -bottom-12 -left-8 h-40 w-40 rounded-full bg-violet-200/25 blur-3xl" aria-hidden="true"></div>
+
+                <div class="relative">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-md shadow-indigo-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </span>
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">Tài liệu tham khảo thêm</h2>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-8 max-w-2xl">
+                        Các repo chính thức và cổng thông tin dành cho nhà phát triển đi kèm với hướng dẫn này. Các thẻ liên kết mở trong tab mới.
+                    </p>
+
+                    <ul class="ref-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <li>
+                            <a href="https://github.com/DEEPX-AI/dx-all-suite" target="_blank" rel="noopener noreferrer" class="ref-card group h-full">
+                                <span class="ref-icon bg-indigo-100 text-indigo-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block text-xs font-semibold uppercase tracking-wider text-indigo-600 mb-0.5">GitHub</span>
+                                    <span class="block font-semibold text-gray-900 group-hover:text-indigo-700 transition-colors">DEEPX SDK</span>
+                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">Unified edge AI SDK: DX-APP, DX-COM, DX-Runtime</span>
+                                    <span class="block text-xs text-indigo-500/80 mt-2 truncate font-mono">github.com/DEEPX-AI/dx-all-suite</span>
+                                </span>
+                                <span class="ref-arrow" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/DEEPX-AI/dx-tutorials" target="_blank" rel="noopener noreferrer" class="ref-card group h-full">
+                                <span class="ref-icon bg-violet-100 text-violet-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block text-xs font-semibold uppercase tracking-wider text-violet-600 mb-0.5">GitHub</span>
+                                    <span class="block font-semibold text-gray-900 group-hover:text-violet-700 transition-colors">DEEPX Tutorials</span>
+                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">Hands-on Jupyter Lab tutorials</span>
+                                    <span class="block text-xs text-violet-500/80 mt-2 truncate font-mono">github.com/DEEPX-AI/dx-tutorials</span>
+                                </span>
+                                <span class="ref-arrow" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://developer.deepx.ai/" target="_blank" rel="noopener noreferrer" class="ref-card group h-full">
+                                <span class="ref-icon bg-emerald-100 text-emerald-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                    </svg>
+                                </span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-0.5">Portal</span>
+                                    <span class="block font-semibold text-gray-900 group-hover:text-emerald-700 transition-colors">DEEPX Developer Site</span>
+                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">Software, docs, lectures, Model Zoo</span>
+                                    <span class="block text-xs text-emerald-500/80 mt-2 truncate font-mono">developer.deepx.ai</span>
+                                </span>
+                                <span class="ref-arrow" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/ultralytics/ultralytics" target="_blank" rel="noopener noreferrer" class="ref-card group h-full">
+                                <span class="ref-icon bg-amber-100 text-amber-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                </span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block text-xs font-semibold uppercase tracking-wider text-amber-600 mb-0.5">GitHub</span>
+                                    <span class="block font-semibold text-gray-900 group-hover:text-amber-700 transition-colors">Ultralytics YOLO</span>
+                                    <span class="block text-sm text-gray-500 mt-1 leading-snug">YOLO26 training, export, and DEEPX NPU integration</span>
+                                    <span class="block text-xs text-amber-600/80 mt-2 truncate font-mono">github.com/ultralytics/ultralytics</span>
+                                </span>
+                                <span class="ref-arrow" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            &copy; 2026 Interface Magazine Edge AI Special Edition. Written by DEEPX & Koshida.
+        </footer>
+    </main>
+</body>
+</html>
