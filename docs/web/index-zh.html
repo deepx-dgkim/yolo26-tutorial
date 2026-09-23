@@ -434,14 +434,20 @@
                 <div class="code-badge flex items-center gap-2 bg-rose-100 text-rose-800 px-3 py-1.5 rounded-t-md text-sm font-bold border border-rose-200 border-b-0 shadow-sm">
                     🍓 Target (Raspberry Pi 5)
                 </div>
-<pre><code class="language-bash"># Install NPU driver
-sudo apt update
-wget https://github.com/DEEPX-AI/dx_rt_npu_linux_driver/raw/main/release/2.5.1/dxrt-driver-dkms_2.5.1-2_all.deb
-sudo apt install ./dxrt-driver-dkms_2.5.1-2_all.deb
+<pre><code class="language-bash"># Download & Store GPG Key
+wget -O - https://apt.releases.deepx.ai/gpg | sudo gpg --dearmor -o /usr/share/keyrings/deepx-archive-keyring.gpg
 
-# Install libdxrt runtime
-wget https://github.com/DEEPX-AI/dx_rt/raw/main/release/3.4.0/libdxrt-bin_3.4.0_arm64.deb
-sudo apt install ./libdxrt-bin_3.4.0_arm64.deb
+# Add DeepX Repository to Sources List
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/deepx-archive-keyring.gpg] https://apt.releases.deepx.ai $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/deepx.list
+
+# Update Package Index
+sudo apt update
+
+# Install NPU Kernel Drive
+sudo apt install dxrt-driver-dkms
+
+# Install DX-RT libraries and executable binaries
+sudo apt install libdxrt-bin
 
 # Reboot the system
 sudo reboot</code></pre>
@@ -449,7 +455,7 @@ sudo reboot</code></pre>
 
 
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    如果 DX-M1 M.2 模块的 firmware(FW) 版本过低，会发生 API 兼容性问题。因此需要按以下方式升级 NPU FW。以 DX-RT v3.4.0 为基准，建议 NPU FW 版本为 v2.7.3 以上。
+                    如果 DX-M1 M.2 模块的 firmware(FW) 版本过低，会发生 API 兼容性问题。因此需要按以下方式升级 NPU FW。以 DX-RT v3.4.0 为基准，建议 NPU FW 版本为 v2.7.4 以上。
                 </p>
                 <div class="code-panel">
 
@@ -461,13 +467,14 @@ sudo reboot</code></pre>
 <pre><code class="language-bash"># Stop dxrt.service before FW upgrade
 systemctl stop dxrt.service
 
-# Download NPU FW v2.7.4
-wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/2.7.4/mdot2/fw.bin
+# Download latest NPU FW
+FW_VER=$(curl -s https://api.github.com/repos/DEEPX-AI/dx_fw/releases/latest | grep -oP '"tag_name": "\K[^"]+' | tr -d 'v')
+wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/${FW_VER}/mdot2/fw.bin
 
 # For DX-M1M module, you need to download the M1M FW bin instead of the M1 FW bin
-# wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1m/2.7.4/mdot2/fw.bin
+# wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1m/${FW_VER}/mdot2/fw.bin
 
-# Upgrade NPU FW to v2.7.4
+# Upgrade NPU FW
 dxcli -u fw.bin
 
 # Restart dxrt.service after FW upgrade
@@ -502,7 +509,7 @@ ls /dev/dxrt*
 # Check NPU daemon status -> expected: dxrt.service - DX-RT Service is active (running) state
 systemctl status dxrt.service
 
-# Check the DX-RT and other version info -> expected: DXRT v3.3.2, FW v2.5.6
+# Check the DX-RT and other version info
 dxcli -s
 
 # Perform a quick validation by inferencing a model -> expected: 'FPS: higher than 90'
