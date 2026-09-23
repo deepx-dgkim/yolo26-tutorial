@@ -437,13 +437,13 @@
 <pre><code class="language-bash"># Download & Store GPG Key
 wget -O - https://apt.releases.deepx.ai/gpg | sudo gpg --dearmor -o /usr/share/keyrings/deepx-archive-keyring.gpg
 
-# Add DeepX Repository to Sources List
+# Add DEEPX Repository to Sources List
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/deepx-archive-keyring.gpg] https://apt.releases.deepx.ai $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/deepx.list
 
 # Update Package Index
 sudo apt update
 
-# Install NPU Kernel Drive
+# Install NPU Kernel Driver
 sudo apt install dxrt-driver-dkms
 
 # Install DX-RT libraries and executable binaries
@@ -465,7 +465,7 @@ sudo reboot</code></pre>
                     🍓 Target (Raspberry Pi 5)
                 </div>
 <pre><code class="language-bash"># Stop dxrt.service before FW upgrade
-systemctl stop dxrt.service
+sudo systemctl stop dxrt.service
 
 # Download latest NPU FW
 FW_VER=$(curl -s https://api.github.com/repos/DEEPX-AI/dx_fw/releases/latest | grep -oP '"tag_name": "\K[^"]+' | tr -d 'v')
@@ -478,7 +478,7 @@ wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/${FW_VER}/mdot2/fw.bin
 dxcli -u fw.bin
 
 # Restart dxrt.service after FW upgrade
-systemctl start dxrt.service</code></pre>
+sudo systemctl start dxrt.service</code></pre>
                 </div>
 
 
@@ -620,7 +620,7 @@ dxtop</code></pre>
                             💻 Host PC (Ubuntu/x86_64)
                         </div>
 <pre><code class="language-bash"># Create and activate Python virtual environment
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 pip install -U pip
 
@@ -636,7 +636,7 @@ pip install ultralytics dx-com</code></pre>
                         </div>
 <pre><code class="language-bash"># Export to ONNX with yolo export (input size = 640, batch size = 1)
 yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
-# wget -O yolo26s-wild.pt https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.onnx</code></pre>
+# wget -O yolo26s-custom.onnx https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.onnx</code></pre>
                         </div>
                         <p class="step-desc">Success when <code>yolo26s-custom.onnx</code> exists. Open it in <a href="https://netron.app" target="_blank" class="text-indigo-600 hover:underline">https://netron.app</a>, click the top <code>images</code> layer, and confirm input shape <code>1x3x640x640</code>.</p>
                         <figure class="my-6 not-prose">
@@ -922,7 +922,6 @@ gst-launch-1.0 urisourcebin uri=file://$(pwd)/test-video-1.mp4 ! decodebin ! \
                     queue max-size-buffers=1 ! \
                     dxosd ! \
                     videoconvert ! fpsdisplaysink sync=false</code></pre>
-</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
@@ -1126,13 +1125,13 @@ names:
                     <strong class="text-gray-700">[Figure 17] Base model selection</strong><br>
                      Choose a supported YOLO variant. YOLO26n is smallest (low latency, lower accuracy). We pick YOLO26s.
                 </figcaption><br>
-            <li><strong>Cloud Training - Start Training:</strong> Cloud training is paid (~$0.34 credit for ~1,300 images with yolo26n). Business email sign-up includes $25 free credit.</li>
+            <li><strong>Cloud Training - Start Training:</strong> Cloud training is paid (~$0.34 credit for ~1,300 images with yolo26s). Business email sign-up includes $25 free credit.</li>
                 <figure><img src="assets/image-13.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
                     <strong class="text-gray-700">[Figure 18] Cloud training pricing</strong><br>
                      Cost depends on base model, epochs, dataset size, and GPU. Click Start Training to begin. Local Training provides an API key to train on the cloud dataset locally. 
                 </figcaption><br>
-            <li><strong>Export:</strong> Export the trained model to get <code>yolo26n.dxnn</code> for direct NPU inference.</li>
+            <li><strong>Export:</strong> Export the trained model to get <code>yolo26s.dxnn</code> for direct NPU inference.</li>
                 <figure><img src="assets/image-14.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
                     <strong class="text-gray-700">[Figure 19] Export to .dxnn</strong><br>
@@ -1154,7 +1153,7 @@ names:
                 <p class="step-desc"><strong>Install packages:</strong> Create a Python venv and <code>pip install ultralytics</code>.</p>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash"># Create and activate Python virtual environment
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 pip install -U pip
 

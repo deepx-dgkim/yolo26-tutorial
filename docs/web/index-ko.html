@@ -437,13 +437,13 @@
 <pre><code class="language-bash"># Download & Store GPG Key
 wget -O - https://apt.releases.deepx.ai/gpg | sudo gpg --dearmor -o /usr/share/keyrings/deepx-archive-keyring.gpg
 
-# Add DeepX Repository to Sources List
+# Add DEEPX Repository to Sources List
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/deepx-archive-keyring.gpg] https://apt.releases.deepx.ai $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/deepx.list
 
 # Update Package Index
 sudo apt update
 
-# Install NPU Kernel Drive
+# Install NPU Kernel Driver
 sudo apt install dxrt-driver-dkms
 
 # Install DX-RT libraries and executable binaries
@@ -464,7 +464,7 @@ sudo reboot</code></pre>
                     🍓 Target (Raspberry Pi 5)
                 </div>
 <pre><code class="language-bash"># Stop dxrt.service before FW upgrade
-systemctl stop dxrt.service
+sudo systemctl stop dxrt.service
 
 # Download latest NPU FW
 FW_VER=$(curl -s https://api.github.com/repos/DEEPX-AI/dx_fw/releases/latest | grep -oP '"tag_name": "\K[^"]+' | tr -d 'v')
@@ -477,7 +477,7 @@ wget https://github.com/DEEPX-AI/dx_fw/raw/main/m1/${FW_VER}/mdot2/fw.bin
 dxcli -u fw.bin
 
 # Restart dxrt.service after FW upgrade
-systemctl start dxrt.service</code></pre>
+sudo systemctl start dxrt.service</code></pre>
                 </div>
 
 
@@ -619,7 +619,7 @@ dxtop</code></pre>
                             💻 Host PC (Ubuntu/x86_64)
                         </div>
 <pre><code class="language-bash"># Python 가상환경 생성 및 활성화
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 pip install -U pip
 
@@ -635,7 +635,7 @@ pip install ultralytics dx-com</code></pre>
                         </div>
 <pre><code class="language-bash"># yolo export 명령어를 활용해 ONNX format으로 추출 (input size = 640, batch size = 1)
 yolo export model=yolo26s-custom.pt format=onnx batch=1 imgsz=640
-# wget -O yolo26s-wild.pt https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.onnx</code></pre>
+# wget -O yolo26s-custom.onnx https://github.com/deepx-dgkim/yolo26-tutorial/raw/main/assets/yolo26s-custom.onnx</code></pre>
                         </div>
                         <p class="step-desc"><code>yolo26s-custom.onnx</code> 파일이 생성되면 성공이다. 그리고 추출된 ONNX 파일의 batch size 가 1 로 고정됐는지 <a href="https://netron.app" target="_blank" class="text-indigo-600 hover:underline">https://netron.app</a> 을 통해 확인해 보자. 해당 브라우저에서 <code>yolo26s-custom.onnx</code> 파일을 로드하고 가장 상단의 images 레이어를 클릭해 input tensor shape 이 <code>1x3x640x640</code>으로 보이면 된다.</p>
                         <figure class="my-6 not-prose">
@@ -921,7 +921,6 @@ gst-launch-1.0 urisourcebin uri=file://$(pwd)/test-video-1.mp4 ! decodebin ! \
                     queue max-size-buffers=1 ! \
                     dxosd ! \
                     videoconvert ! fpsdisplaysink sync=false</code></pre>
-</code></pre>
                         </div>
                     </li>
                     <li class="step-item mb-4">
@@ -1125,13 +1124,13 @@ names:
                     <strong class="text-gray-700">[그림 17] Base Model 선택 화면</strong><br>
                      Ultralytics 에서 지원하는 버전의 YOLO 모델들을 선택해서 training 을 할 수 있다. YOLO26n 이 YOLO26 계열에서 가장 light 한 모델이기에 latency 가 낮고 accuracy 가 상대적으로 떨어진다. YOLO26s 를 선택하자.
                 </figcaption><br>
-            <li><strong>Cloud Training - Start Training:</strong> Cloud training은 과금 모델이며 약 1300장의 dataset 을 yolo26n 으로 training 시 $0.34 정도의 credit 이 소진된다. Account 생성 시 기업 email 로 가입하면 $25 free credit이 부여된다.</li>
+            <li><strong>Cloud Training - Start Training:</strong> Cloud training은 과금 모델이며 약 1300장의 dataset 을 yolo26s 으로 training 시 $0.34 정도의 credit 이 소진된다. Account 생성 시 기업 email 로 가입하면 $25 free credit이 부여된다.</li>
                 <figure><img src="assets/image-13.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
                     <strong class="text-gray-700">[그림 18] Cloud Training 의 과금 정책</strong><br>
                      사용할 Base Model 과 epoch, dataset 의 수, 그리고 GPU type 에 따라 과금이 달라진다. Start Training 을 누르면 학습이 시작된다. 만약 Cloud Training 말고 Local Training 을 선택하면 Cloud 의 dataset 을 기반으로 Local Training 을 할 수 있게 API Key 값을 제공한다. 
                 </figcaption><br>
-            <li><strong>내보내기:</strong> 학습이 끝난 완성된 모델 파일을 export하면 <code>yolo26n.dxnn</code> 파일이 생성되며 이를 다운로드하여 NPU 에서 추론용으로 바로 사용 할 수 있다.</li>
+            <li><strong>내보내기:</strong> 학습이 끝난 완성된 모델 파일을 export하면 <code>yolo26s.dxnn</code> 파일이 생성되며 이를 다운로드하여 NPU 에서 추론용으로 바로 사용 할 수 있다.</li>
                 <figure><img src="assets/image-14.png"></figure>
                 <figcaption class="mt-3 text-sm text-gray-500 text-center">
                     <strong class="text-gray-700">[그림 19] 간단하게 .dxnn 으로 export 하는 과정</strong><br>
@@ -1153,7 +1152,7 @@ names:
                 <p class="step-desc"><strong>패키지 설치:</strong> 터미널이나 커맨드 창을 열고 Python 가상환경을 생성 후 <code>pip</code> 명령어를 이용해 <code>ultralytics</code> 패키지를 설치한다. 이 명령어 하나로 단 몇 분 안에 필요한 툴이 모두 설치된다.</p>
                 <div class="code-panel editor-note">
                     <pre><code class="language-bash"># Python 가상환경 생성 및 활성화
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 pip install -U pip
 
